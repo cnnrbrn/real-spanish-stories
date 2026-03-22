@@ -1,0 +1,18 @@
+.git/
+**/node_modules/
+**/dist/
+**/.turbo/
+**/coverage/
+
+# web app not needed for API build
+apps/web/
+
+# env files
+**/.env
+**/.env.example
+**/.env.local
+**/.env.*.local
+
+# test files
+**/*.spec.ts
+**/vitest.config.ts

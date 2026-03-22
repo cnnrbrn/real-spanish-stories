@@ -1,0 +1,20 @@
+import { Inject } from "@nestjs/common";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { storiesSchema, type Story } from "@real-spanish-stories/shared";
+import { GetStoriesQuery } from "./get-stories.query";
+import { DATABASE_CONNECTION } from "src/database/database.constants";
+
+@QueryHandler(GetStoriesQuery)
+export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
+  constructor(
+    @Inject(DATABASE_CONNECTION)
+    private readonly database: NodePgDatabase<{
+      stories: typeof storiesSchema;
+    }>,
+  ) {}
+
+  async execute(): Promise<Story[]> {
+    return this.database.select().from(storiesSchema);
+  }
+}

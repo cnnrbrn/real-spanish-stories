@@ -1,0 +1,99 @@
+name: Deploy to Lightsail
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/api/**"
+      - "packages/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install lightsailctl
+        run: |
+          sudo curl -Lo /usr/local/bin/lightsailctl \
+            https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl
+          sudo chmod +x /usr/local/bin/lightsailctl
+
+      - name: Build Docker Image
+
+        run: docker build -f apps/api/Dockerfile -t api:latest .
+
+      - name: Push Image & Get Identifier
+        id: push
+        run: |
+          # 1. Push the image to Lightsail
+          aws lightsail push-container-image \
+            --service-name ${{ secrets.LIGHTSAIL_SERVICE_NAME }} \
+            --label api \
+            --image api:latest
+
+          # 2. Get the official AWS image identifier (e.g., :service.api.1)
+          # We query the first element of the list because it's always the most recent
+          IMAGE=$(aws lightsail get-container-images \
+            --service-name ${{ secrets.LIGHTSAIL_SERVICE_NAME }} \
+            --query 'containerImages[0].image' \
+            --output text)
+
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Deploy to Lightsail
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+          SERVICE_NAME: ${{ secrets.LIGHTSAIL_SERVICE_NAME }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          # Safety check to prevent deploying an empty image field
+          if [ -z "$IMAGE" ] || [ "$IMAGE" == "None" ]; then
+            echo "Error: Could not retrieve the image identifier from Lightsail."
+            exit 1
+          fi
+
+          # Generate the deployment JSON
+          CONTAINERS=$(jq -n \
+            --arg image "$IMAGE" \
+            --arg better_auth_url "$BETTER_AUTH_URL" \
+            --arg better_auth_secret "$BETTER_AUTH_SECRET" \
+            --arg database_url "$DATABASE_URL" \
+            --arg openai_api_key "$OPENAI_API_KEY" \
+            '{
+              "api": {
+                "image": $image,
+                "environment": {
+                  "NODE_ENV": "production",
+                  "PORT": "3001",
+                  "BETTER_AUTH_URL": $better_auth_url,
+                  "BETTER_AUTH_SECRET": $better_auth_secret,
+                  "DATABASE_URL": $database_url,
+                  "OPENAI_API_KEY": $openai_api_key
+                },
+                "ports": {
+                  "3001": "HTTP"
+                }
+              }
+            }')
+
+          # Execute the deployment
+          aws lightsail create-container-service-deployment \
+            --service-name "$SERVICE_NAME" \
+            --containers "$CONTAINERS" \
+            --public-endpoint '{"containerName":"api","containerPort":3001,"healthCheck":{"path":"/","successCodes":"200-499"}}'

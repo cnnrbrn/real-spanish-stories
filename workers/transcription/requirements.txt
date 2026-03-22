@@ -1,0 +1,6 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+bullmq>=1.0.0
+torch
+whisperx @ git+https://github.com/m-bain/whisperx.git
+boto3
+psycopg2-binary
