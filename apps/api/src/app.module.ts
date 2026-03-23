@@ -9,7 +9,7 @@ import { TranslateModule } from "./features/translate/translate.module";
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
-import { AuthGuard, AuthModule } from "@thallesp/nestjs-better-auth";
+import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -38,6 +38,10 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
       useFactory: (database: NodePgDatabase, configService: ConfigService) => {
         const resend = new Resend(configService.getOrThrow("RESEND_API_KEY"));
         return {
+          bodyParser: {
+            json: { limit: "2mb" },
+            urlencoded: { limit: "2mb", extended: true },
+          },
           auth: betterAuth({
             database: drizzleAdapter(database, {
               provider: "pg",
@@ -72,10 +76,6 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
   ],
   controllers: [AppController],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
