@@ -1,5 +1,4 @@
 import { NestFactory } from "@nestjs/core";
-import { RequestMethod } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { cleanupOpenApiDoc } from "nestjs-zod";
@@ -10,12 +9,15 @@ async function bootstrap() {
     bodyParser: false,
   });
 
+  // Health check on / for Lightsail (bypasses NestJS global prefix)
+  app.getHttpAdapter().get("/", (_req: any, res: any) => {
+    res.json({ status: "ok" });
+  });
+
   const configService = app.get(ConfigService);
   const corsOrigins = configService.getOrThrow<string>("CORS_ORIGIN").split(",");
   app.enableCors({ origin: corsOrigins, credentials: true });
-  app.setGlobalPrefix("v1", {
-    exclude: [{ path: "/", method: RequestMethod.GET }],
-  });
+  app.setGlobalPrefix("v1");
 
   const config = new DocumentBuilder()
     .setTitle("Real Spanish Stories API")
