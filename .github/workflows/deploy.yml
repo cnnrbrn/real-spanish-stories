@@ -62,9 +62,9 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          APP_AWS_REGION: ${{ secrets.AWS_REGION }}
+          APP_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          APP_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
         run: |
           # Safety check to prevent deploying an empty image field
@@ -74,6 +74,7 @@ jobs:
           fi
 
           # Generate the deployment JSON
+          # Note: APP_AWS_* env vars avoid clashing with the deployer's AWS credentials
           CONTAINERS=$(jq -n \
             --arg image "$IMAGE" \
             --arg better_auth_url "$BETTER_AUTH_URL" \
@@ -81,9 +82,9 @@ jobs:
             --arg database_url "$DATABASE_URL" \
             --arg openai_api_key "$OPENAI_API_KEY" \
             --arg s3_bucket "$S3_BUCKET" \
-            --arg aws_region "$AWS_REGION" \
-            --arg aws_access_key_id "$AWS_ACCESS_KEY_ID" \
-            --arg aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" \
+            --arg aws_region "$APP_AWS_REGION" \
+            --arg aws_access_key_id "$APP_AWS_ACCESS_KEY_ID" \
+            --arg aws_secret_access_key "$APP_AWS_SECRET_ACCESS_KEY" \
             --arg cors_origin "$CORS_ORIGIN" \
             '{
               "api": {
