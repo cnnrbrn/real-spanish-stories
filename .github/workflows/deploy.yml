@@ -61,6 +61,11 @@ jobs:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
         run: |
           # Safety check to prevent deploying an empty image field
           if [ -z "$IMAGE" ] || [ "$IMAGE" == "None" ]; then
@@ -75,6 +80,11 @@ jobs:
             --arg better_auth_secret "$BETTER_AUTH_SECRET" \
             --arg database_url "$DATABASE_URL" \
             --arg openai_api_key "$OPENAI_API_KEY" \
+            --arg s3_bucket "$S3_BUCKET" \
+            --arg aws_region "$AWS_REGION" \
+            --arg aws_access_key_id "$AWS_ACCESS_KEY_ID" \
+            --arg aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" \
+            --arg cors_origin "$CORS_ORIGIN" \
             '{
               "api": {
                 "image": $image,
@@ -84,7 +94,12 @@ jobs:
                   "BETTER_AUTH_URL": $better_auth_url,
                   "BETTER_AUTH_SECRET": $better_auth_secret,
                   "DATABASE_URL": $database_url,
-                  "OPENAI_API_KEY": $openai_api_key
+                  "OPENAI_API_KEY": $openai_api_key,
+                  "S3_BUCKET": $s3_bucket,
+                  "AWS_REGION": $aws_region,
+                  "AWS_ACCESS_KEY_ID": $aws_access_key_id,
+                  "AWS_SECRET_ACCESS_KEY": $aws_secret_access_key,
+                  "CORS_ORIGIN": $cors_origin
                 },
                 "ports": {
                   "3001": "HTTP"
