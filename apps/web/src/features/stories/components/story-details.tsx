@@ -44,7 +44,6 @@ export function StoryDetails({ story }: StoryDetailsProps) {
     return () => document.body.classList.remove('overflow-hidden')
   }, [sidebarOpen])
 
-
   async function handlePhraseSelect({
     words,
     phrase,
@@ -118,7 +117,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               </h1>
               <div className="mt-4 flex items-center gap-2 xl:hidden flex-col md:flex-row">
                 <LevelBadge level={story.level} size="lg" />
-                {story.audioFilename && (
+                {/* {story.audioFilename && (
                   <a
                     href={`${import.meta.env.VITE_API_URL}stories/${story.id}/audio`}
                     download={story.audioFilename}
@@ -127,7 +126,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
                     <Download className="w-4 h-4" />
                     Download the audio
                   </a>
-                )}
+                )} */}
                 {story.pdfLightPath && (
                   <a
                     href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/light`}
@@ -154,7 +153,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               </div>
             </div>
             <div className="flex items-center gap-1">
-              {story.audioFilename && (
+              {/* {story.audioFilename && (
                 <a
                   href={`${import.meta.env.VITE_API_URL}stories/${story.id}/audio`}
                   download={story.audioFilename}
@@ -163,7 +162,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
                   <Download className="w-4 h-4" />
                   Download the audio
                 </a>
-              )}
+              )} */}
               {story.pdfLightPath && (
                 <a
                   href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/light`}

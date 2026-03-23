@@ -28,7 +28,7 @@ export default function Header() {
             />
           </Link>
           <div className="flex items-center gap-2">
-            <AuthMenu />
+            {/* <AuthMenu /> */}
 
             <button
               onClick={toggleTheme}

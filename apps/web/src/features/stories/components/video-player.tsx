@@ -27,7 +27,6 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
 
     useEffect(() => {
       if (!playerRef.current) {
-        // Initialize player first time
         const videoElement = document.createElement('video-js')
         videoElement.classList.add('vjs-big-play-centered')
         videoRef.current?.appendChild(videoElement)
