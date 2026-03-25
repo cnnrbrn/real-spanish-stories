@@ -332,21 +332,6 @@ function renderStory(
   doc.moveDown(0.5);
 }
 
-function renderEndCard(
-  doc: PDFKit.PDFDocument,
-  section: TranscriptionSection,
-  colors: Colors,
-) {
-  ensureSpace(doc, 30);
-  const text = section.words.map((w) => w.word).join(" ");
-  doc
-    .fontSize(FONT_SIZE)
-    .font("Helvetica")
-    .fillColor(colors.mutedFg)
-    .text(text, PAGE_MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
-  doc.moveDown(1);
-}
-
 export function generateStoryPdf(
   story: Story,
   theme: "light" | "dark",
@@ -413,9 +398,6 @@ export function generateStoryPdf(
           break;
         case "story":
           renderStory(doc, section, colors);
-          break;
-        case "end_card":
-          renderEndCard(doc, section, colors);
           break;
       }
     }

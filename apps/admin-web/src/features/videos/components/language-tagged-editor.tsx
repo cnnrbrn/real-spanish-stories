@@ -49,7 +49,6 @@ function getSectionLabel(type: string): string {
     verbs: "Verbs",
     story_header: "Story Header",
     story: "Story",
-    end_card: "End Card",
   }
   return labels[type] || type
 }
@@ -127,22 +126,20 @@ export function LanguageTaggedEditor({ video }: LanguageTaggedEditorProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            onClick={() =>
-              navigate({
-                to: "/videos/$id/sections",
-                params: { id: String(video.id) },
-              })
-            }
-          >
-            ← Back to Sections
-          </Button>
-          <h1 className="text-2xl font-bold">Language Tags: {video.title}</h1>
-        </div>
-        <div className="flex gap-2">
+      <h1 className="text-2xl font-bold">Language Tags: {video.title}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Button
+          variant="outline"
+          onClick={() =>
+            navigate({
+              to: "/videos/$id/sections",
+              params: { id: String(video.id) },
+            })
+          }
+        >
+          ← Back to Sections
+        </Button>
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             onClick={() => retagMutation.mutate()}

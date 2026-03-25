@@ -7,13 +7,14 @@ import { DetectSectionsCommand } from "./detect-sections.command";
 import type { Video } from "../videos.schema";
 import { videosSchema } from "../videos.schema";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
-import { detectSections } from "../sections.utils";
+import { detectSections } from "./detect-sections.utils";
 
-const IN_PROGRESS_STATUSES: VideoStatus[] = [
-  "transcribing",
-  "sectioning",
-  "language_tagging",
-  "generating",
+const ALLOWED_STATUSES: VideoStatus[] = [
+  "transcribed",
+  "sectioned",
+  "language_tagged",
+  "completed",
+  "failed",
 ];
 
 @CommandHandler(DetectSectionsCommand)
@@ -44,9 +45,9 @@ export class DetectSectionsHandler
       );
     }
 
-    if (IN_PROGRESS_STATUSES.includes(video.status)) {
+    if (!ALLOWED_STATUSES.includes(video.status)) {
       throw new BadRequestException(
-        `Cannot detect sections while video is in '${video.status}' status`,
+        `Video must be in 'transcribed', 'sectioned', 'language_tagged', 'completed', or 'failed' status, currently: ${video.status}`,
       );
     }
 

@@ -3,6 +3,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { VideoList } from '@/features/videos/components/video-list'
 import { Button } from '@/components/ui/button'
 import { listVideosQueryOptions } from '@/features/videos/query-options'
+import { PROCESSING_STATUSES } from '@/features/videos/constants'
 
 export const Route = createFileRoute('/')({
   loader: ({ context }) =>
@@ -11,7 +12,15 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const { data: videos } = useSuspenseQuery(listVideosQueryOptions())
+  const { data: videos } = useSuspenseQuery({
+    ...listVideosQueryOptions(),
+    refetchInterval: (query) => {
+      const hasProcessing = query.state.data?.some((v) =>
+        PROCESSING_STATUSES.includes(v.status as (typeof PROCESSING_STATUSES)[number])
+      )
+      return hasProcessing ? 2500 : false
+    },
+  })
 
   return (
     <div className="space-y-4">

@@ -27,11 +27,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getResponse()
         : String(exception);
 
+    const cause = exception instanceof Error ? (exception as any).cause : undefined;
+
     this.logger.error(
       `[${request.method}] ${request.url} → ${status}`,
       JSON.stringify({
         body: request.body,
         error: message,
+        cause: cause ? String(cause) : undefined,
+        causeDetail: cause?.message ?? cause?.detail ?? undefined,
         stack: exception instanceof Error ? exception.stack : undefined,
       }),
     );

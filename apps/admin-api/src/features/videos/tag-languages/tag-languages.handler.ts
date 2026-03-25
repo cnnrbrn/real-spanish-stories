@@ -11,7 +11,7 @@ import { videosSchema } from "../videos.schema";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { tagLanguages } from "../language-tagging.utils";
 
-const ALLOWED_STATUSES: VideoStatus[] = ["sectioned", "language_tagged", "completed"];
+const ALLOWED_STATUSES: VideoStatus[] = ["sectioned", "language_tagged", "completed", "failed"];
 
 @CommandHandler(TagLanguagesCommand)
 export class TagLanguagesHandler

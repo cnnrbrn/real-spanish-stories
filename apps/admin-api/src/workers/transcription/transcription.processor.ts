@@ -55,8 +55,7 @@ export class TranscriptionProcessor extends WorkerHost {
         `Transcription complete for video ${videoId}: ${result.words.length} words`,
       );
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unknown error";
+      const message = error instanceof Error ? error.message : "Unknown error";
       this.logger.error(
         `Transcription failed for video ${videoId}: ${message}`,
       );

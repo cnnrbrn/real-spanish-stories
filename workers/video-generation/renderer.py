@@ -37,7 +37,6 @@ from constants import (
     VIDEO_LOGO_MAX_HEIGHT_RATIO,
     VIDEO_LOGO_MAX_WIDTH_RATIO,
     VIDEO_LOGO_PATH,
-    VIDEO_END_CARD_EXTENSION,
     VIDEO_MIN_FONT_SIZE,
     VIDEO_PRIMARY_FONT_COLOR,
     VIDEO_SECONDARY_FONT_COLOR,
@@ -113,8 +112,6 @@ class VideoConfig:
     logo_max_width_ratio: float = VIDEO_LOGO_MAX_WIDTH_RATIO
     logo_max_height_ratio: float = VIDEO_LOGO_MAX_HEIGHT_RATIO
 
-    # End card settings
-    end_card_extension: float = VIDEO_END_CARD_EXTENSION
 
 
 class VideoGenerationService:
@@ -187,8 +184,8 @@ class VideoGenerationService:
             logger.info(f"[{video_id}] Building frame data index... ({time.time() - start_time:.1f}s)")
             frame_data_list = self._build_frame_data_index(sections, audio_duration)
 
-            # Content ends at last section (end_card) + extension, not at audio file end
-            content_end = frame_data_list[-1].end_time + self.config.end_card_extension if frame_data_list else audio_duration
+            # Content ends at last section, not at audio file end
+            content_end = frame_data_list[-1].end_time if frame_data_list else audio_duration
             video_duration = content_end + self.config.logo_duration
 
             # Add logo screen immediately after last section ends
@@ -497,7 +494,7 @@ class VideoGenerationService:
         # Title sections use title font size, no highlighting, and get a border
         is_title_section = section_type in (
             "title_spanish", "title_english",
-            "vocabulary_header", "verbs_header", "story_header", "end_card",
+            "vocabulary_header", "verbs_header", "story_header",
         )
         font_size = self.config.title_font_size if is_title_section else self.config.content_font_size
         font = self._get_font(font_size)
@@ -533,7 +530,7 @@ class VideoGenerationService:
                 is_highlighted = False if is_title_section else (highlight_index >= 0 and word_idx == highlight_index)
                 color = self._get_word_color(word_data, is_highlighted, section_type)
 
-                word_text = word_data["word"].rstrip(",")
+                word_text = word_data["word"]
                 draw.text((x, y), word_text, font=font, fill=color)
 
                 # Track bounds for border

@@ -41,6 +41,3 @@ VIDEO_LOGO_PATH = str(_BASE_DIR / "assets" / "logo.png")
 VIDEO_LOGO_DURATION = 5.0  # seconds
 VIDEO_LOGO_MAX_WIDTH_RATIO = 0.6   # Max 60% of video width
 VIDEO_LOGO_MAX_HEIGHT_RATIO = 0.4  # Max 40% of video height
-
-# End card settings
-VIDEO_END_CARD_EXTENSION = 1.0  # Extra seconds to display end card

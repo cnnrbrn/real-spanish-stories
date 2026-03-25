@@ -4,7 +4,6 @@ import type { SectionType } from "@real-spanish-stories/shared";
 const VOCABULARY_HEADER_PHRASE = "Vocabulary from the story";
 const VERBS_HEADER_PHRASE = "Verbs from the story";
 const STORY_HEADER_PHRASE = "Now, the story";
-const END_CARD_PHRASE = "Fin de la historia";
 
 // Spanish marker phrases
 const VOCABULARY_HEADER_PHRASE_ES = "Vocabulario de la historia";
@@ -136,12 +135,6 @@ export function detectSections(
     storyPhrase,
     verbsHeaderIdx >= 0 ? verbsHeaderIdx + 1 : currentIndex,
   );
-  const endCardIdx = findPhraseIndex(
-    words,
-    END_CARD_PHRASE,
-    storyHeaderIdx >= 0 ? storyHeaderIdx + 1 : currentIndex,
-  );
-
   // 3. Extract summary (between title_english and vocabulary_header)
   if (vocabHeaderIdx > currentIndex) {
     const summaryWords = words.slice(currentIndex, vocabHeaderIdx);
@@ -238,8 +231,8 @@ export function detectSections(
     });
     const storyContentStart = storyHeaderIdx + storyPhraseLen;
 
-    // 9. Extract story (between story_header and end_card)
-    const storyContentEnd = endCardIdx >= 0 ? endCardIdx : words.length;
+    // 9. Extract story (between story_header and end of audio)
+    const storyContentEnd = words.length;
     if (storyContentStart < storyContentEnd) {
       const storyWords = words.slice(storyContentStart, storyContentEnd);
       if (storyWords.length > 0) {
@@ -251,20 +244,6 @@ export function detectSections(
         });
       }
     }
-  }
-
-  // 10. Add end_card (static)
-  if (endCardIdx >= 0) {
-    const endPhraseLen = END_CARD_PHRASE.split(/\s+/).length;
-    const endCardWords = words.slice(endCardIdx, endCardIdx + endPhraseLen);
-    sections.push({
-      type: "end_card",
-      static: true,
-      text: END_CARD_PHRASE,
-      start_time: endCardWords[0].start,
-      end_time: endCardWords[endCardWords.length - 1].end,
-      words: endCardWords,
-    });
   }
 
   return { sections };

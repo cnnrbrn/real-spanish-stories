@@ -22,3 +22,8 @@ Thumbs.db
 # Debug
 npm-debug.log*
 pnpm-debug.log*
+
+python-admin
+
+# Data
+/data/

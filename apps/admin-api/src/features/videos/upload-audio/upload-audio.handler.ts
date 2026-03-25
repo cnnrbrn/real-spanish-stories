@@ -9,7 +9,7 @@ import type { Video } from "../videos.schema";
 import { videosSchema } from "../videos.schema";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { StorageService } from "src/storage/storage.service";
-import type { TranscriptionJobData } from "src/transcription/transcription.processor";
+import type { TranscriptionJobData } from "src/workers/transcription/transcription.processor";
 
 const ALLOWED_MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/wave"];
 
@@ -56,6 +56,11 @@ export class UploadAudioHandler
           useSpanishHeadings: command.useSpanishHeadings,
           status: "transcribing",
           errorMessage: null,
+          transcriptionJson: null,
+          sectionsJson: null,
+          languageTaggedJson: null,
+          transcriptionMarkdown: null,
+          videoPath: null,
           updatedAt: new Date(),
         })
         .where(eq(videosSchema.id, command.videoId))
@@ -81,6 +86,18 @@ export class UploadAudioHandler
 
       return updated;
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown error";
+
+      await this.database
+        .update(videosSchema)
+        .set({
+          status: "failed",
+          errorMessage: `Audio upload failed: ${message}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(videosSchema.id, command.videoId));
+
       await this.storageService.delete(key).catch(() => {});
       throw error;
     }

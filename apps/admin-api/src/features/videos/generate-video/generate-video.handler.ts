@@ -18,12 +18,14 @@ export interface VideoGenerationJobData {
   draftMode: boolean;
 }
 
-const ALLOWED_STATUSES: VideoStatus[] = ["language_tagged", "completed", "failed"];
+const ALLOWED_STATUSES: VideoStatus[] = [
+  "language_tagged",
+  "completed",
+  "failed",
+];
 
 @CommandHandler(GenerateVideoCommand)
-export class GenerateVideoHandler
-  implements ICommandHandler<GenerateVideoCommand>
-{
+export class GenerateVideoHandler implements ICommandHandler<GenerateVideoCommand> {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly database: NodePgDatabase<{
@@ -39,9 +41,7 @@ export class GenerateVideoHandler
     });
 
     if (!video) {
-      throw new NotFoundException(
-        `Video with id ${command.videoId} not found`,
-      );
+      throw new NotFoundException(`Video with id ${command.videoId} not found`);
     }
 
     if (!video.languageTaggedJson) {
@@ -88,8 +88,7 @@ export class GenerateVideoHandler
 
       return updated;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unknown error";
+      const message = error instanceof Error ? error.message : "Unknown error";
 
       const [failed] = await this.database
         .update(videosSchema)

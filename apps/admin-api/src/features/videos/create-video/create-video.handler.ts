@@ -7,9 +7,7 @@ import { videosSchema } from "../videos.schema";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 
 @CommandHandler(CreateVideoCommand)
-export class CreateVideoHandler
-  implements ICommandHandler<CreateVideoCommand>
-{
+export class CreateVideoHandler implements ICommandHandler<CreateVideoCommand> {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly database: NodePgDatabase<{
@@ -24,6 +22,10 @@ export class CreateVideoHandler
         title: command.title,
         altTitle: command.altTitle,
         level: command.level,
+        status: "draft",
+        useSpanishHeadings: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
       .returning();
 

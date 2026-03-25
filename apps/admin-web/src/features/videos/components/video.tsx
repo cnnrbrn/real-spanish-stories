@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Check, X, Trash2, Upload, FileText, Layers, Tag, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Pencil, Check, X, Trash2, Upload, FileText, Layers, Tag, Sparkles, CheckCircle2, Film } from 'lucide-react'
 import type { Video as VideoType } from '../types'
-import { updateVideo, deleteVideo } from '../api'
-import { videoKeys, VIDEO_LEVELS } from '../constants'
+import { updateVideo, deleteVideo, generateVideo } from '../api'
+import { videoKeys, VIDEO_LEVELS, PROCESSING_STATUSES } from '../constants'
 import { createStoryFromVideo, getStoryByVideoId, updateStory } from '@/features/stories/api'
 import { storyKeys } from '@/features/stories/constants'
 import type { StoryUpdate } from '@/features/stories/types'
@@ -59,6 +59,13 @@ export function Video({ video }: VideoProps) {
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteVideo(video.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: videoKeys.list() })
+    },
+  })
+
+  const generateVideoMutation = useMutation({
+    mutationFn: () => generateVideo(video.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: videoKeys.list() })
     },
@@ -144,8 +151,19 @@ export function Video({ video }: VideoProps) {
   const hasTranscription = !!video.transcriptionJson
   const hasSections = !!video.sectionsJson
   const hasLanguageTags = !!video.languageTaggedJson
+  const canGenerateVideo = hasLanguageTags &&
+    ['language_tagged', 'completed', 'failed'].includes(video.status)
+
+  const isProcessing = PROCESSING_STATUSES.includes(
+    video.status as (typeof PROCESSING_STATUSES)[number]
+  )
 
   const getStatusBadge = () => {
+    if (video.status === 'failed') return { label: 'Failed', variant: 'destructive' as const }
+    if (video.status === 'generating') return { label: 'Generating...', variant: 'secondary' as const }
+    if (video.status === 'transcribing') return { label: 'Transcribing...', variant: 'secondary' as const }
+    if (video.status === 'sectioning') return { label: 'Sectioning...', variant: 'secondary' as const }
+    if (video.status === 'language_tagging') return { label: 'Tagging...', variant: 'secondary' as const }
     if (hasLanguageTags) return { label: 'Ready', variant: 'default' as const }
     if (hasSections) return { label: 'In Progress', variant: 'secondary' as const }
     if (hasTranscription) return { label: 'Transcribed', variant: 'secondary' as const }
@@ -223,13 +241,16 @@ export function Video({ video }: VideoProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <CardTitle className="text-xl">{video.title}</CardTitle>
-                  <Badge variant={statusBadge.variant}>
+                  <Badge variant={statusBadge.variant} className={isProcessing ? 'animate-pulse' : ''}>
                     {statusBadge.label}
                   </Badge>
                 </div>
                 <CardDescription className="mt-1.5 text-base">
                   {video.altTitle}
                 </CardDescription>
+                {video.status === 'failed' && video.errorMessage && (
+                  <p className="mt-1.5 text-sm text-destructive">{video.errorMessage}</p>
+                )}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
@@ -274,8 +295,8 @@ export function Video({ video }: VideoProps) {
 
             <div className="flex flex-wrap gap-2 text-xs">
               {video.level && (
-                <div className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
-                  <span className="capitalize font-medium text-muted-foreground">{video.level}</span>
+                <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-md">
+                  <span className="capitalize font-bold text-sm text-foreground">{video.level}</span>
                 </div>
               )}
               {hasAudio && (
@@ -377,6 +398,17 @@ export function Video({ video }: VideoProps) {
                     Language Tags
                   </>
                 )}
+              </Button>
+
+              <Button
+                size="sm"
+                variant="secondary"
+                className="gap-1.5"
+                onClick={() => generateVideoMutation.mutate()}
+                disabled={!canGenerateVideo || generateVideoMutation.isPending || video.status === 'generating'}
+              >
+                <Film className="h-3.5 w-3.5" />
+                {generateVideoMutation.isPending || video.status === 'generating' ? 'Generating...' : 'Generate Video'}
               </Button>
 
               <Button
