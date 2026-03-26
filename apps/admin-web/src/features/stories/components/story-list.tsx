@@ -15,14 +15,10 @@ export function StoryList({ stories }: StoryListProps) {
   }
 
   return (
-    <>
-      <h1>Stories</h1>
-
-      <div className="grid gap-4">
-        {stories.map((story) => (
-          <Story key={story.id} story={story} />
-        ))}
-      </div>
-    </>
+    <div className="grid gap-4">
+      {stories.map((story) => (
+        <Story key={story.id} story={story} />
+      ))}
+    </div>
   )
 }

@@ -15,14 +15,10 @@ export function VideoList({ videos }: VideoListProps) {
   }
 
   return (
-    <>
-      <h1>Videos</h1>
-
-      <div className="grid gap-4">
-        {videos.map((video) => (
-          <Video key={video.id} video={video} />
-        ))}
-      </div>
-    </>
+    <div className="grid gap-4">
+      {videos.map((video) => (
+        <Video key={video.id} video={video} />
+      ))}
+    </div>
   )
 }

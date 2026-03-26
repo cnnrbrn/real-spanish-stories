@@ -1,9 +1,10 @@
-import { Inject, NotFoundException } from "@nestjs/common";
+import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { GetStoriesQuery } from "./get-stories.query";
 import { storiesSchema, type StoryResponse } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { eq } from "drizzle-orm";
 
 @QueryHandler(GetStoriesQuery)
 export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
@@ -21,10 +22,12 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
         altTitle: storiesSchema.altTitle,
         videoLink: storiesSchema.videoLink,
         level: storiesSchema.level,
+        status: storiesSchema.status,
         isPremium: storiesSchema.isPremium,
         createdAt: storiesSchema.createdAt,
       })
-      .from(storiesSchema);
+      .from(storiesSchema)
+      .where(eq(storiesSchema.status, "published"));
     return stories as StoryResponse[];
   }
 }

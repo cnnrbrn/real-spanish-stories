@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { STORY_LEVEL_VALUES } from "../constants/story-levels.js";
+import { STORY_STATUS_VALUES } from "../constants/story-status.js";
 import { transcriptionSchema } from "./transcription.schema.js";
 
 export const storySchema = z.object({
@@ -8,6 +9,7 @@ export const storySchema = z.object({
   altTitle: z.string(),
   videoLink: z.string().nullable(),
   level: z.enum(STORY_LEVEL_VALUES),
+  status: z.enum(STORY_STATUS_VALUES),
   isPremium: z.boolean(),
   createdAt: z.coerce.date(),
 });

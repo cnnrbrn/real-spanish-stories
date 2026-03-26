@@ -1,3 +1,4 @@
+import { STORY_STATUS_VALUES } from "@real-spanish-stories/shared";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
@@ -13,7 +14,7 @@ const updateStorySchema = z.object({
 });
 
 const updateStoryStatusSchema = z.object({
-  status: z.enum(["draft", "published"]),
+  status: z.enum(STORY_STATUS_VALUES),
 });
 
 export class UpdateStoryDto extends createZodDto(updateStorySchema) {}
