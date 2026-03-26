@@ -1,10 +1,13 @@
 import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { GetStoriesQuery } from "./get-stories.query";
-import { storiesSchema, type StoryResponse } from "@real-spanish-stories/shared";
+import {
+  storiesSchema,
+  type StoryResponse,
+} from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 @QueryHandler(GetStoriesQuery)
 export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
@@ -27,7 +30,8 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
         createdAt: storiesSchema.createdAt,
       })
       .from(storiesSchema)
-      .where(eq(storiesSchema.status, "published"));
+      .where(eq(storiesSchema.status, "published"))
+      .orderBy(desc(storiesSchema.createdAt));
     return stories as StoryResponse[];
   }
 }
