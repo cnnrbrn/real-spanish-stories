@@ -1,5 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { desc } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { GetVideosQuery } from "./get-videos.query";
 import type { Video } from "../videos.schema";
@@ -16,6 +17,9 @@ export class GetVideosHandler implements IQueryHandler<GetVideosQuery> {
   ) {}
 
   async execute(): Promise<Video[]> {
-    return this.database.select().from(videosSchema);
+    return this.database
+      .select()
+      .from(videosSchema)
+      .orderBy(desc(videosSchema.createdAt));
   }
 }

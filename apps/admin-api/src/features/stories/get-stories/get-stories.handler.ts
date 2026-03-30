@@ -1,5 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { desc } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { storiesSchema, type Story } from "@real-spanish-stories/shared";
 import { GetStoriesQuery } from "./get-stories.query";
@@ -15,6 +16,9 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
   ) {}
 
   async execute(): Promise<Story[]> {
-    return this.database.select().from(storiesSchema);
+    return this.database
+      .select()
+      .from(storiesSchema)
+      .orderBy(desc(storiesSchema.createdAt));
   }
 }

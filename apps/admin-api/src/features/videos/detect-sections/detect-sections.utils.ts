@@ -8,7 +8,7 @@ const STORY_HEADER_PHRASE = "Now, the story";
 // Spanish marker phrases
 const VOCABULARY_HEADER_PHRASE_ES = "Vocabulario de la historia";
 const VERBS_HEADER_PHRASE_ES = "Verbos de la historia";
-const STORY_HEADER_PHRASE_ES = "Y ahora, la historia";
+const STORY_HEADER_PHRASE_ES = "Ahora, la historia";
 
 interface Word {
   word: string;
@@ -64,6 +64,7 @@ export function detectSections(
   title: string,
   altTitle: string | null,
   useSpanishHeadings: boolean = false,
+  level: string | null = null,
 ): SectionsJson {
   const vocabPhrase = useSpanishHeadings
     ? VOCABULARY_HEADER_PHRASE_ES
@@ -103,6 +104,20 @@ export function detectSections(
       words: titleWords,
     });
     currentIndex += titleWordCount;
+  }
+
+  // Advanced videos only have title_spanish + story
+  if (level === "advanced") {
+    const storyWords = words.slice(currentIndex);
+    if (storyWords.length > 0) {
+      sections.push({
+        type: "story",
+        start_time: storyWords[0].start,
+        end_time: storyWords[storyWords.length - 1].end,
+        words: storyWords,
+      });
+    }
+    return { sections };
   }
 
   // 2. Extract title_english (based on word count in alt_title)

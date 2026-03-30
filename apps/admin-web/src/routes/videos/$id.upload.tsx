@@ -11,8 +11,8 @@ import { useEffect, useState } from "react"
 import { uploadAudio } from "@/features/videos/api"
 import { videoQueryOptions } from "@/features/videos/query-options"
 import {
-  TRANSCRIPTION_SERVICE_OPTIONS,
   TRANSCRIPTION_SERVICES,
+  TRANSCRIPTION_SERVICE_OPTIONS,
   videoKeys,
 } from "@/features/videos/constants"
 import { Button } from "@/components/ui/button"
@@ -217,6 +217,9 @@ function UploadAudioPage() {
                     </SelectItem>
                     <SelectItem value={TRANSCRIPTION_SERVICES.REPLICATE}>
                       Replicate (cloud API, faster, requires API key)
+                    </SelectItem>
+                    <SelectItem value={TRANSCRIPTION_SERVICES.DEEPGRAM}>
+                      Deepgram Nova-3 (cloud API, best for mixed Spanish/English)
                     </SelectItem>
                   </SelectContent>
                 </Select>

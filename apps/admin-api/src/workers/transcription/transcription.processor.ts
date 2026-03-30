@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { videosSchema } from "src/features/videos/videos.schema";
 import { StorageService } from "src/storage/storage.service";
+import { DeepgramTranscriptionService } from "./deepgram-transcription.service";
 import { ReplicateTranscriptionService } from "./replicate-transcription.service";
 
 export interface TranscriptionJobData {
@@ -27,6 +28,7 @@ export class TranscriptionProcessor extends WorkerHost {
     }>,
     private readonly storageService: StorageService,
     private readonly replicateService: ReplicateTranscriptionService,
+    private readonly deepgramService: DeepgramTranscriptionService,
   ) {
     super();
   }
@@ -39,7 +41,10 @@ export class TranscriptionProcessor extends WorkerHost {
 
     try {
       const audioBuffer = await this.storageService.download(audioPath);
-      const result = await this.replicateService.transcribe(audioBuffer);
+      const result =
+        transcriptionOption === "deepgram"
+          ? await this.deepgramService.transcribe(audioBuffer)
+          : await this.replicateService.transcribe(audioBuffer);
 
       await this.database
         .update(videosSchema)

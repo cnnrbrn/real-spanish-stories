@@ -63,6 +63,7 @@ export class DetectSectionsHandler
         video.title,
         video.altTitle,
         video.useSpanishHeadings,
+        video.level,
       );
 
       const [updated] = await this.database

@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { BullModule } from "@nestjs/bullmq";
 import { DatabaseModule } from "src/database/database.module";
 import { StorageModule } from "src/storage/storage.module";
+import { DeepgramTranscriptionService } from "./deepgram-transcription.service";
 import { ReplicateTranscriptionService } from "./replicate-transcription.service";
 import { TranscriptionProcessor } from "./transcription.processor";
 
@@ -12,7 +13,7 @@ import { TranscriptionProcessor } from "./transcription.processor";
     DatabaseModule,
     StorageModule,
   ],
-  providers: [ReplicateTranscriptionService, TranscriptionProcessor],
+  providers: [DeepgramTranscriptionService, ReplicateTranscriptionService, TranscriptionProcessor],
   exports: [BullModule],
 })
 export class TranscriptionModule {}
