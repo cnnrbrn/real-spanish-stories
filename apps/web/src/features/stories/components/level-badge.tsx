@@ -1,4 +1,5 @@
-import { STORY_LEVELS, type StoryLevel } from '@real-spanish-stories/shared'
+import { STORY_LEVELS } from '@real-spanish-stories/shared'
+import type { StoryLevel } from '@real-spanish-stories/shared'
 
 interface LevelBadgeProps {
   level: StoryLevel
@@ -6,30 +7,23 @@ interface LevelBadgeProps {
 }
 
 const levelConfig: Record<StoryLevel, { className: string }> = {
-  just_starting: {
-    className: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  },
-  beginner: {
-    className: 'bg-level-beginner text-level-beginner-foreground',
-  },
-  intermediate: {
-    className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  },
-  advanced: {
-    className: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
-  },
+  just_starting: { className: 'bg-level-just-starting text-level-foreground' },
+  beginner: { className: 'bg-level-beginner text-level-foreground' },
+  intermediate: { className: 'bg-level-intermediate text-level-foreground' },
+  advanced: { className: 'bg-level-advanced text-level-foreground' },
 }
 
 export function LevelBadge({ level, size = 'sm' }: LevelBadgeProps) {
   const config = levelConfig[level]
-  const levelData = STORY_LEVELS.find(l => l.value === level)
+  const levelData = STORY_LEVELS.find((l) => l.value === level)
 
-  const sizeClasses = size === 'lg'
-    ? 'px-4 py-1.5 text-sm'
-    : 'px-2.5 py-0.5 text-xs'
+  const sizeClasses =
+    size === 'lg' ? 'px-4 py-1.5 text-lg' : 'px-2.5 py-0.5 text-base'
 
   return (
-    <span className={`inline-flex items-center rounded-full font-medium ${sizeClasses} ${config.className}`}>
+    <span
+      className={`inline-flex items-center rounded-md font-medium ${sizeClasses} ${config.className}`}
+    >
       {levelData?.label}
     </span>
   )
