@@ -81,12 +81,16 @@ def download_from_s3(s3_key: str, local_path: str):
 
 
 async def process_job(job, token):
-    """Process a transcription job."""
+    """Process a transcription or alignment job."""
     data = job.data
     video_id = data["videoId"]
     audio_s3_key = data["audioPath"]
+    transcript_text = data.get("transcriptionText")
+    language = data.get("language", "es")
 
-    logger.info(f"[{video_id}] Processing local transcription job")
+    is_alignment = transcript_text is not None
+    job_type = "alignment" if is_alignment else "transcription"
+    logger.info(f"[{video_id}] Processing {job_type} job")
 
     # Create temp file for audio download
     audio_suffix = Path(audio_s3_key).suffix or ".mp3"
@@ -98,16 +102,19 @@ async def process_job(job, token):
         # Download audio from S3
         download_from_s3(audio_s3_key, tmp_audio_path)
 
-        # Transcribe
-        result = transcription_service.transcribe_audio(tmp_audio_path)
+        # Transcribe or align
+        if is_alignment:
+            result = transcription_service.align_audio(tmp_audio_path, transcript_text, language)
+        else:
+            result = transcription_service.transcribe_audio(tmp_audio_path)
 
         # Update database
         update_video_status(video_id, "transcribed", transcription_json=json.dumps(result))
-        logger.info(f"[{video_id}] Transcription completed: {len(result['words'])} words")
+        logger.info(f"[{video_id}] {job_type.title()} completed: {len(result['words'])} words")
 
     except Exception as e:
-        logger.error(f"[{video_id}] Transcription failed: {e}", exc_info=True)
-        update_video_status(video_id, "failed", error_message=str(e))
+        logger.error(f"[{video_id}] {job_type.title()} failed: {e}", exc_info=True)
+        update_video_status(video_id, "failed", error_message=f"{job_type.title()} failed: {e}")
         raise
 
     finally:

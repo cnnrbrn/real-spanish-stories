@@ -1,6 +1,7 @@
 import { Processor, WorkerHost } from "@nestjs/bullmq";
+import { InjectQueue } from "@nestjs/bullmq";
 import { Inject, Logger } from "@nestjs/common";
-import { Job } from "bullmq";
+import { Job, Queue } from "bullmq";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
@@ -17,6 +18,13 @@ export interface TranscriptionJobData {
   fixTimestamps: boolean;
 }
 
+export interface AlignmentJobData {
+  videoId: number;
+  audioPath: string;
+  transcriptionText: string;
+  language: string;
+}
+
 @Processor("transcription")
 export class TranscriptionProcessor extends WorkerHost {
   private readonly logger = new Logger(TranscriptionProcessor.name);
@@ -29,12 +37,14 @@ export class TranscriptionProcessor extends WorkerHost {
     private readonly storageService: StorageService,
     private readonly replicateService: ReplicateTranscriptionService,
     private readonly deepgramService: DeepgramTranscriptionService,
+    @InjectQueue("transcription-local")
+    private readonly alignmentQueue: Queue<AlignmentJobData>,
   ) {
     super();
   }
 
   async process(job: Job<TranscriptionJobData>): Promise<void> {
-    const { videoId, audioPath, transcriptionOption } = job.data;
+    const { videoId, audioPath, transcriptionOption, fixTimestamps } = job.data;
     this.logger.log(
       `Processing transcription job for video ${videoId} (${transcriptionOption})`,
     );
@@ -45,6 +55,30 @@ export class TranscriptionProcessor extends WorkerHost {
         transcriptionOption === "deepgram"
           ? await this.deepgramService.transcribe(audioBuffer)
           : await this.replicateService.transcribe(audioBuffer);
+
+      if (fixTimestamps && transcriptionOption === "deepgram") {
+        await this.database
+          .update(videosSchema)
+          .set({
+            transcriptionJson: JSON.stringify(result),
+            status: "aligning",
+            errorMessage: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(videosSchema.id, videoId));
+
+        await this.alignmentQueue.add("align", {
+          videoId,
+          audioPath,
+          transcriptionText: result.text,
+          language: "es",
+        });
+
+        this.logger.log(
+          `Deepgram transcription saved for video ${videoId} (${result.words.length} words), alignment job queued`,
+        );
+        return;
+      }
 
       await this.database
         .update(videosSchema)

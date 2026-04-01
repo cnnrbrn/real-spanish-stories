@@ -24,6 +24,7 @@ export type VideoLevel = (typeof VIDEO_LEVELS)[number]["value"]
 
 export const PROCESSING_STATUSES = [
   "transcribing",
+  "aligning",
   "sectioning",
   "language_tagging",
   "generating",

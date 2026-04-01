@@ -1,6 +1,7 @@
 export const VIDEO_STATUS_VALUES = [
   "draft",
   "transcribing",
+  "aligning",
   "transcribed",
   "sectioning",
   "sectioned",

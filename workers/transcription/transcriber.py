@@ -63,6 +63,66 @@ class TranscriptionService:
             self._align_language = language_code
             logger.info("Alignment model loaded successfully")
 
+    @staticmethod
+    def _text_to_segments(text: str) -> list[dict]:
+        """Convert flat transcript text into segments for whisperx.align().
+
+        Splits on sentence boundaries to create reasonably sized segments.
+        """
+        import re
+        sentences = re.split(r'(?<=[.?!])\s+', text.strip())
+        segments = [{"text": s.strip()} for s in sentences if s.strip()]
+        if not segments:
+            segments = [{"text": text.strip()}]
+        return segments
+
+    def align_audio(self, audio_path: str, transcript_text: str, language: str = "es") -> dict:
+        """
+        Align pre-existing transcript text against audio using WhisperX forced alignment.
+
+        Uses text from an external source (e.g. Deepgram) and produces accurate
+        word-level timestamps. Only loads the alignment model, not the full ASR model.
+        """
+        path = Path(audio_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Audio file not found: {audio_path}")
+
+        logger.info(f"Aligning transcript against audio: {audio_path}")
+
+        audio = whisperx.load_audio(str(path))
+        segments = self._text_to_segments(transcript_text)
+        logger.info(f"Created {len(segments)} segments from transcript text")
+
+        self._load_align_model(language)
+
+        result = whisperx.align(
+            segments,
+            self._align_model,
+            self._align_metadata,
+            audio,
+            self._device,
+            interpolate_method="linear",
+            return_char_alignments=False,
+        )
+
+        words = []
+        for segment in result.get("segments", []):
+            for word_data in segment.get("words", []):
+                words.append({
+                    "word": word_data.get("word", ""),
+                    "start": word_data.get("start", 0.0),
+                    "end": word_data.get("end", 0.0),
+                })
+
+        text = " ".join(w["word"] for w in words)
+        logger.info(f"Alignment completed: {len(words)} words")
+
+        return {
+            "text": text,
+            "words": words,
+            "segments": result.get("segments", []),
+        }
+
     def transcribe_audio(self, audio_path: str) -> dict:
         """
         Transcribe an audio file with word-level timestamps.

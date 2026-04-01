@@ -162,6 +162,7 @@ export function Video({ video }: VideoProps) {
     if (video.status === 'failed') return { label: 'Failed', variant: 'destructive' as const }
     if (video.status === 'generating') return { label: 'Generating...', variant: 'secondary' as const }
     if (video.status === 'transcribing') return { label: 'Transcribing...', variant: 'secondary' as const }
+    if (video.status === 'aligning') return { label: 'Aligning...', variant: 'secondary' as const }
     if (video.status === 'sectioning') return { label: 'Sectioning...', variant: 'secondary' as const }
     if (video.status === 'language_tagging') return { label: 'Tagging...', variant: 'secondary' as const }
     if (hasLanguageTags) return { label: 'Ready', variant: 'default' as const }

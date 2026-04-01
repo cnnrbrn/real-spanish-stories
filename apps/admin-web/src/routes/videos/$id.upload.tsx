@@ -138,6 +138,8 @@ function UploadAudioPage() {
     if (uploadMutation.isPending) return "Uploading audio file..."
     if (isPolling && video.status === "transcribing")
       return "Transcribing audio..."
+    if (isPolling && video.status === "aligning")
+      return "Aligning timestamps..."
     if (video.status === "failed")
       return `Transcription failed: ${video.errorMessage || "Unknown error"}`
     return null
