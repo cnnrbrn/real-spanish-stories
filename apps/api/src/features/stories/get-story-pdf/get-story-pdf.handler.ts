@@ -43,7 +43,7 @@ export class GetStoryPdfHandler implements IQueryHandler<GetStoryPdfQuery> {
     }
 
     const buffer = await this.storageService.download(pdfPath as string);
-    const filename = `${story.altTitle}-${capitalize(story.level!)}-${query.theme}.pdf`;
+    const filename = pdfPath.split("/")[1];
     return { buffer, filename };
   }
 }

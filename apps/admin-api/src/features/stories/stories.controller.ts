@@ -1,7 +1,18 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus,
-  NotFoundException, Param, ParseIntPipe, Patch, Post, Res,
-  UploadedFile, UseInterceptors,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Res,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";

@@ -83,6 +83,22 @@ function getLanguageRuns(
   return runs;
 }
 
+function drawFooter(doc: PDFKit.PDFDocument, colors: Colors) {
+  const savedBottom = doc.page.margins.bottom;
+  doc.page.margins.bottom = 0;
+  doc
+    .fontSize(11)
+    .font("Helvetica")
+    .fillColor(colors.mutedFg)
+    .text("realspanishstories.com", PAGE_MARGIN, A4_HEIGHT - 28, {
+      width: CONTENT_WIDTH,
+      align: "center",
+      lineBreak: false,
+      link: "https://realspanishstories.com",
+    });
+  doc.page.margins.bottom = savedBottom;
+}
+
 // --- Section renderers ---
 
 function renderTitleSpanish(
@@ -313,8 +329,10 @@ function renderStory(
     if (curX + wordW > A4_WIDTH - PAGE_MARGIN && curX > PAGE_MARGIN) {
       curX = PAGE_MARGIN;
       curY += LINE_HEIGHT;
-      ensureSpace(doc, LINE_HEIGHT);
-      curY = doc.y > curY ? doc.y : curY;
+      if (curY > A4_HEIGHT - PAGE_MARGIN) {
+        doc.addPage();
+        curY = PAGE_MARGIN;
+      }
     }
 
     doc.fillColor(color).text(wordText, curX, curY, { lineBreak: false });
@@ -323,8 +341,10 @@ function renderStory(
     if (word.lineBreak) {
       curX = PAGE_MARGIN;
       curY += LINE_HEIGHT * 1.2;
-      ensureSpace(doc, LINE_HEIGHT);
-      curY = doc.y > curY ? doc.y : curY;
+      if (curY > A4_HEIGHT - PAGE_MARGIN) {
+        doc.addPage();
+        curY = PAGE_MARGIN;
+      }
     }
   }
 
@@ -340,6 +360,7 @@ export function generateStoryPdf(
     const colors = THEMES[theme];
     const doc = new PDFDocument({
       size: "A4",
+      bufferPages: true,
       margins: {
         top: PAGE_MARGIN,
         bottom: PAGE_MARGIN,
@@ -402,6 +423,14 @@ export function generateStoryPdf(
       }
     }
 
+    // Draw footer on every page now that all content is rendered
+    const { start, count } = doc.bufferedPageRange();
+    for (let i = 0; i < count; i++) {
+      doc.switchToPage(start + i);
+      drawFooter(doc, colors);
+    }
+
+    doc.flushPages();
     doc.end();
   });
 }
