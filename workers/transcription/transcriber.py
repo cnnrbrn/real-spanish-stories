@@ -64,17 +64,24 @@ class TranscriptionService:
             logger.info("Alignment model loaded successfully")
 
     @staticmethod
-    def _text_to_segments(text: str) -> list[dict]:
+    def _text_to_segments(text: str, audio_duration: float) -> list[dict]:
         """Convert flat transcript text into segments for whisperx.align().
 
-        Splits on sentence boundaries to create reasonably sized segments.
+        Splits on sentence boundaries and distributes evenly across audio duration.
+        whisperx.align() requires start/end on each segment to extract audio chunks.
         """
         import re
         sentences = re.split(r'(?<=[.?!])\s+', text.strip())
-        segments = [{"text": s.strip()} for s in sentences if s.strip()]
-        if not segments:
-            segments = [{"text": text.strip()}]
-        return segments
+        sentences = [s.strip() for s in sentences if s.strip()]
+        if not sentences:
+            sentences = [text.strip()]
+
+        n = len(sentences)
+        step = audio_duration / n
+        return [
+            {"text": s, "start": i * step, "end": (i + 1) * step}
+            for i, s in enumerate(sentences)
+        ]
 
     def align_audio(self, audio_path: str, transcript_text: str, language: str = "es") -> dict:
         """
@@ -90,7 +97,8 @@ class TranscriptionService:
         logger.info(f"Aligning transcript against audio: {audio_path}")
 
         audio = whisperx.load_audio(str(path))
-        segments = self._text_to_segments(transcript_text)
+        audio_duration = len(audio) / 16000
+        segments = self._text_to_segments(transcript_text, audio_duration)
         logger.info(f"Created {len(segments)} segments from transcript text")
 
         self._load_align_model(language)
