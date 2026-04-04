@@ -6,7 +6,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
-      "env": ["BETTER_AUTH_URL", "BETTER_AUTH_SECRET", "DATABASE_URL", "VITE_API_URL"],
+      "env": ["BETTER_AUTH_URL", "BETTER_AUTH_SECRET", "DATABASE_URL", "VITE_API_URL", "VITE_UMAMI_WEBSITE_ID"],
       "inputs": ["$TURBO_DEFAULT$", ".env", ".env.local"]
     },
     "dev": {
