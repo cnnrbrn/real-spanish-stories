@@ -36,6 +36,7 @@ jobs:
           docker build \
             -f apps/web/Dockerfile \
             --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_UMAMI_WEBSITE_ID=${{ secrets.VITE_UMAMI_WEBSITE_ID }} \
             -t web:latest .
 
       - name: Push Image & Get Identifier

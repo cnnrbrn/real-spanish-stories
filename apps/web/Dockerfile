@@ -19,6 +19,8 @@ RUN pnpm install --frozen-lockfile
 FROM installer AS builder
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_UMAMI_WEBSITE_ID
+ENV VITE_UMAMI_WEBSITE_ID=$VITE_UMAMI_WEBSITE_ID
 COPY --from=pruner /app/out/full/ .
 RUN pnpm turbo build --filter=@real-spanish-stories/web
 
