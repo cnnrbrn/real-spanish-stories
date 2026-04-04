@@ -41,13 +41,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         href: videojsCss,
       },
     ],
-    scripts: [
-      {
-        src: 'https://cloud.umami.is/script.js',
-        defer: true,
-        'data-website-id': import.meta.env.VITE_UMAMI_WEBSITE_ID,
-      },
-    ],
   }),
 
   shellComponent: RootDocument,
@@ -73,6 +66,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          src="https://cloud.umami.is/script.js"
+          defer
+          data-website-id={import.meta.env.VITE_UMAMI_WEBSITE_ID}
+        />
         <HeadContent />
       </head>
       <body className="flex flex-col min-h-screen">
