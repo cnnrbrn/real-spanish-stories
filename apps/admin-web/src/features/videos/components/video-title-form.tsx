@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { createVideo } from '../api'
-import { videoKeys, VIDEO_LEVELS } from '../constants'
+import { VIDEO_LEVELS, videoKeys } from '../constants'
 import { Button } from '@/components/ui/button'
 import {
   Form,

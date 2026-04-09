@@ -106,17 +106,93 @@ export function detectSections(
     currentIndex += titleWordCount;
   }
 
-  // Advanced videos only have title_spanish + story
+  // Advanced videos: title_spanish + subjunctive_verbs_header + subjunctive_verbs + story_header + story
   if (level === "advanced") {
-    const storyWords = words.slice(currentIndex);
-    if (storyWords.length > 0) {
+    const storyIdx = findPhraseIndex(words, STORY_HEADER_PHRASE_ES, currentIndex);
+
+    if (storyIdx >= 0) {
+      const subjunctiveWords = words.slice(currentIndex, storyIdx);
+
+      // Split off the spoken header ("En esta historia vamos a incorporar … en modo subjuntivo")
+      // from the actual verb content. The header is displayed as a static title; its spoken
+      // words don't need to appear in subjunctive_verbs.
+      const HEADER_END_PHRASE = "en modo subjuntivo";
+      const headerPhraseLen = HEADER_END_PHRASE.split(/\s+/).length;
+      const headerEndIdx = findPhraseIndex(subjunctiveWords, HEADER_END_PHRASE, 0);
+      const verbStartIdx = headerEndIdx >= 0 ? headerEndIdx + headerPhraseLen : 0;
+      const headerWords = subjunctiveWords.slice(0, verbStartIdx);
+      const verbWords = subjunctiveWords.slice(verbStartIdx);
+
       sections.push({
-        type: "story",
-        start_time: storyWords[0].start,
-        end_time: storyWords[storyWords.length - 1].end,
-        words: storyWords,
+        type: "subjunctive_verbs_header",
+        static: true,
+        text: "En esta historia vamos a incorporar 2 verbos en modo subjuntivo.",
+        start_time: headerWords.length > 0 ? headerWords[0].start : 0,
+        end_time: headerWords.length > 0 ? headerWords[headerWords.length - 1].end : 0,
+        words: [],
       });
+
+      if (verbWords.length > 0) {
+        // Mark lineBreaks to split each verb into 2 screens.
+        // inScreen2 tracks state: Screen 1 ends on ")" word, Screen 2 ends on the
+        // word before the next verb's "(" word. Using a stateful loop avoids
+        // wrongly marking the EN verb word that precedes the grammar note's own "(".
+        const markedWords: (Word & { lineBreak?: boolean })[] = [];
+        let inScreen2 = false;
+        for (let idx = 0; idx < verbWords.length; idx++) {
+          const w = verbWords[idx];
+          const nextWord = verbWords[idx + 1];
+          if (!inScreen2 && w.word.includes(")")) {
+            markedWords.push({ ...w, lineBreak: true });
+            inScreen2 = true;
+          } else if (inScreen2 && nextWord && nextWord.word.includes("(")) {
+            markedWords.push({ ...w, lineBreak: true });
+            inScreen2 = false;
+          } else {
+            markedWords.push(w);
+          }
+        }
+        sections.push({
+          type: "subjunctive_verbs",
+          start_time: markedWords[0].start,
+          end_time: markedWords[markedWords.length - 1].end,
+          words: markedWords,
+        });
+      }
+
+      const storyPhraseLen = STORY_HEADER_PHRASE_ES.split(/\s+/).length;
+      const storyHeaderWords = words.slice(storyIdx, storyIdx + storyPhraseLen);
+      sections.push({
+        type: "story_header",
+        static: true,
+        text: STORY_HEADER_PHRASE_ES,
+        start_time: storyHeaderWords[0].start,
+        end_time: storyHeaderWords[storyHeaderWords.length - 1].end,
+        words: storyHeaderWords,
+      });
+
+      const storyWords = words.slice(storyIdx + storyPhraseLen);
+      if (storyWords.length > 0) {
+        sections.push({
+          type: "story",
+          start_time: storyWords[0].start,
+          end_time: storyWords[storyWords.length - 1].end,
+          words: storyWords,
+        });
+      }
+    } else {
+      // Fallback: no story marker found
+      const storyWords = words.slice(currentIndex);
+      if (storyWords.length > 0) {
+        sections.push({
+          type: "story",
+          start_time: storyWords[0].start,
+          end_time: storyWords[storyWords.length - 1].end,
+          words: storyWords,
+        });
+      }
     }
+
     return { sections };
   }
 

@@ -45,10 +45,17 @@ function getSectionLabel(type: string): string {
     vocabulary: "Vocabulary",
     verbs_header: "Verbs Header",
     verbs: "Verbs",
+    subjunctive_verbs_header: "Subjunctive Verbs Header",
+    subjunctive_verbs: "Subjunctive Verbs",
     story_header: "Story Header",
     story: "Story",
   }
   return labels[type] || type
+}
+
+function extractVerbCount(text: string): number {
+  const match = text.match(/incorporar (\d+) verbos/)
+  return match ? parseInt(match[1], 10) : 2
 }
 
 export function SectionsEditor({ video }: SectionsEditorProps) {
@@ -82,6 +89,17 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
       navigate({ to: "/videos/$id/language-tagged", params: { id: String(video.id) } })
     },
   })
+
+  const updateVerbCount = (sectionIndex: number, count: number) => {
+    setSectionsData((prev) => {
+      const newSections = { ...prev, sections: [...prev.sections] }
+      const section = { ...newSections.sections[sectionIndex] }
+      section.text = `En esta historia vamos a incorporar ${count} verbos en modo subjuntivo.`
+      newSections.sections[sectionIndex] = section
+      return newSections
+    })
+    setHasChanges(true)
+  }
 
   const toggleLineBreak = (sectionIndex: number, wordIndex: number) => {
     setSectionsData((prev) => {
@@ -156,7 +174,18 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-medium">{getSectionLabel(section.type)}</h3>
-                {section.static ? (
+                {section.type === "subjunctive_verbs_header" ? (
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Number of verbs:</span>
+                    <input
+                      type="number"
+                      min={1}
+                      className="w-20 rounded border px-2 py-1 text-sm"
+                      value={extractVerbCount(section.text ?? "")}
+                      onChange={(e) => updateVerbCount(index, Number(e.target.value))}
+                    />
+                  </div>
+                ) : section.static ? (
                   <p className="text-sm text-muted-foreground">
                     Static text: "{section.text}"
                   </p>

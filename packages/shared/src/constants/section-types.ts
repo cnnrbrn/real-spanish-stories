@@ -6,6 +6,8 @@ export const SECTION_TYPE_VALUES = [
   "vocabulary",
   "verbs_header",
   "verbs",
+  "subjunctive_verbs_header",
+  "subjunctive_verbs",
   "story_header",
   "story",
 ] as const;

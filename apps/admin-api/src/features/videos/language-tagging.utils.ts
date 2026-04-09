@@ -18,7 +18,7 @@ interface SectionsData {
 
 const SPANISH_SECTIONS = new Set(["title_spanish", "story"]);
 const ENGLISH_SECTIONS = new Set(["title_english", "summary"]);
-const MIXED_SECTIONS = new Set(["vocabulary", "verbs"]);
+const MIXED_SECTIONS = new Set(["vocabulary", "verbs", "subjunctive_verbs"]);
 
 function tagAllWords(words: Word[], language: string): void {
   for (const word of words) {

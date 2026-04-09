@@ -495,6 +495,7 @@ class VideoGenerationService:
         is_title_section = section_type in (
             "title_spanish", "title_english",
             "vocabulary_header", "verbs_header", "story_header",
+            "subjunctive_verbs_header",
         )
         font_size = self.config.title_font_size if is_title_section else self.config.content_font_size
         font = self._get_font(font_size)
@@ -506,6 +507,16 @@ class VideoGenerationService:
         # Verbs sections: 4 lines (es word, en word, es sentence, en sentence) with word highlighting
         if section_type == "verbs":
             return self._render_verbs_frame(words, highlight_index, font, draw, img)
+
+        # Subjunctive verbs: 2 screens per verb (verb info / sentences).
+        # Only use the structured renderer for actual verb screens (those with brackets
+        # or EN words). The header speech block (all-ES, no brackets) falls through to
+        # the default word-wrap renderer below.
+        if section_type == "subjunctive_verbs":
+            has_brackets = any("(" in w["word"] or ")" in w["word"] for w in words)
+            has_en = any(w.get("language") == "en" for w in words)
+            if has_brackets or has_en:
+                return self._render_subjunctive_verbs_frame(words, highlight_index, font, draw, img)
 
         # Calculate layout with word wrapping
         max_width = self.config.width - (2 * self.config.text_margin)
@@ -726,6 +737,145 @@ class VideoGenerationService:
                 word_bbox = line_font.getbbox(word_text)
                 word_width = word_bbox[2] - word_bbox[0]
                 current_x += word_width + line_space_width
+
+        return img
+
+    def _split_subjunctive_screen1(
+        self, words: list[Word]
+    ) -> list[tuple[list[Word], str]]:
+        """Split a screen-1 block into 3 lines: ES verb / EN verb / grammar (brackets)."""
+        bracket_open = next((i for i, w in enumerate(words) if "(" in w["word"]), len(words))
+        en_start = next(
+            (i for i, w in enumerate(words[:bracket_open]) if w.get("language") == "en"),
+            bracket_open,
+        )
+        result: list[tuple[list[Word], str]] = []
+        if words[:en_start]:
+            result.append((words[:en_start], "es"))
+        if words[en_start:bracket_open]:
+            result.append((words[en_start:bracket_open], "en"))
+        if words[bracket_open:]:
+            result.append((words[bracket_open:], "es"))
+        return result
+
+    def _split_subjunctive_screen2(
+        self, words: list[Word]
+    ) -> list[tuple[list[Word], str]]:
+        """Split a screen-2 block into 3 lines: ES sentence / usado explanation / EN sentence."""
+        usado_start = next(
+            (i for i, w in enumerate(words) if w["word"].lower().startswith("usado")), None
+        )
+        if usado_start is None:
+            en_start = next(
+                (i for i, w in enumerate(words) if w.get("language") == "en"), len(words)
+            )
+            result: list[tuple[list[Word], str]] = []
+            if words[:en_start]:
+                result.append((words[:en_start], "es"))
+            if words[en_start:]:
+                result.append((words[en_start:], "en"))
+            return result
+
+        en_start = next(
+            (i for i, w in enumerate(words) if i >= usado_start and w.get("language") == "en"),
+            len(words),
+        )
+        result = []
+        if words[:usado_start]:
+            result.append((words[:usado_start], "es"))
+        if words[usado_start:en_start]:
+            result.append((words[usado_start:en_start], "es"))
+        if words[en_start:]:
+            result.append((words[en_start:], "en"))
+        return result
+
+    def _render_subjunctive_verbs_frame(
+        self,
+        words: list[Word],
+        highlight_index: int,
+        font: ImageFont.FreeTypeFont,
+        draw: ImageDraw.ImageDraw,
+        img: Image.Image,
+    ) -> Image.Image:
+        """Render one pre-split screen of a subjunctive verb entry.
+
+        Screen 1 (contains brackets): ES verb / EN verb / grammar
+        Screen 2 (no brackets):       ES sentence / usado explanation / EN sentence
+
+        Words arrive pre-split into blocks by lineBreak markers via _split_into_text_blocks.
+        """
+        has_brackets = any("(" in w["word"] or ")" in w["word"] for w in words)
+        lines = (
+            self._split_subjunctive_screen1(words)
+            if has_brackets
+            else self._split_subjunctive_screen2(words)
+        )
+        if not lines:
+            return img
+
+        available_width = self.config.width - (2 * self.config.text_margin)
+        line_font = font
+        line_font_size = self.config.content_font_size
+        sw = line_font.getbbox(" ")[2]
+
+        # Word-wrap each logical line into display rows so long sentences don't overflow.
+        # Each entry: (row_words, lang, logical_line_idx)
+        inner_height = int(line_font_size * 1.2)  # spacing within a wrapped logical line
+        outer_height = int(line_font_size * 1.8)  # gap after the last row of each logical line
+
+        display_rows: list[tuple[list[Word], str, int]] = []
+        for line_idx, (line_words, lang) in enumerate(lines):
+            current_row: list[Word] = []
+            current_w = 0
+            for word in line_words:
+                ww = line_font.getbbox(word["word"])[2] - line_font.getbbox(word["word"])[0]
+                if current_row and current_w + sw + ww > available_width:
+                    display_rows.append((current_row, lang, line_idx))
+                    current_row = [word]
+                    current_w = ww
+                else:
+                    current_w += (sw if current_row else 0) + ww
+                    current_row.append(word)
+            if current_row:
+                display_rows.append((current_row, lang, line_idx))
+
+        # Total height: inner_height per row, but replace the last row of each logical
+        # line with outer_height (except the very last row which needs no trailing gap).
+        total_height = 0
+        for i, (_, _, line_idx) in enumerate(display_rows):
+            if i == len(display_rows) - 1:
+                total_height += inner_height  # last row — just the text height
+            elif display_rows[i + 1][2] != line_idx:
+                total_height += outer_height  # last row of this logical line
+            else:
+                total_height += inner_height  # mid-wrap row
+
+        start_y = (self.config.height - total_height) / 2
+
+        # flat_idx tracks position across all words for highlight matching
+        flat_idx = 0
+        current_y = start_y
+        for i, (row_words, lang, line_idx) in enumerate(display_rows):
+            base_color = self.config.primary_color if lang == "es" else self.config.secondary_color
+            total_w = sum(line_font.getbbox(w["word"])[2] - line_font.getbbox(w["word"])[0] for w in row_words)
+            total_w += sw * (len(row_words) - 1) if len(row_words) > 1 else 0
+            current_x = int((self.config.width - total_w) / 2)
+
+            for word in row_words:
+                word_text = word["word"]
+                is_highlighted = highlight_index >= 0 and flat_idx == highlight_index
+                color = self.config.highlight_text_color if is_highlighted else base_color
+                draw.text((current_x, current_y), word_text, font=line_font, fill=color)
+                bw = line_font.getbbox(word_text)[2] - line_font.getbbox(word_text)[0]
+                current_x += bw + sw
+                flat_idx += 1
+
+            if i == len(display_rows) - 1:
+                pass  # last row — no advance needed
+            elif display_rows[i + 1][2] != line_idx:
+                current_y += outer_height
+            else:
+                current_y += inner_height
 
         return img
 
