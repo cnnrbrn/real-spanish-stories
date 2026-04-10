@@ -37,15 +37,19 @@ export function syncTranscriptWords(
 ): string {
   const transcription: TranscriptionData = JSON.parse(transcriptionJson);
   const sectionsData: SectionsData = JSON.parse(sectionsJson);
-  const transcriptWords = transcription.words;
 
-  let wordIndex = 0;
+  // Build lookup by start time — timings don't change during manual edits
+  const wordByStart = new Map<number, string>();
+  for (const w of transcription.words) {
+    wordByStart.set(w.start, w.word);
+  }
+
   for (const section of sectionsData.sections) {
     if (!section.words) continue;
     for (const sectionWord of section.words) {
-      if (wordIndex < transcriptWords.length) {
-        sectionWord.word = transcriptWords[wordIndex].word;
-        wordIndex++;
+      const updated = wordByStart.get(sectionWord.start);
+      if (updated !== undefined) {
+        sectionWord.word = updated;
       }
     }
   }
@@ -63,22 +67,18 @@ export function syncLineBreaks(
   const sections: SectionsData = JSON.parse(sectionsJson);
   const tagged: SectionsData = JSON.parse(languageTaggedJson);
 
-  // Build lookup: sectionType -> wordIndex -> lineBreak
-  const lineBreaks = new Map<string, Map<number, boolean>>();
+  // Build lookup by start time — same approach as syncTranscriptWords
+  const lineBreaks = new Map<number, boolean>();
   for (const section of sections.sections) {
-    const wordMap = new Map<number, boolean>();
-    for (const [i, word] of (section.words ?? []).entries()) {
-      wordMap.set(i, word.lineBreak ?? false);
+    for (const word of section.words ?? []) {
+      lineBreaks.set(word.start, word.lineBreak ?? false);
     }
-    lineBreaks.set(section.type, wordMap);
   }
 
   // Apply to tagged JSON
   for (const section of tagged.sections) {
-    const sectionBreaks = lineBreaks.get(section.type);
-    if (!sectionBreaks) continue;
-    for (const [i, word] of (section.words ?? []).entries()) {
-      const hasBreak = sectionBreaks.get(i);
+    for (const word of section.words ?? []) {
+      const hasBreak = lineBreaks.get(word.start);
       if (hasBreak) {
         word.lineBreak = true;
       } else if ("lineBreak" in word) {

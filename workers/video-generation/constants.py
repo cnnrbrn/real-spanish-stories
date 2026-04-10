@@ -18,6 +18,7 @@ VIDEO_FPS_DRAFT = 15
 
 # Font settings
 VIDEO_FONT_PATH = str(_BASE_DIR / "fonts" / "Inter-SemiBold.ttf")
+VIDEO_FONT_ITALIC_PATH = str(_BASE_DIR / "fonts" / "Inter-SemiBoldItalic.ttf")
 VIDEO_TITLE_FONT_SIZE = 120
 VIDEO_CONTENT_FONT_SIZE = 100
 VIDEO_MIN_FONT_SIZE = 60  # Minimum font size for readability

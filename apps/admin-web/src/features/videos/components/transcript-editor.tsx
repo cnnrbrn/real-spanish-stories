@@ -54,11 +54,10 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
   const uploadSubtitleMutation = useMutation({
     mutationFn: (file: File) => uploadTranscriptionSubtitle(video.id, file),
     onSuccess: (updatedVideo) => {
+      queryClient.setQueryData(videoKeys.detail(video.id), updatedVideo)
       queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
-      // Update local state with new words
-      const newData = JSON.parse(updatedVideo.transcriptionJson!)
-      setWords(newData.words || [])
-      setUploadMessage({ type: 'success', text: 'ASS file imported successfully' })
+      // Navigate to force a fresh loader run — guarantees stale sections don't show
+      navigate({ to: '/videos/$id/transcript', params: { id: video.id.toString() } })
     },
     onError: (error: Error) => {
       setUploadMessage({ type: 'error', text: `Import failed: ${error.message}` })
@@ -146,14 +145,14 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
           >
             {saveMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
-          {video.sectionsJson ? (
+          {video.sectionsJson && !uploadSubtitleMutation.isPending ? (
             <Button
               variant="secondary"
               onClick={() => navigate({ to: "/videos/$id/sections", params: { id: video.id.toString() } })}
             >
               Go to Sections
             </Button>
-          ) : (
+          ) : !uploadSubtitleMutation.isPending && (
             <Button
               onClick={() => detectSectionsMutation.mutate()}
               disabled={!canDetectSections || detectSectionsMutation.isPending}

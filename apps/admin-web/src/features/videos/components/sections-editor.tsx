@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 
 import { detectSections, tagLanguages, updateVideo } from "../api"
+import { videoKeys } from "../constants"
 import type { Video } from "../types"
 import { Button } from "@/components/ui/button"
 
@@ -69,7 +70,7 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
   const redoSectionsMutation = useMutation({
     mutationFn: () => detectSections(video.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["video", video.id] })
+      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
     },
   })
 
@@ -78,14 +79,14 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
       updateVideo(video.id, { sectionsJson: JSON.stringify(sectionsData) }),
     onSuccess: () => {
       setHasChanges(false)
-      queryClient.invalidateQueries({ queryKey: ["video", video.id] })
+      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
     },
   })
 
   const tagLanguagesMutation = useMutation({
     mutationFn: () => tagLanguages(video.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["video", video.id] })
+      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
       navigate({ to: "/videos/$id/language-tagged", params: { id: String(video.id) } })
     },
   })
@@ -175,15 +176,25 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
               <div>
                 <h3 className="font-medium">{getSectionLabel(section.type)}</h3>
                 {section.type === "subjunctive_verbs_header" ? (
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Number of verbs:</span>
-                    <input
-                      type="number"
-                      min={1}
-                      className="w-20 rounded border px-2 py-1 text-sm"
-                      value={extractVerbCount(section.text ?? "")}
-                      onChange={(e) => updateVerbCount(index, Number(e.target.value))}
-                    />
+                  <div className="mt-1 space-y-1">
+                    <p className="text-sm text-muted-foreground">
+                      Static text: "{section.text}"
+                    </p>
+                    {section.start_time !== undefined && section.end_time !== undefined && (
+                      <p className="text-sm text-muted-foreground">
+                        {formatTime(section.start_time)} – {formatTime(section.end_time)}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Number of verbs:</span>
+                      <input
+                        type="number"
+                        min={1}
+                        className="w-20 rounded border px-2 py-1 text-sm"
+                        value={extractVerbCount(section.text ?? "")}
+                        onChange={(e) => updateVerbCount(index, Number(e.target.value))}
+                      />
+                    </div>
                   </div>
                 ) : section.static ? (
                   <p className="text-sm text-muted-foreground">

@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { generateVideo, tagLanguages, updateVideo } from "../api"
+import { videoKeys } from "../constants"
 import type { Video } from "../types"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -47,6 +48,8 @@ function getSectionLabel(type: string): string {
     vocabulary: "Vocabulary",
     verbs_header: "Verbs Header",
     verbs: "Verbs",
+    subjunctive_verbs_header: "Subjunctive Verbs Header",
+    subjunctive_verbs: "Subjunctive Verbs",
     story_header: "Story Header",
     story: "Story",
   }
@@ -77,7 +80,7 @@ export function LanguageTaggedEditor({ video }: LanguageTaggedEditorProps) {
       updateVideo(video.id, { languageTaggedJson: JSON.stringify(data) }),
     onSuccess: () => {
       setHasChanges(false)
-      queryClient.invalidateQueries({ queryKey: ["video", video.id] })
+      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
     },
   })
 
@@ -88,14 +91,14 @@ export function LanguageTaggedEditor({ video }: LanguageTaggedEditorProps) {
         setData(JSON.parse(updatedVideo.languageTaggedJson))
         setHasChanges(false)
       }
-      queryClient.invalidateQueries({ queryKey: ["video", video.id] })
+      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
     },
   })
 
   const generateMutation = useMutation({
     mutationFn: () => generateVideo(video.id, draftMode),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["video", video.id] })
+      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
     },
   })
 

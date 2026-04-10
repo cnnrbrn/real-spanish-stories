@@ -27,6 +27,7 @@ from constants import (
     VIDEO_CRF_DRAFT,
     VIDEO_ENCODING_PRESET,
     VIDEO_ENCODING_PRESET_DRAFT,
+    VIDEO_FONT_ITALIC_PATH,
     VIDEO_FONT_PATH,
     VIDEO_FPS,
     VIDEO_FPS_DRAFT,
@@ -50,6 +51,26 @@ from constants import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_display(words: list) -> list[tuple[str, bool]]:
+    """Return (display_text, italic) for each word.
+
+    Words wrapped in ( ) brackets are rendered without the brackets and in
+    italic. Bracket state is tracked across words so that inner words like
+    'de' in '(imperfecto de subjuntivo)' are also italicised.
+    """
+    result = []
+    inside = False
+    for w in words:
+        text = w["word"]
+        if "(" in text:
+            inside = True
+        italic = inside
+        if ")" in text:
+            inside = False
+        result.append((text.replace("(", "").replace(")", ""), italic))
+    return result
 
 
 @dataclass
@@ -88,6 +109,7 @@ class VideoConfig:
 
     # Font settings
     font_path: str = VIDEO_FONT_PATH
+    font_italic_path: str = VIDEO_FONT_ITALIC_PATH
     title_font_size: int = VIDEO_TITLE_FONT_SIZE
     content_font_size: int = VIDEO_CONTENT_FONT_SIZE
     min_font_size: int = VIDEO_MIN_FONT_SIZE
@@ -122,6 +144,7 @@ class VideoGenerationService:
         self.output_dir = output_dir or Path("data/outputs")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self._font_cache: dict[int, ImageFont.FreeTypeFont] = {}
+        self._italic_font_cache: dict[int, ImageFont.FreeTypeFont] = {}
         # Frame cache to avoid re-rendering identical frames
         self._frame_cache: dict[str, np.ndarray] = {}
         self._frame_cache_key: str | None = None
@@ -265,8 +288,8 @@ class VideoGenerationService:
                 end = section.get("end_time")
 
                 if text and start is not None and end is not None and end > start:
-                    # Create a single "word" containing the full text
-                    words = [{"word": text, "start": start, "end": end}]
+                    # Split into individual word tokens so _calculate_text_layout can wrap
+                    words = [{"word": w, "start": start, "end": end} for w in text.split()]
                     frame_data_list.append(
                         FrameData(
                             start_time=start,
@@ -495,7 +518,6 @@ class VideoGenerationService:
         is_title_section = section_type in (
             "title_spanish", "title_english",
             "vocabulary_header", "verbs_header", "story_header",
-            "subjunctive_verbs_header",
         )
         font_size = self.config.title_font_size if is_title_section else self.config.content_font_size
         font = self._get_font(font_size)
@@ -531,22 +553,29 @@ class VideoGenerationService:
         min_x = self.config.width
         max_x = 0
 
+        # Pre-resolve bracket → italic mapping for all words in one pass
+        all_words_flat = [word_data for line in lines for word_data, _ in line]
+        resolved_flat = _resolve_display(all_words_flat)
+        italic_font = self._get_italic_font(font_size)
+
         # Draw each word
         word_idx = 0
         for line_num, line in enumerate(lines):
             y = start_y + (line_num * line_height)
 
             for word_data, x in line:
+                display_text, use_italic = resolved_flat[word_idx]
+                draw_font = italic_font if use_italic else font
+
                 # No highlighting for title sections or when highlight_index is -1
                 is_highlighted = False if is_title_section else (highlight_index >= 0 and word_idx == highlight_index)
                 color = self._get_word_color(word_data, is_highlighted, section_type)
 
-                word_text = word_data["word"]
-                draw.text((x, y), word_text, font=font, fill=color)
+                draw.text((x, y), display_text, font=draw_font, fill=color)
 
                 # Track bounds for border
                 if is_title_section:
-                    word_bbox = font.getbbox(word_text)
+                    word_bbox = draw_font.getbbox(display_text)
                     word_width = word_bbox[2] - word_bbox[0]
                     min_x = min(min_x, x)
                     max_x = max(max_x, x + word_width)
@@ -715,11 +744,15 @@ class VideoGenerationService:
 
             base_color = self.config.primary_color if lang == "es" else self.config.secondary_color
 
+            # Resolve bracket → italic display for this line
+            italic_font = self._get_italic_font(line_font_size if is_verb_line else sentence_font_size)
+            resolved = [(dt.rstrip(","), it) for dt, it in _resolve_display(line_words)]
+
             # First pass: calculate total width for centering
             total_width = 0
-            for word in line_words:
-                word_text = word["word"].rstrip(",")
-                word_bbox = line_font.getbbox(word_text)
+            for display_text, use_italic in resolved:
+                wfont = italic_font if use_italic else line_font
+                word_bbox = wfont.getbbox(display_text)
                 total_width += word_bbox[2] - word_bbox[0]
             total_width += line_space_width * (len(line_words) - 1) if len(line_words) > 1 else 0
 
@@ -727,14 +760,14 @@ class VideoGenerationService:
             current_x = int((self.config.width - total_width) / 2)
 
             # Second pass: draw words
-            for idx, word in zip(indices, line_words):
-                word_text = word["word"].rstrip(",")
+            for idx, (display_text, use_italic) in zip(indices, resolved):
+                wfont = italic_font if use_italic else line_font
                 is_highlighted = highlight_index >= 0 and idx == highlight_index
                 color = self.config.highlight_text_color if is_highlighted else base_color
 
-                draw.text((current_x, y), word_text, font=line_font, fill=color)
+                draw.text((current_x, y), display_text, font=wfont, fill=color)
 
-                word_bbox = line_font.getbbox(word_text)
+                word_bbox = wfont.getbbox(display_text)
                 word_width = word_bbox[2] - word_bbox[0]
                 current_x += word_width + line_space_width
 
@@ -804,7 +837,9 @@ class VideoGenerationService:
 
         Words arrive pre-split into blocks by lineBreak markers via _split_into_text_blocks.
         """
-        has_brackets = any("(" in w["word"] or ")" in w["word"] for w in words)
+        # Screen 1 ends with the closing ")" word; check last word only so that
+        # brackets added elsewhere (Screen 2, etc.) don't mis-trigger Screen 1.
+        has_brackets = bool(words) and ")" in words[-1]["word"]
         lines = (
             self._split_subjunctive_screen1(words)
             if has_brackets
@@ -815,27 +850,31 @@ class VideoGenerationService:
 
         available_width = self.config.width - (2 * self.config.text_margin)
         line_font = font
+        italic_font = self._get_italic_font(self.config.content_font_size)
         line_font_size = self.config.content_font_size
         sw = line_font.getbbox(" ")[2]
 
         # Word-wrap each logical line into display rows so long sentences don't overflow.
-        # Each entry: (row_words, lang, logical_line_idx)
+        # Each entry: (row_display_words, lang, logical_line_idx)
+        # row_display_words: list of (display_text, italic)
         inner_height = int(line_font_size * 1.2)  # spacing within a wrapped logical line
         outer_height = int(line_font_size * 1.8)  # gap after the last row of each logical line
 
-        display_rows: list[tuple[list[Word], str, int]] = []
+        display_rows: list[tuple[list[tuple[str, bool]], str, int]] = []
         for line_idx, (line_words, lang) in enumerate(lines):
-            current_row: list[Word] = []
+            resolved = _resolve_display(line_words)
+            current_row: list[tuple[str, bool]] = []
             current_w = 0
-            for word in line_words:
-                ww = line_font.getbbox(word["word"])[2] - line_font.getbbox(word["word"])[0]
+            for display_text, italic in resolved:
+                wfont = italic_font if italic else line_font
+                ww = wfont.getbbox(display_text)[2] - wfont.getbbox(display_text)[0]
                 if current_row and current_w + sw + ww > available_width:
                     display_rows.append((current_row, lang, line_idx))
-                    current_row = [word]
+                    current_row = [(display_text, italic)]
                     current_w = ww
                 else:
                     current_w += (sw if current_row else 0) + ww
-                    current_row.append(word)
+                    current_row.append((display_text, italic))
             if current_row:
                 display_rows.append((current_row, lang, line_idx))
 
@@ -857,16 +896,19 @@ class VideoGenerationService:
         current_y = start_y
         for i, (row_words, lang, line_idx) in enumerate(display_rows):
             base_color = self.config.primary_color if lang == "es" else self.config.secondary_color
-            total_w = sum(line_font.getbbox(w["word"])[2] - line_font.getbbox(w["word"])[0] for w in row_words)
+            total_w = 0
+            for display_text, italic in row_words:
+                wfont = italic_font if italic else line_font
+                total_w += wfont.getbbox(display_text)[2] - wfont.getbbox(display_text)[0]
             total_w += sw * (len(row_words) - 1) if len(row_words) > 1 else 0
             current_x = int((self.config.width - total_w) / 2)
 
-            for word in row_words:
-                word_text = word["word"]
+            for display_text, italic in row_words:
+                wfont = italic_font if italic else line_font
                 is_highlighted = highlight_index >= 0 and flat_idx == highlight_index
                 color = self.config.highlight_text_color if is_highlighted else base_color
-                draw.text((current_x, current_y), word_text, font=line_font, fill=color)
-                bw = line_font.getbbox(word_text)[2] - line_font.getbbox(word_text)[0]
+                draw.text((current_x, current_y), display_text, font=wfont, fill=color)
+                bw = wfont.getbbox(display_text)[2] - wfont.getbbox(display_text)[0]
                 current_x += bw + sw
                 flat_idx += 1
 
@@ -957,10 +999,19 @@ class VideoGenerationService:
             try:
                 self._font_cache[size] = ImageFont.truetype(self.config.font_path, size)
             except OSError:
-                # Fallback to default font if Inter not available
                 logger.warning(f"Font not found at {self.config.font_path}, using default")
                 self._font_cache[size] = ImageFont.load_default()
         return self._font_cache[size]
+
+    def _get_italic_font(self, size: int) -> ImageFont.FreeTypeFont:
+        """Get or create a cached italic font at the specified size."""
+        if size not in self._italic_font_cache:
+            try:
+                self._italic_font_cache[size] = ImageFont.truetype(self.config.font_italic_path, size)
+            except OSError:
+                logger.warning(f"Italic font not found at {self.config.font_italic_path}, falling back to regular")
+                self._italic_font_cache[size] = self._get_font(size)
+        return self._italic_font_cache[size]
 
     def _load_logo(self) -> Image.Image | None:
         """Load and scale the logo image for display."""
