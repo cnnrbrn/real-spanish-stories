@@ -4,6 +4,7 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 import { VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
@@ -28,6 +29,8 @@ export const videosSchema = pgTable("videos", {
   errorMessage: text("error_message"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (t) => [
+  uniqueIndex("videos_alt_title_level_unique").on(t.altTitle, t.level),
+]);
 
 export type Video = typeof videosSchema.$inferSelect;

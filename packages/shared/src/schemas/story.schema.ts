@@ -7,6 +7,7 @@ export const storySchema = z.object({
   id: z.number(),
   title: z.string(),
   altTitle: z.string(),
+  slug: z.string(),
   videoLink: z.string().nullable(),
   level: z.enum(STORY_LEVEL_VALUES),
   status: z.enum(STORY_STATUS_VALUES),

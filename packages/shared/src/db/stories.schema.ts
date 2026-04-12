@@ -21,6 +21,7 @@ export const storiesSchema = pgTable("stories", {
   pdfLightPath: varchar("pdf_light_path", { length: 500 }),
   pdfDarkPath: varchar("pdf_dark_path", { length: 500 }),
   transcription: jsonb("transcription").$type<Transcription>(),
+  slug: varchar("slug", { length: 300 }).unique(),
   videoLink: varchar("video_link", { length: 500 }),
   isPremium: boolean("is_premium").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),

@@ -2,7 +2,11 @@ import { ConflictException, Inject, NotFoundException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
-import { storiesSchema, type Story } from "@real-spanish-stories/shared";
+import {
+  createSlug,
+  storiesSchema,
+  type Story,
+} from "@real-spanish-stories/shared";
 import { videosSchema } from "../../videos/videos.schema";
 import { CreateStoryFromVideoCommand } from "./create-story-from-video.command";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
@@ -54,6 +58,7 @@ export class CreateStoryFromVideoHandler
         videoId: command.videoId,
         title: video.title,
         altTitle: video.altTitle,
+        slug: createSlug(video.altTitle, video.level ?? ''),
         level: video.level,
         audioPath: video.audioPath,
         audioFilename: video.audioFilename,

@@ -23,6 +23,7 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
         id: storiesSchema.id,
         title: storiesSchema.title,
         altTitle: storiesSchema.altTitle,
+        slug: storiesSchema.slug,
         videoLink: storiesSchema.videoLink,
         level: storiesSchema.level,
         status: storiesSchema.status,

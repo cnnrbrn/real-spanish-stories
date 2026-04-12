@@ -1,8 +1,8 @@
 import { StoryListItem } from './story-list-item'
-import type { Story } from '@real-spanish-stories/shared'
+import type { StoryResponse } from '@real-spanish-stories/shared'
 
 interface StoryListProps {
-  stories: Story[]
+  stories: StoryResponse[]
 }
 
 export function StoryList({ stories }: StoryListProps) {

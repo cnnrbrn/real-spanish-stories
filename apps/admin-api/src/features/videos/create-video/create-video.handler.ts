@@ -1,5 +1,6 @@
-import { Inject } from "@nestjs/common";
+import { ConflictException, Inject } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { and, eq } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { CreateVideoCommand } from "./create-video.command";
 import type { Video } from "../videos.schema";
@@ -16,6 +17,21 @@ export class CreateVideoHandler implements ICommandHandler<CreateVideoCommand> {
   ) {}
 
   async execute(command: CreateVideoCommand): Promise<Video> {
+    const existing = await this.database
+      .select({ id: videosSchema.id })
+      .from(videosSchema)
+      .where(and(
+        eq(videosSchema.altTitle, command.altTitle),
+        eq(videosSchema.level, command.level),
+      ))
+      .limit(1);
+
+    if (existing.length > 0) {
+      throw new ConflictException(
+        "A video with this title and level already exists",
+      );
+    }
+
     const [video] = await this.database
       .insert(videosSchema)
       .values({

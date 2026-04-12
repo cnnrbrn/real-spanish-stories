@@ -1,13 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { capitalizeFirstLetter } from '@real-spanish-stories/shared'
-import { getStoryById } from '@/features/stories/api'
+import { getStoryBySlug } from '@/features/stories/api'
 import { StoryDetails } from '@/features/stories/components/story-details'
 
-export const Route = createFileRoute('/story/$storyId')({
+export const Route = createFileRoute('/story/$slug')({
   loader: async ({ params }) => {
-    const storyId = Number(params.storyId)
-    const story = await getStoryById(storyId)
-    return story
+    return getStoryBySlug(params.slug)
   },
   head: function ({ loaderData }) {
     return {

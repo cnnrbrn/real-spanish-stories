@@ -16,11 +16,11 @@ export class GetStoryHandler implements IQueryHandler<GetStoryQuery> {
   ) {}
   async execute(query: GetStoryQuery): Promise<StoryDetail> {
     const story = await this.database.query.stories.findFirst({
-      where: eq(storiesSchema.id, query.id),
+      where: eq(storiesSchema.slug, query.slug),
     });
 
     if (!story) {
-      throw new NotFoundException(`Story with id ${query.id} not found`);
+      throw new NotFoundException(`Story not found`);
     }
 
     const { updatedAt, ...storyDto } = story;

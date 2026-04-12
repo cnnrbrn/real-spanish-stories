@@ -2,10 +2,10 @@ import { Link } from '@tanstack/react-router'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { getYouTubeThumbnail } from '../utils/video'
 import { LevelBadge } from './level-badge'
-import type { Story, StoryLevel } from '@real-spanish-stories/shared'
+import type { StoryResponse } from '@real-spanish-stories/shared'
 
 interface StoryListItemProps {
-  story: Story
+  story: StoryResponse
 }
 
 export function StoryListItem({ story }: StoryListItemProps) {
@@ -13,14 +13,12 @@ export function StoryListItem({ story }: StoryListItemProps) {
     ? getYouTubeThumbnail(story.videoLink, 'hqdefault')
     : null
 
-  const levelLabel = story.level
-    ? STORY_LEVELS.find((l) => l.value === story.level)?.label
-    : null
+  const levelLabel = STORY_LEVELS.find((l) => l.value === story.level)?.label
 
   return (
     <Link
-      to="/story/$storyId"
-      params={{ storyId: String(story.id) }}
+      to="/story/$slug"
+      params={{ slug: story.slug }}
       className="group block rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-gray-900 hover:shadow-lg transition-shadow"
     >
       {thumbnail && (
@@ -38,7 +36,7 @@ export function StoryListItem({ story }: StoryListItemProps) {
             {story.altTitle || story.title}
             {levelLabel ? ` - ${levelLabel} Spanish` : ''}
           </h2>
-          {story.level && <LevelBadge level={story.level as StoryLevel} />}
+          <LevelBadge level={story.level} />
         </div>
       </div>
     </Link>

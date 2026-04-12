@@ -25,9 +25,9 @@ export class StoriesController {
   }
 
   @AllowAnonymous()
-  @Get(":id")
-  getStory(@Param("id", ParseIntPipe) id: number) {
-    return this.queryBus.execute(new GetStoryQuery(id));
+  @Get(":slug")
+  getStory(@Param("slug") slug: string) {
+    return this.queryBus.execute(new GetStoryQuery(slug));
   }
 
   @AllowAnonymous()

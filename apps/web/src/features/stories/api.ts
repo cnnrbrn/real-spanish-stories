@@ -6,7 +6,7 @@ import {
 import z from 'zod'
 import type {
   StoryDetail,
-  Story,
+  StoryResponse,
   TranslationResponse,
 } from '@real-spanish-stories/shared'
 
@@ -28,7 +28,7 @@ export async function translatePhrase(
   return translationResponseSchema.parse(await response.json())
 }
 
-export const getStories = async (): Promise<Story[]> => {
+export const getStories = async (): Promise<StoryResponse[]> => {
   const response = await fetch(`${import.meta.env.VITE_API_URL}stories`)
   if (!response.ok) {
     throw new Error(`Failed to fetch stories: ${response.statusText}`)
@@ -36,10 +36,10 @@ export const getStories = async (): Promise<Story[]> => {
   return z.array(storySchema).parse(await response.json())
 }
 
-export const getStoryById = async (id: number): Promise<StoryDetail> => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}stories/${id}`)
+export const getStoryBySlug = async (slug: string): Promise<StoryDetail> => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}stories/${slug}`)
   if (!response.ok) {
-    throw new Error(`Failed to fetch story ${id}: ${response.statusText}`)
+    throw new Error(`Failed to fetch story ${slug}: ${response.statusText}`)
   }
   return storyDetailSchema.parse(await response.json())
 }
