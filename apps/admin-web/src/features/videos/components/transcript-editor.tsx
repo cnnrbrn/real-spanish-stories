@@ -54,10 +54,11 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
   const uploadSubtitleMutation = useMutation({
     mutationFn: (file: File) => uploadTranscriptionSubtitle(video.id, file),
     onSuccess: (updatedVideo) => {
+      const newData = JSON.parse(updatedVideo.transcriptionJson!)
+      setWords(newData.words || [])
       queryClient.setQueryData(videoKeys.detail(video.id), updatedVideo)
       queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
-      // Navigate to force a fresh loader run — guarantees stale sections don't show
-      navigate({ to: '/videos/$id/transcript', params: { id: video.id.toString() } })
+      setUploadMessage({ type: 'success', text: 'ASS file imported successfully' })
     },
     onError: (error: Error) => {
       setUploadMessage({ type: 'error', text: `Import failed: ${error.message}` })

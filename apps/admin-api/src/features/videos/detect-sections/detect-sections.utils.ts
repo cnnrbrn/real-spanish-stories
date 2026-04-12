@@ -125,11 +125,10 @@ export function detectSections(
 
       sections.push({
         type: "subjunctive_verbs_header",
-        static: true,
         text: "En esta historia vamos a incorporar 2 verbos en modo subjuntivo.",
         start_time: headerWords.length > 0 ? headerWords[0].start : 0,
         end_time: headerWords.length > 0 ? headerWords[headerWords.length - 1].end : 0,
-        words: [],
+        words: headerWords,
       });
 
       if (verbWords.length > 0) {

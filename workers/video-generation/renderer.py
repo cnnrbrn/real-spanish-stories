@@ -324,8 +324,13 @@ class VideoGenerationService:
                     )
                     continue
 
-                # Split into text blocks based on lineBreak markers
-                blocks = self._split_into_text_blocks(words)
+                # Split into text blocks based on lineBreak markers.
+                # Verbs sections need special splitting by language-switch
+                # pattern when no lineBreak markers are present.
+                if section_type == "verbs" and not any(w.get("lineBreak") for w in words):
+                    blocks = self._split_verbs_into_blocks(words)
+                else:
+                    blocks = self._split_into_text_blocks(words)
 
                 for block in blocks:
                     # Create a FrameData entry for each word in the block
@@ -489,6 +494,48 @@ class VideoGenerationService:
                 current_words = []
 
         # Don't forget remaining words
+        if current_words:
+            blocks.append(
+                TextBlock(
+                    words=current_words,
+                    start_time=current_words[0]["start"],
+                    end_time=current_words[-1]["end"],
+                )
+            )
+
+        return blocks
+
+    def _split_verbs_into_blocks(self, words: list[Word]) -> list[TextBlock]:
+        """Split verbs into display blocks by language-switch pattern.
+
+        Each verb consists of 4 language groups: ES word, EN translation,
+        ES sentence, EN sentence. We detect boundaries by counting language
+        switches — every 4th switch marks the start of a new verb.
+        """
+        blocks: list[TextBlock] = []
+        current_words: list[Word] = []
+        switch_count = 0
+        prev_lang: str | None = None
+
+        for word in words:
+            lang = word.get("language", "es")
+            if prev_lang is not None and lang != prev_lang:
+                switch_count += 1
+                if switch_count >= 4:
+                    # Boundary: this word starts a new verb group
+                    if current_words:
+                        blocks.append(
+                            TextBlock(
+                                words=current_words,
+                                start_time=current_words[0]["start"],
+                                end_time=current_words[-1]["end"],
+                            )
+                        )
+                    current_words = []
+                    switch_count = 0
+            current_words.append(word)
+            prev_lang = lang
+
         if current_words:
             blocks.append(
                 TextBlock(
@@ -745,7 +792,7 @@ class VideoGenerationService:
             base_color = self.config.primary_color if lang == "es" else self.config.secondary_color
 
             # Resolve bracket → italic display for this line
-            italic_font = self._get_italic_font(line_font_size if is_verb_line else sentence_font_size)
+            italic_font = self._get_italic_font(verb_font_size if is_verb_line else sentence_font_size)
             resolved = [(dt.rstrip(","), it) for dt, it in _resolve_display(line_words)]
 
             # First pass: calculate total width for centering
