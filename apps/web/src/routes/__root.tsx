@@ -28,6 +28,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
+        name: 'description',
+        content:
+          'Learn Spanish with real-voice audio stories about history. Choose from four levels - just starting to advanced - and build vocabulary naturally.',
+      },
+      {
         title: 'Real Spanish Stories',
       },
     ],
@@ -63,7 +68,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.remove('dark')
     } else {
       // No stored preference, check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      ).matches
       if (prefersDark) {
         document.documentElement.classList.add('dark')
       }
@@ -77,9 +84,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1">
-          {children}
-        </main>
+        <main className="flex-1">{children}</main>
         <Footer />
         <TanStackDevtools
           config={{
