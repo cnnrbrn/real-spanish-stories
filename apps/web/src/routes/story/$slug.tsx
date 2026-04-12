@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { capitalizeFirstLetter } from '@real-spanish-stories/shared'
+import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { getStoryBySlug } from '@/features/stories/api'
 import { StoryDetails } from '@/features/stories/components/story-details'
 
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/story/$slug')({
       meta: [
         {
           title: loaderData
-            ? `${loaderData.altTitle} | ${capitalizeFirstLetter(loaderData.level)} Spanish | Real Spanish Stories`
+            ? `${loaderData.altTitle} | ${STORY_LEVELS.find((l) => l.value === loaderData.level)?.label ?? ''} | Real Spanish Stories`
             : 'Real Spanish Stories',
         },
       ],
