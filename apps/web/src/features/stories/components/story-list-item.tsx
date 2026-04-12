@@ -27,7 +27,7 @@ export function StoryListItem({ story }: StoryListItemProps) {
         <div className="aspect-video bg-gray-100 dark:bg-gray-800">
           <img
             src={thumbnail}
-            alt={`${story.altTitle || story.title}${levelLabel ? ` — ${levelLabel}` : ''}`}
+            alt={`${story.altTitle || story.title}${levelLabel ? ` - ${levelLabel} Spanish` : ''}`}
             className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
           />
         </div>
@@ -35,7 +35,8 @@ export function StoryListItem({ story }: StoryListItemProps) {
       <div className="p-4">
         <div className="flex items-center justify-between gap-2 mb-2">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1">
-            {story.altTitle || story.title}{levelLabel ? ` — ${levelLabel}` : ''}
+            {story.altTitle || story.title}
+            {levelLabel ? ` - ${levelLabel} Spanish` : ''}
           </h2>
           {story.level && <LevelBadge level={story.level as StoryLevel} />}
         </div>
