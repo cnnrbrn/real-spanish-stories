@@ -33,7 +33,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           'Learn Spanish with real-voice audio stories about history. Choose from four levels - just starting to advanced - and build vocabulary naturally.',
       },
       {
-        title: 'Real Spanish Stories',
+        title:
+          'Real Spanish Stories | Learn Spanish with Latin American History',
       },
     ],
     scripts: [
@@ -51,6 +52,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         rel: 'stylesheet',
         href: videojsCss,
+      },
+      {
+        rel: 'icon',
+        href: '/favicon.ico',
+      },
+      {
+        rel: 'apple-touch-icon',
+        href: '/apple-touch-icon.png',
       },
     ],
   }),
