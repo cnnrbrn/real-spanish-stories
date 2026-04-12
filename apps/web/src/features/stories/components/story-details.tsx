@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { PanelRightClose, PanelRightOpen, X, Download } from 'lucide-react'
 import { translatePhrase } from '../api'
+import { createStoryTitle } from '../utils/story'
 import { VideoPlayer } from './video-player'
 import { LevelBadge } from './level-badge'
 import { TranscriptDisplay } from './transcript-display'
 import { WordExplanationPanel } from './word-explanation-panel'
 import type { VideoPlayerHandle } from './video-player'
 import type {
+  Story,
   StoryDetail,
   TranscriptionWord,
   TranslationResponse,
@@ -111,22 +113,27 @@ export function StoryDetails({ story }: StoryDetailsProps) {
         )}
         <div className="mb-8">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                {story.altTitle || story.title}
-              </h1>
-              <div className="mt-4 flex items-center gap-2 xl:hidden flex-col md:flex-row">
-                <LevelBadge level={story.level} size="lg" />
-                {/* {story.audioFilename && (
-                  <a
-                    href={`${import.meta.env.VITE_API_URL}stories/${story.id}/audio`}
-                    download={story.audioFilename}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground text-base"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download the audio
-                  </a>
-                )} */}
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+              {createStoryTitle(story)}
+            </h1>
+            <button
+              onClick={() => setSidebarOpen((o) => !o)}
+              className="shrink-0 p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
+              aria-label="Toggle translation panel"
+            >
+              {sidebarOpen ? (
+                <PanelRightClose className="w-6 h-6" />
+              ) : (
+                <PanelRightOpen className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+          <div className="mt-4 flex flex-col md:flex-row md:items-center gap-2">
+            <div className="self-start">
+              <LevelBadge level={story.level} size="lg" />
+            </div>
+            {(story.pdfLightPath || story.pdfDarkPath) && (
+              <div className="flex items-center">
                 {story.pdfLightPath && (
                   <a
                     href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/light`}
@@ -148,53 +155,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
                   </a>
                 )}
               </div>
-              <div className="mt-4 hidden xl:block">
-                <LevelBadge level={story.level} size="lg" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              {/* {story.audioFilename && (
-                <a
-                  href={`${import.meta.env.VITE_API_URL}stories/${story.id}/audio`}
-                  download={story.audioFilename}
-                  className="hidden xl:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground text-base"
-                >
-                  <Download className="w-4 h-4" />
-                  Download the audio
-                </a>
-              )} */}
-              {story.pdfLightPath && (
-                <a
-                  href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/light`}
-                  download
-                  className="hidden xl:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground text-base"
-                >
-                  <Download className="w-4 h-4" />
-                  PDF (Light)
-                </a>
-              )}
-              {story.pdfDarkPath && (
-                <a
-                  href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/dark`}
-                  download
-                  className="hidden xl:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground text-base"
-                >
-                  <Download className="w-4 h-4" />
-                  PDF (Dark)
-                </a>
-              )}
-              <button
-                onClick={() => setSidebarOpen((o) => !o)}
-                className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
-                aria-label="Toggle translation panel"
-              >
-                {sidebarOpen ? (
-                  <PanelRightClose className="w-6 h-6" />
-                ) : (
-                  <PanelRightOpen className="w-6 h-6" />
-                )}
-              </button>
-            </div>
+            )}
           </div>
         </div>
         {!hintDismissed && (

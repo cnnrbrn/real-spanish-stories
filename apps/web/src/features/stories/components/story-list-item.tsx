@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
+import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { getYouTubeThumbnail } from '../utils/video'
 import { LevelBadge } from './level-badge'
-import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import type { Story, StoryLevel } from '@real-spanish-stories/shared'
 
 interface StoryListItemProps {
