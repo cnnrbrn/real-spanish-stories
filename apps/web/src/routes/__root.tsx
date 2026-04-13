@@ -33,8 +33,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           'Learn Spanish with real-voice audio stories about history. Choose from four levels - just starting to advanced - and build vocabulary naturally.',
       },
       {
-        title:
-          'Real Spanish Stories | Learn Spanish with Latin American History',
+        title: 'Real Spanish Stories | Learn Spanish with History',
       },
     ],
     scripts: [

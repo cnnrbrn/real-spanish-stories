@@ -29,9 +29,17 @@ export default function Header() {
           </Link>
           <div className="flex items-center gap-4">
             <Link
+              to="/"
+              className="font-medium text-foreground hover:text-primary transition-colors"
+              activeProps={{ className: 'font-medium text-primary underline underline-offset-4 transition-colors' }}
+              activeOptions={{ exact: true }}
+            >
+              Home
+            </Link>
+            <Link
               to="/how-it-works"
               className="font-medium text-foreground hover:text-primary transition-colors"
-              activeProps={{ className: 'font-medium text-primary transition-colors' }}
+              activeProps={{ className: 'font-medium text-primary underline underline-offset-4 transition-colors' }}
             >
               How it works
             </Link>
