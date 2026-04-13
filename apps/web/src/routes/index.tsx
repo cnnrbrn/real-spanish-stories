@@ -12,6 +12,9 @@ export const Route = createFileRoute('/')({
   loader: ({ context: { queryClient } }) => {
     return queryClient.ensureQueryData(storiesQueryOptions)
   },
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://realspanishstories.com/' }],
+  }),
   component: HomePage,
 })
 

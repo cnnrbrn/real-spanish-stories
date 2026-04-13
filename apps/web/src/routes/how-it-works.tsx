@@ -12,6 +12,7 @@ export const Route = createFileRoute('/how-it-works')({
           'Learn Spanish through real Latin American history stories graded across four levels — from Just Starting to Advanced. Comprehensible input that is actually interesting.',
       },
     ],
+    links: [{ rel: 'canonical', href: 'https://realspanishstories.com/how-it-works' }],
   }),
   component: HowItWorksPage,
 })
