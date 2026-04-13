@@ -27,7 +27,14 @@ export default function Header() {
               className="h-14"
             />
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <Link
+              to="/how-it-works"
+              className="font-medium text-foreground hover:text-primary transition-colors"
+              activeProps={{ className: 'font-medium text-primary transition-colors' }}
+            >
+              How it works
+            </Link>
             {/* <AuthMenu /> */}
 
             <button
