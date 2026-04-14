@@ -64,7 +64,7 @@ function HomePage() {
           <strong>Intermediate</strong>, and <strong>Advanced</strong>.
         </p>
       </div>
-      <LevelFilter selected={selected} onChange={handleFilterChange} />
+      {/* <LevelFilter selected={selected} onChange={handleFilterChange} /> */}
       <StoryList stories={filteredStories} />
     </div>
   )
