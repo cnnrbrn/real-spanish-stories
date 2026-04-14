@@ -26,6 +26,12 @@ export default function Footer() {
         <p className="text-sm text-muted-foreground">
           © {currentYear} Real Spanish Stories
         </p>
+        <a
+          href="mailto:info@realspanishstories.com"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          info@realspanishstories.com
+        </a>
       </div>
     </footer>
   )
