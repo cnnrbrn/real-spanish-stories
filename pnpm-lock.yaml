@@ -377,6 +377,9 @@ importers:
       nitro:
         specifier: npm:nitro-nightly@latest
         version: nitro-nightly@3.0.1-20260227-181935-bfbb207c(@libsql/client@0.14.0)(better-sqlite3@11.10.0)(chokidar@4.0.3)(dotenv@17.2.3)(drizzle-orm@0.45.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(@types/pg@8.16.0)(better-sqlite3@11.10.0)(kysely@0.28.14)(pg@8.18.0)(postgres@3.4.8))(ioredis@5.9.3)(jiti@2.6.1)(lru-cache@11.2.5)(vite@7.3.1(@types/node@22.19.10)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0))
+      qs:
+        specifier: ^6.14.0
+        version: 6.14.1
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.13))(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -438,6 +441,9 @@ importers:
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.10
+      '@types/qs':
+        specifier: ^6.9.18
+        version: 6.14.0
       '@types/react':
         specifier: ^19.2.0
         version: 19.2.13
