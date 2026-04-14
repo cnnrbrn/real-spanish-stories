@@ -16,7 +16,8 @@ const levelConfig: Record<StoryLevel, string> = {
 const baseClasses =
   'rounded-full px-4 py-1.5 text-sm font-medium cursor-pointer transition-colors'
 
-const ringClasses = 'ring-2 ring-gray-900 dark:ring-white ring-offset-2 ring-offset-background'
+const ringClasses =
+  'ring-2 ring-gray-900 dark:ring-white ring-offset-2 ring-offset-background'
 
 export function LevelFilter({ selected, onChange }: LevelFilterProps) {
   const isAll = selected === null || selected.length === 0
@@ -30,14 +31,14 @@ export function LevelFilter({ selected, onChange }: LevelFilterProps) {
       onChange([level])
       return
     }
-    const next = selected!.includes(level)
-      ? selected!.filter((l) => l !== level)
-      : [...selected!, level]
+    const next = selected.includes(level)
+      ? selected.filter((l) => l !== level)
+      : [...selected, level]
     onChange(next.length === 0 ? null : next)
   }
 
   return (
-    <div className="flex flex-wrap gap-2 mb-6">
+    <div className="flex flex-wrap justify-center gap-2 mb-6">
       <button
         type="button"
         onClick={handleAll}
@@ -46,7 +47,7 @@ export function LevelFilter({ selected, onChange }: LevelFilterProps) {
         All
       </button>
       {STORY_LEVELS.map(({ value, label }) => {
-        const isActive = !isAll && selected!.includes(value)
+        const isActive = !isAll && selected.includes(value)
         return (
           <button
             key={value}

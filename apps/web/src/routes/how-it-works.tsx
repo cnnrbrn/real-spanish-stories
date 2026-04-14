@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/how-it-works')({
   head: () => ({
@@ -12,7 +12,9 @@ export const Route = createFileRoute('/how-it-works')({
           'Learn Spanish through real Latin American history stories graded across four levels — from Just Starting to Advanced. Comprehensible input that is actually interesting.',
       },
     ],
-    links: [{ rel: 'canonical', href: 'https://realspanishstories.com/how-it-works' }],
+    links: [
+      { rel: 'canonical', href: 'https://realspanishstories.com/how-it-works' },
+    ],
   }),
   component: HowItWorksPage,
 })
@@ -65,8 +67,12 @@ function HowItWorksPage() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
               {level.label}
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">{level.description}</p>
-            <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{level.verbs}</p>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">
+              {level.description}
+            </p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {level.verbs}
+            </p>
           </div>
         ))}
       </div>
