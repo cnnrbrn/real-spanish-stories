@@ -1,34 +1,14 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { STORY_LEVEL_VALUES } from '@real-spanish-stories/shared'
-import type { StoryLevel } from '@real-spanish-stories/shared'
 import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
-import { LevelFilter } from '@/features/stories/components/level-filter'
 
 const storiesQueryOptions = queryOptions({
   queryKey: ['stories'],
   queryFn: () => getStories(),
 })
 
-
-type Levels = StoryLevel[] | null;
-
-
-// const searchSchema = z.object({
-//   levels: z
-//     .union([
-//       z.enum(STORY_LEVEL_VALUES).transform((v) => [v]),
-//       z.array(z.enum(STORY_LEVEL_VALUES)),
-//     ])
-//     .optional(),
-// })
-
 export const Route = createFileRoute('/')({
-  validateSearch: (search: { [key: string]: unknown }) => {
-
-  },
   loader: ({ context: { queryClient } }) => {
     return queryClient.ensureQueryData(storiesQueryOptions)
   },
