@@ -13,14 +13,8 @@ export const TRANSCRIPTION_SERVICE_OPTIONS = [
 export type TranscriptionService =
   (typeof TRANSCRIPTION_SERVICE_OPTIONS)[number]
 
-export const VIDEO_LEVELS = [
-  { value: "just_starting", label: "Just Starting" },
-  { value: "beginner", label: "Beginner" },
-  { value: "intermediate", label: "Intermediate" },
-  { value: "advanced", label: "Advanced" },
-] as const
-
-export type VideoLevel = (typeof VIDEO_LEVELS)[number]["value"]
+export { STORY_LEVELS as VIDEO_LEVELS } from "@real-spanish-stories/shared"
+export type { StoryLevel as VideoLevel } from "@real-spanish-stories/shared"
 
 export const PROCESSING_STATUSES = [
   "transcribing",

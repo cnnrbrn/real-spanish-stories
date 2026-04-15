@@ -1,11 +1,3 @@
-export function levelToParam(level: string): string {
-  return level.replace(/_/g, '-')
-}
-
-export function paramToLevel(param: string): string {
-  return param.replace(/-/g, '_')
-}
-
 export function createSlug(altTitle: string, level: string): string {
   const titlePart = altTitle
     .toLowerCase()
@@ -13,6 +5,5 @@ export function createSlug(altTitle: string, level: string): string {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-  const levelPart = levelToParam(level)
-  return `${titlePart}-${levelPart}-spanish`
+  return `${titlePart}-${level}-spanish`
 }

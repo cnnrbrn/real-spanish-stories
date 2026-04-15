@@ -7,7 +7,7 @@ interface LevelFilterProps {
 }
 
 const levelConfig: Record<StoryLevel, string> = {
-  just_starting: 'bg-level-just-starting text-level-foreground',
+  'just-starting': 'bg-level-just-starting text-level-foreground',
   beginner: 'bg-level-beginner text-level-foreground',
   intermediate: 'bg-level-intermediate text-level-foreground',
   advanced: 'bg-level-advanced text-level-foreground',

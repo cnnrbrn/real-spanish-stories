@@ -12,17 +12,23 @@ const storiesQueryOptions = queryOptions({
   queryFn: () => getStories(),
 })
 
-const searchSchema = z.object({
-  levels: z
-    .union([
-      z.enum(STORY_LEVEL_VALUES).transform((v) => [v]),
-      z.array(z.enum(STORY_LEVEL_VALUES)),
-    ])
-    .optional(),
-})
+
+type Levels = StoryLevel[] | null;
+
+
+// const searchSchema = z.object({
+//   levels: z
+//     .union([
+//       z.enum(STORY_LEVEL_VALUES).transform((v) => [v]),
+//       z.array(z.enum(STORY_LEVEL_VALUES)),
+//     ])
+//     .optional(),
+// })
 
 export const Route = createFileRoute('/')({
-  validateSearch: searchSchema,
+  validateSearch: (search: { [key: string]: unknown }) => {
+
+  },
   loader: ({ context: { queryClient } }) => {
     return queryClient.ensureQueryData(storiesQueryOptions)
   },
@@ -34,22 +40,6 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const { data: stories } = useSuspenseQuery(storiesQueryOptions)
-  const { levels } = Route.useSearch()
-  const navigate = useNavigate({ from: '/' })
-
-  const selected: StoryLevel[] | null =
-    levels && levels.length > 0 ? levels : null
-
-  const filteredStories =
-    selected === null
-      ? stories
-      : stories.filter((s) => selected.includes(s.level))
-
-  function handleFilterChange(next: StoryLevel[] | null) {
-    navigate({
-      search: next === null ? {} : { levels: next },
-    })
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
@@ -65,7 +55,7 @@ function HomePage() {
         </p>
       </div>
       {/* <LevelFilter selected={selected} onChange={handleFilterChange} /> */}
-      <StoryList stories={filteredStories} />
+      <StoryList stories={stories} />
     </div>
   )
 }
