@@ -41,19 +41,19 @@ export function LevelFilter({ selected, onChange }: LevelFilterProps) {
     <div className="flex flex-wrap justify-center gap-2 mb-6">
       <button
         type="button"
-        onClick={handleAll}
         className={`${baseClasses} bg-gray-600 text-white ${isAll ? ringClasses : ''}`}
+        onClick={handleAll}
       >
         All
       </button>
       {STORY_LEVELS.map(({ value, label }) => {
-        const isActive = !isAll && selected.includes(value)
+        const isSelected = !isAll && selected.includes(value)
         return (
           <button
             key={value}
             type="button"
+            className={`${baseClasses} ${levelConfig[value]} ${isSelected ? ringClasses : ''}`}
             onClick={() => handleLevel(value)}
-            className={`${baseClasses} ${levelConfig[value]} ${isActive ? ringClasses : ''}`}
           >
             {label}
           </button>

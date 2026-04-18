@@ -7,7 +7,9 @@ interface LevelBadgeProps {
 }
 
 const levelConfig: Record<StoryLevel, { className: string }> = {
-  'just-starting': { className: 'bg-level-just-starting text-level-foreground' },
+  'just-starting': {
+    className: 'bg-level-just-starting text-level-foreground',
+  },
   beginner: { className: 'bg-level-beginner text-level-foreground' },
   intermediate: { className: 'bg-level-intermediate text-level-foreground' },
   advanced: { className: 'bg-level-advanced text-level-foreground' },
