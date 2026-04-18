@@ -9,7 +9,7 @@ export const Route = createFileRoute('/how-it-works')({
       {
         name: 'description',
         content:
-          'Learn Spanish through real Latin American history stories graded across four levels — from Just Starting to Advanced. Comprehensible input that is actually interesting.',
+          'Learn Spanish through real Latin American history stories graded across four levels - from Just Starting to Advanced. Comprehensible input that is actually interesting.',
       },
     ],
     links: [
@@ -27,9 +27,9 @@ function HowItWorksPage() {
       </h1>
       <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
         Beginner and intermediate Spanish content can be a little dull. Real
-        Spanish Stories uses comprehensible input — graded, easy-to-follow
-        language — applied to real Latin American history, with native voice
-        audio for every story.
+        Spanish Stories uses comprehensible input with graded, easy-to-follow
+        language applied to real Latin American history. Each story is narrated
+        by a real human, we don't use AI voices.
       </p>
       <p className="text-lg text-gray-600 dark:text-gray-400 mb-12">
         Each story is available at four levels. Pick the one that matches where
