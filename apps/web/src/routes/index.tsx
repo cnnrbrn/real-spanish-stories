@@ -49,11 +49,8 @@ function HomePage() {
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-3">
           Learn Spanish with Latin American History Stories
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">
-          Real historical stories from Latin America, adapted for four levels:{' '}
-          <br />
-          <strong>Just Starting</strong>, <strong>Beginner</strong>,{' '}
-          <strong>Intermediate</strong>, and <strong>Advanced</strong>.
+        <p className="hidden sm:block text-lg text-gray-600 dark:text-gray-400">
+          Real historical stories from Latin America, adapted for four levels.
         </p>
       </div>
       <LevelFilter selected={levels ?? null} onChange={handleLevelChange} />
