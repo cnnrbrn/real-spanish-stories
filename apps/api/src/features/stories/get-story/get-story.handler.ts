@@ -1,7 +1,11 @@
 import { Inject, NotFoundException } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { GetStoryQuery } from "./get-story.query";
-import { storiesSchema, type StoryDetail } from "@real-spanish-stories/shared";
+import {
+  storyDetailSchema,
+  storiesSchema,
+  type StoryDetail,
+} from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
@@ -23,7 +27,6 @@ export class GetStoryHandler implements IQueryHandler<GetStoryQuery> {
       throw new NotFoundException(`Story not found`);
     }
 
-    const { updatedAt, ...storyDto } = story;
-    return storyDto as StoryDetail;
+    return storyDetailSchema.parse(story);
   }
 }

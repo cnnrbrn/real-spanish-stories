@@ -29,10 +29,6 @@ const config = defineConfig({
         enabled: true,
         crawlLinks: true, // Discovers all linkable pages
       },
-      sitemap: {
-        enabled: true,
-        host: 'https://realspanishstories.com',
-      },
     }),
     viteReact(),
   ],

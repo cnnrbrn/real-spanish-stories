@@ -9,10 +9,13 @@ export default function Footer() {
 
   return (
     <footer className="bg-background border-t border-border mt-auto">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center gap-4">
-        <p className="text-sm text-muted-foreground">
-          © {currentYear} Real Spanish Stories
-        </p>
+      <div className="flex-col sm:flex-row max-w-7xl mx-auto px-4 py-4 flex items-center justify-center gap-4">
+        <a
+          href="mailto:info@realspanishstories.com"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          info@realspanishstories.com
+        </a>
         <ClientOnly>
           <div className="flex gap-2">
             <SocialIcon
@@ -32,12 +35,9 @@ export default function Footer() {
             />
           </div>
         </ClientOnly>
-        <a
-          href="mailto:info@realspanishstories.com"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          info@realspanishstories.com
-        </a>
+        <p className="text-sm text-muted-foreground">
+          © {currentYear} Real Spanish Stories
+        </p>
       </div>
     </footer>
   )

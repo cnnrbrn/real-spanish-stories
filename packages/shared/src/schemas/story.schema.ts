@@ -13,6 +13,7 @@ export const storySchema = z.object({
   status: z.enum(STORY_STATUS_VALUES),
   isPremium: z.boolean(),
   createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type StoryResponse = z.infer<typeof storySchema>;
