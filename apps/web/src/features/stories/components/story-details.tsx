@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { PanelRightClose, PanelRightOpen, X, Download } from 'lucide-react'
+import { STORY_LEVELS } from '@real-spanish-stories/shared'
+import type {
+  Story,
+  StoryDetail,
+  TranscriptionWord,
+  TranslationResponse,
+} from '@real-spanish-stories/shared'
 import { translatePhrase } from '../api'
 import { createStoryTitle } from '../utils/story'
 import { VideoPlayer } from './video-player'
@@ -7,12 +15,6 @@ import { LevelBadge } from './level-badge'
 import { TranscriptDisplay } from './transcript-display'
 import { WordExplanationPanel } from './word-explanation-panel'
 import type { VideoPlayerHandle } from './video-player'
-import type {
-  Story,
-  StoryDetail,
-  TranscriptionWord,
-  TranslationResponse,
-} from '@real-spanish-stories/shared'
 import { usePreferencesStore } from '@/stores/preferences'
 
 interface StoryDetailsProps {
@@ -100,6 +102,28 @@ export function StoryDetails({ story }: StoryDetailsProps) {
       <div
         className={`flex-1 min-w-0${!sidebarOpen ? ' max-w-5xl mx-auto' : ''}`}
       >
+        {(() => {
+          const level = STORY_LEVELS.find((l) => l.value === story.level)
+          return (
+            <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+              {level && (
+                <>
+                  <span>/</span>
+                  <Link
+                    to="/stories/$levelSlug"
+                    params={{ levelSlug: level.urlSlug }}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    {level.label} Spanish Stories
+                  </Link>
+                </>
+              )}
+              <span>/</span>
+              <span className="text-foreground">{story.altTitle || story.title}</span>
+            </nav>
+          )
+        })()}
         {story.videoLink && (
           <div className="mb-6 aspect-video bg-black">
             <VideoPlayer

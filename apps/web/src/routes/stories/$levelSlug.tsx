@@ -42,6 +42,15 @@ export const Route = createFileRoute('/stories/$levelSlug')({
             : 'Real Spanish Stories',
         },
         ...(description ? [{ name: 'description', content: description }] : []),
+        ...(loaderData
+          ? [
+              { property: 'og:type', content: 'website' },
+              { property: 'og:title', content: `${loaderData.levelData.label} Spanish Stories | Real Spanish Stories` },
+              ...(description ? [{ property: 'og:description', content: description }] : []),
+              { property: 'og:url', content: `https://realspanishstories.com/stories/${params.levelSlug}` },
+              { property: 'og:image', content: 'https://realspanishstories.com/og-image.jpg' },
+            ]
+          : []),
       ],
       links: [
         {
@@ -49,6 +58,31 @@ export const Route = createFileRoute('/stories/$levelSlug')({
           href: `https://realspanishstories.com/stories/${params.levelSlug}`,
         },
       ],
+      scripts: loaderData
+        ? [
+            {
+              type: 'application/ld+json',
+              children: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://realspanishstories.com',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: `${loaderData.levelData.label} Spanish Stories`,
+                    item: `https://realspanishstories.com/stories/${params.levelSlug}`,
+                  },
+                ],
+              }),
+            },
+          ]
+        : [],
     }
   },
   component: LevelStoriesPage,
@@ -59,6 +93,11 @@ function LevelStoriesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
+      <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+        <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+        <span>/</span>
+        <span className="text-foreground">{levelData.label} Spanish Stories</span>
+      </nav>
       <div className="mb-8 text-center max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-3">
           {levelData.label} Spanish Stories

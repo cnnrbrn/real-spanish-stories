@@ -15,11 +15,26 @@ export const Route = createFileRoute('/story/$slug')({
       meta: [
         {
           title: loaderData
-            ? `${loaderData.altTitle} | ${level?.label ?? ''} | Real Spanish Stories`
+            ? `${loaderData.altTitle} in ${level?.label ?? ''} Spanish | Real Spanish Stories`
             : 'Real Spanish Stories',
         },
         ...(loaderData?.description
           ? [{ name: 'description', content: loaderData.description }]
+          : []),
+        ...(loaderData
+          ? [
+              { property: 'og:type', content: 'article' },
+              { property: 'og:title', content: `${loaderData.altTitle} in ${level?.label ?? ''} Spanish | Real Spanish Stories` },
+              ...(loaderData.description ? [{ property: 'og:description', content: loaderData.description }] : []),
+              { property: 'og:url', content: canonicalUrl },
+              ...(loaderData.videoLink
+                ? (() => {
+                    const match = loaderData.videoLink.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
+                    const videoId = match?.[1]
+                    return videoId ? [{ property: 'og:image', content: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` }] : []
+                  })()
+                : []),
+            ]
           : []),
       ],
       links: [
@@ -51,6 +66,37 @@ export const Route = createFileRoute('/story/$slug')({
                   name: 'Real Spanish Stories',
                   url: 'https://realspanishstories.com',
                 },
+              }),
+            },
+            {
+              type: 'application/ld+json',
+              children: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://realspanishstories.com',
+                  },
+                  ...(level
+                    ? [
+                        {
+                          '@type': 'ListItem',
+                          position: 2,
+                          name: `${level.label} Spanish Stories`,
+                          item: `https://realspanishstories.com/stories/${level.urlSlug}`,
+                        },
+                      ]
+                    : []),
+                  {
+                    '@type': 'ListItem',
+                    position: level ? 3 : 2,
+                    name: loaderData.altTitle,
+                    item: canonicalUrl,
+                  },
+                ],
               }),
             },
           ]

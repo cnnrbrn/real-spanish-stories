@@ -9,8 +9,20 @@ export const Route = createFileRoute('/how-it-works')({
       {
         name: 'description',
         content:
-          'Learn Spanish through real Latin American history stories graded across four levels - from Just Starting to Advanced. Comprehensible input that is actually interesting.',
+          'Find out how Real Spanish Stories works. Each story is graded across four levels, comes with real-voice audio, a PDF script, and word-by-word translation so you can learn Spanish at your own pace.',
       },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:title', content: 'How It Works | Real Spanish Stories' },
+      {
+        property: 'og:description',
+        content:
+          'Find out how Real Spanish Stories works. Each story is graded across four levels, comes with real-voice audio, a PDF script, and word-by-word translation so you can learn Spanish at your own pace.',
+      },
+      {
+        property: 'og:image',
+        content: 'https://realspanishstories.com/og-image.jpg',
+      },
+      { property: 'og:url', content: 'https://realspanishstories.com/how-it-works' },
     ],
     links: [
       { rel: 'canonical', href: 'https://realspanishstories.com/how-it-works' },
@@ -58,7 +70,7 @@ function HowItWorksPage() {
           },
           {
             label: 'Advanced',
-            verbs: '15+ verbs per story, including 2–3 subjunctive forms',
+            verbs: '15+ verbs per story, including 2 - 3 subjunctive forms',
             description:
               'Rich vocabulary, complex structures, and idiomatic Spanish close to native-level reading.',
           },

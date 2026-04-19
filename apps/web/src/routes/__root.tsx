@@ -35,6 +35,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         title: 'Real Spanish Stories | Learn Spanish with History',
       },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'Real Spanish Stories' },
+      { property: 'og:title', content: 'Real Spanish Stories | Learn Spanish with History' },
+      { property: 'og:description', content: 'Learn Spanish with real-voice audio stories about history. Choose from four levels - just starting to advanced - and build vocabulary naturally.' },
+      { property: 'og:image', content: 'https://realspanishstories.com/og-image.jpg' },
     ],
     scripts: [
       {

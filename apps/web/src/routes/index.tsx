@@ -22,7 +22,27 @@ export const Route = createFileRoute('/')({
     return queryClient.ensureQueryData(storiesQueryOptions)
   },
   head: () => ({
+    meta: [
+      { property: 'og:url', content: 'https://realspanishstories.com/' },
+    ],
     links: [{ rel: 'canonical', href: 'https://realspanishstories.com/' }],
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'Real Spanish Stories',
+          url: 'https://realspanishstories.com',
+          logo: 'https://realspanishstories.com/og-image.jpg',
+          sameAs: [
+            'https://www.youtube.com/@RealSpanishStories',
+            'https://www.instagram.com/realspanishstories/',
+            'https://www.tiktok.com/@realspanishstories',
+          ],
+        }),
+      },
+    ],
   }),
   component: HomePage,
 })
