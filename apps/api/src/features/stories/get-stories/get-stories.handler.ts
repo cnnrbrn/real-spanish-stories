@@ -8,7 +8,7 @@ import {
 } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 @QueryHandler(GetStoriesQuery)
@@ -20,11 +20,20 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
     }>,
   ) {}
   async execute(query: GetStoriesQuery): Promise<StoryResponse[]> {
+    const whereClause =
+      query.levels && query.levels.length > 0
+        ? and(
+            eq(storiesSchema.status, "published"),
+            inArray(storiesSchema.level, query.levels),
+          )
+        : eq(storiesSchema.status, "published");
+
     const stories = await this.database
       .select({
         id: storiesSchema.id,
         title: storiesSchema.title,
         altTitle: storiesSchema.altTitle,
+        description: storiesSchema.description,
         slug: storiesSchema.slug,
         videoLink: storiesSchema.videoLink,
         level: storiesSchema.level,
@@ -34,7 +43,7 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
         updatedAt: storiesSchema.updatedAt,
       })
       .from(storiesSchema)
-      .where(eq(storiesSchema.status, "published"))
+      .where(whereClause)
       .orderBy(desc(storiesSchema.createdAt));
     return z.array(storySchema).parse(stories);
   }

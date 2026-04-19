@@ -3,8 +3,7 @@ import { DATABASE_CONNECTION } from "./database.constants";
 import { ConfigService } from "@nestjs/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { storiesSchema } from "@real-spanish-stories/shared";
-import * as authSchema from "src/auth/auth.schema";
+import { storiesSchema, user, session, account, verification } from "@real-spanish-stories/shared";
 
 @Module({
   providers: [
@@ -17,7 +16,10 @@ import * as authSchema from "src/auth/auth.schema";
         return drizzle(pool, {
           schema: {
             stories: storiesSchema,
-            ...authSchema,
+            user,
+            session,
+            account,
+            verification,
           },
         });
       },

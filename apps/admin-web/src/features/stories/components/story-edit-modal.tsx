@@ -3,14 +3,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Story } from '../types'
-import { updateStory } from '../api'
+import type { StoryDetail as Story } from '@real-spanish-stories/shared'
+import { STORY_LEVEL_VALUES } from '@real-spanish-stories/shared'
+import { updateStory, generateStoryDescription } from '../api'
 import { storyKeys } from '../constants'
 import { VIDEO_LEVELS } from '@/features/videos/constants'
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -28,6 +27,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Loader2 } from 'lucide-react'
 
 interface StoryEditModalProps {
   story: Story
@@ -45,7 +46,8 @@ interface StoryEditModalProps {
 const editStorySchema = z.object({
   title: z.string().min(1).max(200),
   altTitle: z.string().min(1).max(200),
-  level: z.string().optional(),
+  description: z.string().max(160).nullable().optional(),
+  level: z.enum(STORY_LEVEL_VALUES).optional(),
   videoLink: z.string().url().optional(),
   isPremium: z.boolean(),
 })
@@ -54,6 +56,7 @@ type EditStoryFormValues = z.infer<typeof editStorySchema>
 
 export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
   const [open, setOpen] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const queryClient = useQueryClient()
 
   const form = useForm<EditStoryFormValues>({
@@ -61,6 +64,7 @@ export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
     defaultValues: {
       title: story.title,
       altTitle: story.altTitle,
+      description: story.description ?? '',
       level: story.level || undefined,
       videoLink: story.videoLink || undefined,
       isPremium: story.isPremium,
@@ -77,9 +81,22 @@ export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
     },
   })
 
+  async function handleGenerate() {
+    setIsGenerating(true)
+    try {
+      const { description } = await generateStoryDescription(story.id)
+      form.setValue('description', description, { shouldValidate: true })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   function onSubmit(data: EditStoryFormValues) {
     updateMutation.mutate(data)
   }
+
+  const descriptionValue = form.watch('description') ?? ''
+  const charCount = typeof descriptionValue === 'string' ? descriptionValue.length : 0
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -114,6 +131,48 @@ export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
                   <FormLabel>Title (English)</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="The Small Cat" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Description</FormLabel>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs ${charCount > 160 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        {charCount}/160
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleGenerate}
+                        disabled={isGenerating}
+                      >
+                        {isGenerating ? (
+                          <>
+                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            Generating...
+                          </>
+                        ) : (
+                          'Generate'
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      value={field.value ?? ''}
+                      placeholder="A beginner-level Spanish story about..."
+                      className="resize-none"
+                      rows={3}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

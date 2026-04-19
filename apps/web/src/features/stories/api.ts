@@ -6,6 +6,7 @@ import {
 import z from 'zod'
 import type {
   StoryDetail,
+  StoryLevel,
   StoryResponse,
   TranslationResponse,
 } from '@real-spanish-stories/shared'
@@ -28,8 +29,12 @@ export async function translatePhrase(
   return translationResponseSchema.parse(await response.json())
 }
 
-export const getStories = async (): Promise<StoryResponse[]> => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}stories`)
+export const getStories = async (levels?: StoryLevel[]): Promise<StoryResponse[]> => {
+  const params = levels?.map((l) => `level=${l}`).join('&')
+  const url = params
+    ? `${import.meta.env.VITE_API_URL}stories?${params}`
+    : `${import.meta.env.VITE_API_URL}stories`
+  const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Failed to fetch stories: ${response.statusText}`)
   }

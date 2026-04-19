@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { DeleteVideoCommand } from "./delete-video.command";
-import { videosSchema } from "../videos.schema";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { StorageService } from "src/storage/storage.service";
 

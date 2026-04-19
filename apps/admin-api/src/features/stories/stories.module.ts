@@ -13,6 +13,7 @@ import { StorageModule } from "src/storage/storage.module";
 import { UploadAudioToStoryHandler } from "./upload-audio-to-story/upload-audio-to-story.handler";
 import { CreateStoryPdfsHandler } from "./create-story-pdfs/create-story-pdfs.handler";
 import { DeleteStoryPdfsHandler } from "./delete-story-pdfs/delete-story-pdfs.handler";
+import { GenerateDescriptionHandler } from "./generate-description/generate-description.handler";
 
 @Module({
   imports: [DatabaseModule, CqrsModule, StorageModule],
@@ -28,6 +29,7 @@ import { DeleteStoryPdfsHandler } from "./delete-story-pdfs/delete-story-pdfs.ha
     UploadAudioToStoryHandler,
     CreateStoryPdfsHandler,
     DeleteStoryPdfsHandler,
+    GenerateDescriptionHandler,
   ],
 })
 export class StoriesModule {}

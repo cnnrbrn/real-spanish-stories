@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Story } from '../types'
+import type { StoryDetail as Story } from '@real-spanish-stories/shared'
 import { uploadStoryAudio } from '../api'
 import { storyKeys } from '../constants'
 import {

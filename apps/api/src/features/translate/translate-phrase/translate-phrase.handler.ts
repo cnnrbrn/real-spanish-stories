@@ -9,7 +9,7 @@ import { TranslationResponseDto } from "../translate.dto";
 import { translationResponseSchema } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { storiesSchema } from "@real-spanish-stories/shared";
-import { translationCacheSchema } from "../translation-cache.schema";
+import { translationCacheSchema } from "@real-spanish-stories/shared";
 
 @CommandHandler(TranslatePhraseCommand)
 export class TranslatePhraseHandler implements ICommandHandler<TranslatePhraseCommand> {

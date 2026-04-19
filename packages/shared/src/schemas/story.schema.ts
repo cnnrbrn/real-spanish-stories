@@ -7,6 +7,7 @@ export const storySchema = z.object({
   id: z.number(),
   title: z.string(),
   altTitle: z.string(),
+  description: z.string().max(160).nullable(),
   slug: z.string(),
   videoLink: z.string().nullable(),
   level: z.enum(STORY_LEVEL_VALUES),
@@ -27,3 +28,22 @@ export const storyDetailSchema = storySchema.extend({
 });
 
 export type StoryDetail = z.infer<typeof storyDetailSchema>;
+
+export const storyUpdateSchema = storyDetailSchema.pick({
+  title: true,
+  altTitle: true,
+  level: true,
+  description: true,
+  audioPath: true,
+  audioFilename: true,
+  videoLink: true,
+  isPremium: true,
+}).partial().extend({
+  transcription: z.string().optional(),
+});
+
+export type StoryUpdate = z.infer<typeof storyUpdateSchema>;
+
+export interface StoryStatusUpdate {
+  status: "draft" | "published";
+}

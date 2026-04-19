@@ -1,5 +1,5 @@
 import { pgTable, serial, text, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
-import { storiesSchema } from "@real-spanish-stories/shared";
+import { storiesSchema } from "./stories.schema.js";
 
 export const translationCacheSchema = pgTable("translation_cache", {
   id: serial("id").primaryKey(),

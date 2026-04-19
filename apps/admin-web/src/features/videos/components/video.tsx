@@ -7,7 +7,7 @@ import { updateVideo, deleteVideo, generateVideo } from '../api'
 import { videoKeys, VIDEO_LEVELS, PROCESSING_STATUSES } from '../constants'
 import { createStoryFromVideo, getStoryByVideoId, updateStory } from '@/features/stories/api'
 import { storyKeys } from '@/features/stories/constants'
-import type { StoryUpdate } from '@/features/stories/types'
+import type { StoryLevel, StoryUpdate } from '@real-spanish-stories/shared'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -139,7 +139,7 @@ export function Video({ video }: VideoProps) {
       data: {
         title: video.title,
         altTitle: video.altTitle,
-        level: video.level ?? undefined,
+        level: (video.level ?? undefined) as unknown as StoryLevel | undefined,
         audioPath: video.audioPath ?? undefined,
         audioFilename: video.audioFilename ?? undefined,
         transcription: video.languageTaggedJson ?? undefined,

@@ -6,10 +6,10 @@ export const STORY_LEVEL_VALUES = [
 ] as const;
 
 export const STORY_LEVELS = [
-  { value: "just-starting", label: "Just Starting", labelEs: "Empezando" },
-  { value: "beginner", label: "Beginner", labelEs: "Principiante" },
-  { value: "intermediate", label: "Intermediate", labelEs: "Intermedio" },
-  { value: "advanced", label: "Advanced", labelEs: "Avanzado" },
+  { value: "just-starting", label: "Just Starting", labelEs: "Empezando",    urlSlug: "just-starting-spanish-stories" },
+  { value: "beginner",      label: "Beginner",      labelEs: "Principiante", urlSlug: "beginner-spanish-stories" },
+  { value: "intermediate",  label: "Intermediate",  labelEs: "Intermedio",   urlSlug: "intermediate-spanish-stories" },
+  { value: "advanced",      label: "Advanced",      labelEs: "Avanzado",     urlSlug: "advanced-spanish-stories" },
 ] as const;
 
 export type StoryLevel = typeof STORY_LEVEL_VALUES[number];

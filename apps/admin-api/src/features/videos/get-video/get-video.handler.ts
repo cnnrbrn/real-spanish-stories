@@ -3,8 +3,8 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { GetVideoQuery } from "./get-video.query";
-import type { Video } from "../videos.schema";
-import { videosSchema } from "../videos.schema";
+import type { Video } from "@real-spanish-stories/shared";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 
 @QueryHandler(GetVideoQuery)

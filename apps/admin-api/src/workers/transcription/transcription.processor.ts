@@ -5,7 +5,7 @@ import { Job, Queue } from "bullmq";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
-import { videosSchema } from "src/features/videos/videos.schema";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { StorageService } from "src/storage/storage.service";
 import { DeepgramTranscriptionService } from "./deepgram-transcription.service";
 import { ReplicateTranscriptionService } from "./replicate-transcription.service";

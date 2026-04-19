@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import type { StoryLevel } from '@real-spanish-stories/shared'
 
@@ -23,10 +24,12 @@ export function LevelBadge({ level, size = 'sm' }: LevelBadgeProps) {
     size === 'lg' ? 'px-4 py-1.5 text-lg' : 'px-2.5 py-0.5 text-base'
 
   return (
-    <span
+    <Link
+      to="/stories/$levelSlug"
+      params={{ levelSlug: levelData?.urlSlug ?? '' }}
       className={`inline-flex items-center rounded-md font-medium ${sizeClasses} ${config.className}`}
     >
       {levelData?.label}
-    </span>
+    </Link>
   )
 }

@@ -17,6 +17,7 @@ import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as CheckEmailRouteImport } from './routes/check-email'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StorySlugRouteImport } from './routes/story/$slug'
+import { Route as StoriesLevelSlugRouteImport } from './routes/stories/$levelSlug'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -58,6 +59,11 @@ const StorySlugRoute = StorySlugRouteImport.update({
   path: '/story/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoriesLevelSlugRoute = StoriesLevelSlugRouteImport.update({
+  id: '/stories/$levelSlug',
+  path: '/stories/$levelSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/verify-email'
+    | '/stories/$levelSlug'
     | '/story/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/verify-email'
+    | '/stories/$levelSlug'
     | '/story/$slug'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/verify-email'
+    | '/stories/$levelSlug'
     | '/story/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  StoriesLevelSlugRoute: typeof StoriesLevelSlugRoute
   StorySlugRoute: typeof StorySlugRoute
 }
 
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stories/$levelSlug': {
+      id: '/stories/$levelSlug'
+      path: '/stories/$levelSlug'
+      fullPath: '/stories/$levelSlug'
+      preLoaderRoute: typeof StoriesLevelSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  StoriesLevelSlugRoute: StoriesLevelSlugRoute,
   StorySlugRoute: StorySlugRoute,
 }
 export const routeTree = rootRouteImport

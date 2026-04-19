@@ -1,7 +1,7 @@
-import type { Story, StoryUpdate, StoryStatusUpdate } from "./types"
+import type { StoryDetail, StoryStatusUpdate, StoryUpdate } from "@real-spanish-stories/shared"
 import { API_URL } from "@/config"
 
-export async function listStories(): Promise<Array<Story>> {
+export async function listStories(): Promise<Array<StoryDetail>> {
   const res = await fetch(`${API_URL}/stories`)
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: "Unknown error" }))
@@ -10,7 +10,7 @@ export async function listStories(): Promise<Array<Story>> {
   return res.json()
 }
 
-export async function getStoryByVideoId(videoId: number): Promise<Story> {
+export async function getStoryByVideoId(videoId: number): Promise<StoryDetail> {
   const res = await fetch(`${API_URL}/stories/by-video/${videoId}`)
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: "Unknown error" }))
@@ -19,7 +19,7 @@ export async function getStoryByVideoId(videoId: number): Promise<Story> {
   return res.json()
 }
 
-export async function createStoryFromVideo(videoId: number): Promise<Story> {
+export async function createStoryFromVideo(videoId: number): Promise<StoryDetail> {
   const res = await fetch(`${API_URL}/stories/from-video/${videoId}`, {
     method: "POST",
   })
@@ -33,7 +33,7 @@ export async function createStoryFromVideo(videoId: number): Promise<Story> {
 export async function updateStory(
   id: number,
   data: StoryUpdate,
-): Promise<Story> {
+): Promise<StoryDetail> {
   const res = await fetch(`${API_URL}/stories/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export async function updateStory(
 export async function updateStoryStatus(
   id: number,
   data: StoryStatusUpdate,
-): Promise<Story> {
+): Promise<StoryDetail> {
   const res = await fetch(`${API_URL}/stories/${id}/status`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -95,7 +95,18 @@ export async function deleteStoryPdfs(storyId: number): Promise<void> {
   }
 }
 
-export async function uploadStoryAudio(storyId: number, file: File, name: string): Promise<Story> {
+export async function generateStoryDescription(id: number): Promise<{ description: string }> {
+  const res = await fetch(`${API_URL}/stories/${id}/generate-description`, {
+    method: "POST",
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
+export async function uploadStoryAudio(storyId: number, file: File, name: string): Promise<StoryDetail> {
   const formData = new FormData()
   formData.append("audioFile", file)
   formData.append("name", name)

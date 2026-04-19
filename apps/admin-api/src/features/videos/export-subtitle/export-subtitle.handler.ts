@@ -6,7 +6,7 @@ import {
   ExportSubtitleQuery,
   ExportSubtitleResult,
 } from "./export-subtitle.query";
-import { videosSchema } from "../videos.schema";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { toAss } from "../subtitle.utils";
 

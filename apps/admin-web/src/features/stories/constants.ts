@@ -1,9 +1,9 @@
+export type { StoryStatus } from "@real-spanish-stories/shared"
+
 export const STORY_STATUSES = {
   DRAFT: 'draft',
   PUBLISHED: 'published',
 } as const
-
-export type StoryStatus = typeof STORY_STATUSES[keyof typeof STORY_STATUSES]
 
 export const storyKeys = {
   all: ['stories'] as const,

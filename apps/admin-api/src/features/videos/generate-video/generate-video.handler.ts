@@ -6,8 +6,8 @@ import { eq } from "drizzle-orm";
 import { Queue } from "bullmq";
 import type { VideoStatus } from "@real-spanish-stories/shared";
 import { GenerateVideoCommand } from "./generate-video.command";
-import type { Video } from "../videos.schema";
-import { videosSchema } from "../videos.schema";
+import type { Video } from "@real-spanish-stories/shared";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 
 export interface VideoGenerationJobData {

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Story as StoryType } from '../types'
+import type { StoryDetail as StoryType } from '@real-spanish-stories/shared'
 import { updateStoryStatus, deleteStory, createStoryPdfs, deleteStoryPdfs } from '../api'
 import { storyKeys } from '../constants'
 import { Trash2, ExternalLink, Music2, Music, Edit, FileText } from 'lucide-react'

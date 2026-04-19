@@ -7,7 +7,7 @@ import {
   storiesSchema,
   type Story,
 } from "@real-spanish-stories/shared";
-import { videosSchema } from "../../videos/videos.schema";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { CreateStoryFromVideoCommand } from "./create-story-from-video.command";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 

@@ -1,5 +1,5 @@
 import { Story } from './story'
-import type { Story as StoryType } from '../types'
+import type { StoryDetail as StoryType } from '@real-spanish-stories/shared'
 
 interface StoryListProps {
   stories: Array<StoryType>

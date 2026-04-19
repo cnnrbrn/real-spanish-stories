@@ -1,8 +1,8 @@
 import { Query } from "@nestjs/cqrs";
-import type { StoryResponse } from "@real-spanish-stories/shared";
+import type { StoryLevel, StoryResponse } from "@real-spanish-stories/shared";
 
 export class GetStoriesQuery extends Query<StoryResponse[]> {
-  constructor() {
+  constructor(public readonly levels?: StoryLevel[]) {
     super();
   }
 }

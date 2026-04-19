@@ -5,6 +5,7 @@ import { z } from "zod";
 const updateStorySchema = z.object({
   title: z.string().min(1).max(200).optional(),
   altTitle: z.string().min(1).max(200).optional(),
+  description: z.string().max(160).nullable().optional(),
   level: z.string().optional(),
   audioPath: z.string().optional(),
   audioFilename: z.string().optional(),

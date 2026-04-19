@@ -8,3 +8,6 @@ export * from "./schemas/translation.schema.js";
 export * from "./utils/string-utils.js";
 export * from "./utils/slug.js";
 export * from "./db/stories.schema.js";
+export * from "./db/auth.schema.js";
+export * from "./db/translation-cache.schema.js";
+export * from "./db/videos.schema.js";

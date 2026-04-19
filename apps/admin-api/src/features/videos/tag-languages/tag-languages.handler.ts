@@ -6,8 +6,8 @@ import { eq } from "drizzle-orm";
 import OpenAI from "openai";
 import type { VideoStatus } from "@real-spanish-stories/shared";
 import { TagLanguagesCommand } from "./tag-languages.command";
-import type { Video } from "../videos.schema";
-import { videosSchema } from "../videos.schema";
+import type { Video } from "@real-spanish-stories/shared";
+import { videosSchema } from "@real-spanish-stories/shared";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { tagLanguages } from "../language-tagging.utils";
 

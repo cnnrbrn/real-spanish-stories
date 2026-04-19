@@ -1,5 +1,5 @@
 import { Command } from "@nestjs/cqrs";
-import type { Video } from "../videos.schema";
+import type { Video } from "@real-spanish-stories/shared";
 
 export class ImportSubtitleCommand extends Command<Video> {
   constructor(

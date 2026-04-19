@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Query,
   Res,
 } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
@@ -12,7 +13,7 @@ import { GetStoriesQuery } from "./get-stories/get-stories.query";
 import { GetStoryQuery } from "./get-story/get-story.query";
 import { GetStoryAudioQuery } from "./get-story-audio/get-story-audio.query";
 import { GetStoryPdfQuery } from "./get-story-pdf/get-story-pdf.query";
-import { ThemeParamDto } from "./stories.dto";
+import { GetStoriesQueryDto, ThemeParamDto } from "./stories.dto";
 
 @Controller("stories")
 export class StoriesController {
@@ -20,8 +21,8 @@ export class StoriesController {
 
   @AllowAnonymous()
   @Get()
-  getStories() {
-    return this.queryBus.execute(new GetStoriesQuery());
+  getStories(@Query() { level }: GetStoriesQueryDto) {
+    return this.queryBus.execute(new GetStoriesQuery(level));
   }
 
   @AllowAnonymous()

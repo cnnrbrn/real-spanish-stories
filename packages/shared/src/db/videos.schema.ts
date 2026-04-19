@@ -7,7 +7,7 @@ import {
   uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
-import { VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
+import { VIDEO_STATUS_VALUES } from "../constants/video-status.js";
 
 export const videosSchema = pgTable("videos", {
   id: serial("id").primaryKey(),

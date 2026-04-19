@@ -15,6 +15,9 @@ export const Route = createFileRoute('/story/$slug')({
             ? `${loaderData.altTitle} | ${STORY_LEVELS.find((l) => l.value === loaderData.level)?.label ?? ''} | Real Spanish Stories`
             : 'Real Spanish Stories',
         },
+        ...(loaderData?.description
+          ? [{ name: 'description', content: loaderData.description }]
+          : []),
       ],
       links: [
         {
