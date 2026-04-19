@@ -1,15 +1,8 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { STORY_LEVEL_VALUES } from '@real-spanish-stories/shared'
-import type { StoryLevel } from '@real-spanish-stories/shared'
 import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
-import { LevelFilter } from '@/features/stories/components/level-filter'
-
-const searchSchema = z.object({
-  levels: z.array(z.enum(STORY_LEVEL_VALUES)).optional(),
-})
+import { LevelLinks } from '@/features/stories/components/level-links'
 
 const storiesQueryOptions = queryOptions({
   queryKey: ['stories'],
@@ -17,7 +10,6 @@ const storiesQueryOptions = queryOptions({
 })
 
 export const Route = createFileRoute('/')({
-  validateSearch: searchSchema,
   loader: ({ context: { queryClient } }) => {
     return queryClient.ensureQueryData(storiesQueryOptions)
   },
@@ -49,19 +41,6 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const { data: stories } = useSuspenseQuery(storiesQueryOptions)
-  const { levels } = Route.useSearch()
-  const navigate = useNavigate({ from: Route.fullPath })
-
-  const filteredStories =
-    !levels || levels.length === 0
-      ? stories
-      : stories.filter((s) => levels.includes(s.level))
-
-  function handleLevelChange(newLevels: StoryLevel[] | null) {
-    navigate({
-      search: (prev) => ({ ...prev, levels: newLevels ?? undefined }),
-    })
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
@@ -73,8 +52,8 @@ function HomePage() {
           Real historical stories from Latin America, adapted for four levels.
         </p>
       </div>
-      <LevelFilter selected={levels ?? null} onChange={handleLevelChange} />
-      <StoryList stories={filteredStories} />
+      <LevelLinks />
+      <StoryList stories={stories} />
     </div>
   )
 }
