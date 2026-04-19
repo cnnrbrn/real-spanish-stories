@@ -20,6 +20,7 @@ export const storySchema = z.object({
 export type StoryResponse = z.infer<typeof storySchema>;
 
 export const storyDetailSchema = storySchema.extend({
+  summary: z.string().nullable(),
   audioPath: z.string().nullable(),
   audioFilename: z.string().nullable(),
   pdfLightPath: z.string().nullable(),
@@ -34,6 +35,7 @@ export const storyUpdateSchema = storyDetailSchema.pick({
   altTitle: true,
   level: true,
   description: true,
+  summary: true,
   audioPath: true,
   audioFilename: true,
   videoLink: true,
@@ -41,6 +43,7 @@ export const storyUpdateSchema = storyDetailSchema.pick({
 }).partial().extend({
   transcription: z.string().optional(),
 });
+
 
 export type StoryUpdate = z.infer<typeof storyUpdateSchema>;
 

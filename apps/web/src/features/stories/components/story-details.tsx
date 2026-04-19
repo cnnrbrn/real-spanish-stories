@@ -158,6 +158,11 @@ export function StoryDetails({ story }: StoryDetailsProps) {
             )}
           </div>
         </div>
+        {story.summary && (
+          <div className="mb-6 prose prose-gray dark:prose-invert max-w-none text-lg">
+            <p>{story.summary}</p>
+          </div>
+        )}
         {!hintDismissed && (
           <div className="flex items-center justify-between gap-2 mb-4 px-3 py-2 rounded-lg bg-muted text-sm text-muted-foreground">
             <span>Select a Spanish word or phrase for a translation.</span>

@@ -14,6 +14,7 @@ import { UploadAudioToStoryHandler } from "./upload-audio-to-story/upload-audio-
 import { CreateStoryPdfsHandler } from "./create-story-pdfs/create-story-pdfs.handler";
 import { DeleteStoryPdfsHandler } from "./delete-story-pdfs/delete-story-pdfs.handler";
 import { GenerateDescriptionHandler } from "./generate-description/generate-description.handler";
+import { GenerateSummaryHandler } from "./generate-summary/generate-summary.handler";
 
 @Module({
   imports: [DatabaseModule, CqrsModule, StorageModule],
@@ -30,6 +31,7 @@ import { GenerateDescriptionHandler } from "./generate-description/generate-desc
     CreateStoryPdfsHandler,
     DeleteStoryPdfsHandler,
     GenerateDescriptionHandler,
+    GenerateSummaryHandler,
   ],
 })
 export class StoriesModule {}

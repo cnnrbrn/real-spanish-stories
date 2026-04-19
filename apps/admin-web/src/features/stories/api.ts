@@ -95,6 +95,17 @@ export async function deleteStoryPdfs(storyId: number): Promise<void> {
   }
 }
 
+export async function generateStorySummary(id: number): Promise<{ summary: string }> {
+  const res = await fetch(`${API_URL}/stories/${id}/generate-summary`, {
+    method: "POST",
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function generateStoryDescription(id: number): Promise<{ description: string }> {
   const res = await fetch(`${API_URL}/stories/${id}/generate-description`, {
     method: "POST",

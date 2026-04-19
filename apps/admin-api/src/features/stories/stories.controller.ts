@@ -29,6 +29,7 @@ import { UploadAudioToStoryCommand } from "./upload-audio-to-story/upload-audio-
 import { CreateStoryPdfsCommand } from "./create-story-pdfs/create-story-pdfs.command";
 import { DeleteStoryPdfsCommand } from "./delete-story-pdfs/delete-story-pdfs.command";
 import { GenerateDescriptionCommand } from "./generate-description/generate-description.command";
+import { GenerateSummaryCommand } from "./generate-summary/generate-summary.command";
 import { UpdateStoryDto, UpdateStoryStatusDto } from "./stories.dto";
 
 @Controller("stories")
@@ -93,6 +94,11 @@ export class StoriesController {
   @Post(":id/generate-description")
   generateDescription(@Param("id", ParseIntPipe) id: number) {
     return this.commandBus.execute(new GenerateDescriptionCommand(id));
+  }
+
+  @Post(":id/generate-summary")
+  generateSummary(@Param("id", ParseIntPipe) id: number) {
+    return this.commandBus.execute(new GenerateSummaryCommand(id));
   }
 
   @Post(":id/create-pdfs")

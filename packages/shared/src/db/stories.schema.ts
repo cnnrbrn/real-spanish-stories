@@ -4,6 +4,7 @@ import {
   jsonb,
   pgTable,
   serial,
+  text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -15,6 +16,7 @@ export const storiesSchema = pgTable("stories", {
   title: varchar("title", { length: 200 }).notNull(),
   altTitle: varchar("alt_title", { length: 200 }).notNull(),
   description: varchar("description", { length: 160 }),
+  summary: text("summary"),
   level: varchar("level", { length: 50 }),
   status: varchar("status", { length: 50 }).notNull().default("draft"),
   audioPath: varchar("audio_path", { length: 500 }),
