@@ -1,0 +1,1 @@
+CREATE INDEX "stories_alt_title_idx" ON "stories" USING btree ("alt_title");

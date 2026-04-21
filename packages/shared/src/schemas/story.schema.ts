@@ -26,6 +26,7 @@ export const storyDetailSchema = storySchema.extend({
   pdfLightPath: z.string().nullable(),
   pdfDarkPath: z.string().nullable(),
   transcription: transcriptionSchema,
+  siblings: z.array(storySchema),
 });
 
 export type StoryDetail = z.infer<typeof storyDetailSchema>;

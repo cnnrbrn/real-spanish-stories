@@ -1,16 +1,10 @@
 import { Link } from '@tanstack/react-router'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
+import { levelColorClasses } from '../utils/level-colors'
 import type { StoryLevel } from '@real-spanish-stories/shared'
 
 interface LevelLinksProps {
   activeLevel?: StoryLevel
-}
-
-const levelConfig: Record<StoryLevel, string> = {
-  'just-starting': 'bg-level-just-starting text-level-foreground',
-  beginner: 'bg-level-beginner text-level-foreground',
-  intermediate: 'bg-level-intermediate text-level-foreground',
-  advanced: 'bg-level-advanced text-level-foreground',
 }
 
 const baseClasses =
@@ -41,7 +35,7 @@ export function LevelLinks({ activeLevel }: LevelLinksProps) {
         return isActive ? (
           <span
             key={value}
-            className={`${baseClasses} ${levelConfig[value]} ${ringClasses}`}
+            className={`${baseClasses} ${levelColorClasses[value]} ${ringClasses}`}
           >
             {label}
           </span>
@@ -50,7 +44,7 @@ export function LevelLinks({ activeLevel }: LevelLinksProps) {
             key={value}
             to="/stories/$levelSlug"
             params={{ levelSlug: urlSlug }}
-            className={`${baseClasses} ${levelConfig[value]}`}
+            className={`${baseClasses} ${levelColorClasses[value]}`}
           >
             {label}
           </Link>

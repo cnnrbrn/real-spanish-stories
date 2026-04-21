@@ -15,10 +15,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "db:generate": "node --require tsx/cjs node_modules/drizzle-kit/bin.cjs generate",
-    "db:migrate": "node --require tsx/cjs node_modules/drizzle-kit/bin.cjs migrate",
-    "db:push": "node --require tsx/cjs node_modules/drizzle-kit/bin.cjs push",
-    "db:studio": "node --require tsx/cjs node_modules/drizzle-kit/bin.cjs studio"
+    "db:generate": "node --env-file=../../.env --require tsx/cjs node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "node --env-file=../../.env --require tsx/cjs node_modules/drizzle-kit/bin.cjs migrate",
+    "db:push": "node --env-file=../../.env --require tsx/cjs node_modules/drizzle-kit/bin.cjs push",
+    "db:studio": "node --env-file=../../.env --require tsx/cjs node_modules/drizzle-kit/bin.cjs studio"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.1",

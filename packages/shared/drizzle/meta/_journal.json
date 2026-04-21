@@ -15,6 +15,13 @@
       "when": 1776615575592,
       "tag": "0002_rare_roxanne_simpson",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776782212725,
+      "tag": "0003_high_guardsmen",
+      "breakpoints": true
     }
   ]
 }

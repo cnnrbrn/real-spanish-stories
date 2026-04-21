@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -29,6 +30,8 @@ export const storiesSchema = pgTable("stories", {
   isPremium: boolean("is_premium").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("stories_alt_title_idx").on(table.altTitle),
+]);
 
 export type Story = typeof storiesSchema.$inferSelect;

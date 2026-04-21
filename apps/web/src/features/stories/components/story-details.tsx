@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { PanelRightClose, PanelRightOpen, X, Download } from 'lucide-react'
+import { Download, PanelRightClose, PanelRightOpen, X } from 'lucide-react'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
+import { translatePhrase } from '../api'
+import { createStoryTitle } from '../utils/story'
+import { LevelBadge } from './level-badge'
+import { LevelProgressionPanel } from './level-progression-panel'
+import { TranscriptDisplay } from './transcript-display'
+import { VideoPlayer } from './video-player'
+import { WordExplanationPanel } from './word-explanation-panel'
+import type { VideoPlayerHandle } from './video-player'
 import type {
-  Story,
   StoryDetail,
   TranscriptionWord,
   TranslationResponse,
 } from '@real-spanish-stories/shared'
-import { translatePhrase } from '../api'
-import { createStoryTitle } from '../utils/story'
-import { VideoPlayer } from './video-player'
-import { LevelBadge } from './level-badge'
-import { TranscriptDisplay } from './transcript-display'
-import { WordExplanationPanel } from './word-explanation-panel'
-import type { VideoPlayerHandle } from './video-player'
 import { usePreferencesStore } from '@/stores/preferences'
 
 interface StoryDetailsProps {
@@ -98,32 +98,33 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-6">
+    <div className="max-w-7xl mx-auto p-4">
+      {(() => {
+        const level = STORY_LEVELS.find((l) => l.value === story.level)
+        return (
+          <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+            {level && (
+              <>
+                <span>/</span>
+                <Link
+                  to="/stories/$levelSlug"
+                  params={{ levelSlug: level.urlSlug }}
+                  className="hover:text-foreground transition-colors"
+                >
+                  {level.label} Spanish Stories
+                </Link>
+              </>
+            )}
+            <span>/</span>
+            <span className="text-foreground">{story.altTitle || story.title}</span>
+          </nav>
+        )
+      })()}
+      <div className="flex flex-col md:flex-row gap-6">
       <div
         className={`flex-1 min-w-0${!sidebarOpen ? ' max-w-5xl mx-auto' : ''}`}
       >
-        {(() => {
-          const level = STORY_LEVELS.find((l) => l.value === story.level)
-          return (
-            <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-              {level && (
-                <>
-                  <span>/</span>
-                  <Link
-                    to="/stories/$levelSlug"
-                    params={{ levelSlug: level.urlSlug }}
-                    className="hover:text-foreground transition-colors"
-                  >
-                    {level.label} Spanish Stories
-                  </Link>
-                </>
-              )}
-              <span>/</span>
-              <span className="text-foreground">{story.altTitle || story.title}</span>
-            </nav>
-          )
-        })()}
         {story.videoLink && (
           <div className="mb-6 aspect-video bg-black">
             <VideoPlayer
@@ -231,7 +232,14 @@ export function StoryDetails({ story }: StoryDetailsProps) {
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="px-4 pb-4 md:p-0">
+        <div className="px-4 pb-4 md:p-0 space-y-4">
+          <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+            <LevelProgressionPanel
+              currentLevel={story.level}
+              levels={story.siblings}
+              altTitle={story.altTitle}
+            />
+          </div>
           <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
             <WordExplanationPanel
               phrase={selectedPhrase}
@@ -243,6 +251,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
           </div>
         </div>
       </aside>
+      </div>
     </div>
   )
 }
