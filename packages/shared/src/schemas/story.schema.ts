@@ -51,3 +51,16 @@ export type StoryUpdate = z.infer<typeof storyUpdateSchema>;
 export interface StoryStatusUpdate {
   status: "draft" | "published";
 }
+
+export const storyLevelLinkSchema = z.object({
+  level: z.enum(STORY_LEVEL_VALUES),
+  slug: z.string(),
+  videoLink: z.string().nullable(),
+});
+
+export const storyGroupSchema = z.object({
+  altTitle: z.string(),
+  levels: z.array(storyLevelLinkSchema),
+});
+
+export type StoryGroup = z.infer<typeof storyGroupSchema>;

@@ -37,6 +37,13 @@ export default function Header() {
               Home
             </Link>
             <Link
+              to="/series"
+              className="font-medium text-foreground hover:text-primary transition-colors"
+              activeProps={{ className: 'font-medium text-primary underline underline-offset-4 transition-colors' }}
+            >
+              Series
+            </Link>
+            <Link
               to="/how-it-works"
               className="font-medium text-foreground hover:text-primary transition-colors"
               activeProps={{ className: 'font-medium text-primary underline underline-offset-4 transition-colors' }}

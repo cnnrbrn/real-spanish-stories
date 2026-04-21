@@ -1,11 +1,13 @@
 import {
   storyDetailSchema,
+  storyGroupSchema,
   storySchema,
   translationResponseSchema,
 } from '@real-spanish-stories/shared'
 import z from 'zod'
 import type {
   StoryDetail,
+  StoryGroup,
   StoryLevel,
   StoryResponse,
   TranslationResponse,
@@ -39,6 +41,14 @@ export const getStories = async (levels?: StoryLevel[]): Promise<StoryResponse[]
     throw new Error(`Failed to fetch stories: ${response.statusText}`)
   }
   return z.array(storySchema).parse(await response.json())
+}
+
+export const getStoriesGrouped = async (): Promise<StoryGroup[]> => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}stories/grouped`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch grouped stories: ${response.statusText}`)
+  }
+  return z.array(storyGroupSchema).parse(await response.json())
 }
 
 export const getStoryBySlug = async (slug: string): Promise<StoryDetail> => {

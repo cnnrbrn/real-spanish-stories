@@ -10,6 +10,7 @@ import { QueryBus } from "@nestjs/cqrs";
 import { Response } from "express";
 import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
 import { GetStoriesQuery } from "./get-stories/get-stories.query";
+import { GetStoriesGroupedQuery } from "./get-stories-grouped/get-stories-grouped.query";
 import { GetStoryQuery } from "./get-story/get-story.query";
 import { GetStoryAudioQuery } from "./get-story-audio/get-story-audio.query";
 import { GetStoryPdfQuery } from "./get-story-pdf/get-story-pdf.query";
@@ -23,6 +24,12 @@ export class StoriesController {
   @Get()
   getStories(@Query() { level }: GetStoriesQueryDto) {
     return this.queryBus.execute(new GetStoriesQuery(level));
+  }
+
+  @AllowAnonymous()
+  @Get("grouped")
+  getStoriesGrouped() {
+    return this.queryBus.execute(new GetStoriesGroupedQuery());
   }
 
   @AllowAnonymous()
