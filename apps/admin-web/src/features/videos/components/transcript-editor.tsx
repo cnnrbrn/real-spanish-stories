@@ -214,6 +214,13 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
           ))}
         </div>
       </div>
+
+      <div>
+        <label className="text-sm font-medium">Plain Text</label>
+        <p className="mt-2 rounded-md border bg-white p-4 text-base leading-relaxed whitespace-pre-wrap">
+          {words.map((w) => w.word).join(' ')}
+        </p>
+      </div>
     </div>
   )
 }

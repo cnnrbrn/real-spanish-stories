@@ -102,22 +102,22 @@ export function StoryDetails({ story }: StoryDetailsProps) {
       {(() => {
         const level = STORY_LEVELS.find((l) => l.value === story.level)
         return (
-          <nav className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+          <nav className="mb-4 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-foreground transition-colors shrink-0">Home</Link>
             {level && (
               <>
-                <span>/</span>
+                <span className="shrink-0">/</span>
                 <Link
                   to="/stories/$levelSlug"
                   params={{ levelSlug: level.urlSlug }}
-                  className="hover:text-foreground transition-colors"
+                  className="hover:text-foreground transition-colors shrink-0"
                 >
                   {level.label} Spanish Stories
                 </Link>
               </>
             )}
-            <span>/</span>
-            <span className="text-foreground">{story.altTitle || story.title}</span>
+            <span className="shrink-0">/</span>
+            <span className="text-foreground min-w-0 truncate">{story.altTitle || story.title}</span>
           </nav>
         )
       })()}

@@ -896,9 +896,9 @@ class VideoGenerationService:
             return img
 
         available_width = self.config.width - (2 * self.config.text_margin)
-        line_font = font
-        italic_font = self._get_italic_font(self.config.content_font_size)
-        line_font_size = self.config.content_font_size
+        line_font_size = 80 if len(words) > 31 else self.config.content_font_size
+        line_font = self._get_font(line_font_size)
+        italic_font = self._get_italic_font(line_font_size)
         sw = line_font.getbbox(" ")[2]
 
         # Word-wrap each logical line into display rows so long sentences don't overflow.
