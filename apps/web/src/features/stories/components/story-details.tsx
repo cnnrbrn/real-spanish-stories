@@ -184,8 +184,8 @@ export function StoryDetails({ story }: StoryDetailsProps) {
           </div>
         </div>
         {story.summary && (
-          <div className="mb-6 prose prose-gray dark:prose-invert max-w-none text-lg">
-            <p>{story.summary}</p>
+          <div className="story-summary mb-6 max-w-none text-lg">
+            <div dangerouslySetInnerHTML={{ __html: story.summary }} />
           </div>
         )}
         {!hintDismissed && (

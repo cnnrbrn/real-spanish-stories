@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
@@ -222,12 +223,9 @@ export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
                     </Button>
                   </div>
                   <FormControl>
-                    <Textarea
-                      {...field}
+                    <RichTextEditor
                       value={field.value ?? ""}
-                      placeholder="A beginner-level story about..."
-                      className="resize-none"
-                      rows={4}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />

@@ -138,6 +138,26 @@ body {
   --color-level-advanced: var(--level-advanced);
 }
 
+@layer components {
+  .story-summary p {
+    margin-bottom: 0.75em;
+  }
+  .story-summary p:last-child {
+    margin-bottom: 0;
+  }
+  .story-summary ul,
+  .story-summary ol {
+    padding-left: 1.5em;
+    margin-bottom: 0.75em;
+  }
+  .story-summary ul {
+    list-style-type: disc;
+  }
+  .story-summary ol {
+    list-style-type: decimal;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
