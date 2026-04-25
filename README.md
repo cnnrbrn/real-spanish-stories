@@ -1,8 +1,10 @@
-# Real Spanish Stories (in progress)
+# Real Spanish Stories
+
+![Real Spanish Stories](screenshot.png)
 
 A platform for learning Spanish through real historical stories with video content, translations and progress tracking, with an emphasis on learning verbs.
 
-**Live (in development)**: [realspanishstories.com](https://realspanishstories.com)
+**Live link**: [realspanishstories.com](https://realspanishstories.com)
 
 ## Monorepo Structure
 

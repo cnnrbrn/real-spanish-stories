@@ -58,7 +58,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
                 const result = await resend.emails.send({
                   from: configService.getOrThrow("RESEND_FROM_EMAIL"),
                   to: user.email,
-                  subject: "Verify your email – Real Spanish Stories",
+                  subject: "Verify your email for Real Spanish Stories",
                   html: `<p>Click the link below to verify your email:</p><p><a href="${url}">${url}</a></p>`,
                 });
                 console.log("[resend]", result);

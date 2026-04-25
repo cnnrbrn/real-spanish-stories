@@ -9,11 +9,6 @@ async function bootstrap() {
     bodyParser: false,
   });
 
-  // Health check on / for Lightsail (bypasses NestJS global prefix)
-  // app.getHttpAdapter().get("/", (_req: any, res: any) => {
-  //   res.json({ status: "ok" });
-  // });
-
   const configService = app.get(ConfigService);
   const corsOrigins = configService
     .getOrThrow<string>("CORS_ORIGIN")
