@@ -51,10 +51,15 @@ export class DetectSectionsHandler
       );
     }
 
-    // Set status to sectioning
+    // Set status to sectioning and persist the flags so the next visit reflects them
     await this.database
       .update(videosSchema)
-      .set({ status: "sectioning", updatedAt: new Date() })
+      .set({
+        status: "sectioning",
+        useSpanishHeadings: command.useSpanishHeadings,
+        skipEnglishTitle: command.skipEnglishTitle,
+        updatedAt: new Date(),
+      })
       .where(eq(videosSchema.id, command.videoId));
 
     try {
@@ -62,8 +67,9 @@ export class DetectSectionsHandler
         video.transcriptionJson,
         video.title,
         video.altTitle,
-        video.useSpanishHeadings,
+        command.useSpanishHeadings,
         video.level,
+        command.skipEnglishTitle,
       );
 
       const [updated] = await this.database

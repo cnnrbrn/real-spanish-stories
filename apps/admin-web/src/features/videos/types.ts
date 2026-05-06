@@ -18,8 +18,12 @@ export interface Video {
   level: string | null
   status: VideoStatus
   useSpanishHeadings: boolean
+  skipEnglishTitle: boolean
+  skipVerbs: boolean
+  subjunctiveVerbCount: number
   audioPath: string | null
   audioFilename: string | null
+  videoPath: string | null
   transcriptionJson: string | null
   sectionsJson: string | null
   languageTaggedJson: string | null
@@ -27,6 +31,26 @@ export interface Video {
   errorMessage: string | null
   createdAt: string
   updatedAt: string
+}
+
+export interface VideoListItem {
+  id: number
+  title: string
+  altTitle: string
+  level: string | null
+  status: VideoStatus
+  useSpanishHeadings: boolean
+  skipEnglishTitle: boolean
+  audioPath: string | null
+  audioFilename: string | null
+  videoPath: string | null
+  errorMessage: string | null
+  createdAt: string
+  updatedAt: string
+  hasTranscriptionJson: boolean
+  hasSectionsJson: boolean
+  hasLanguageTaggedJson: boolean
+  hasTranscriptionMarkdown: boolean
 }
 
 export interface VideoCreate {
@@ -40,7 +64,6 @@ export interface VideoUpdate {
   altTitle?: string
   level?: string
   status?: VideoStatus
-  useSpanishHeadings?: boolean
   transcriptionJson?: string
   sectionsJson?: string
   languageTaggedJson?: string

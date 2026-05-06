@@ -1,7 +1,27 @@
 import { Query } from "@nestjs/cqrs";
-import type { Video } from "@real-spanish-stories/shared";
+import type { VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
 
-export class GetVideosQuery extends Query<Video[]> {
+export interface VideoListItem {
+  id: number;
+  title: string;
+  altTitle: string;
+  status: (typeof VIDEO_STATUS_VALUES)[number];
+  level: string | null;
+  useSpanishHeadings: boolean;
+  skipEnglishTitle: boolean;
+  audioPath: string | null;
+  audioFilename: string | null;
+  videoPath: string | null;
+  errorMessage: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  hasTranscriptionJson: boolean;
+  hasSectionsJson: boolean;
+  hasLanguageTaggedJson: boolean;
+  hasTranscriptionMarkdown: boolean;
+}
+
+export class GetVideosQuery extends Query<VideoListItem[]> {
   constructor() {
     super();
   }

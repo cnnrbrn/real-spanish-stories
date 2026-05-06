@@ -14,7 +14,6 @@ export interface TranscriptionJobData {
   videoId: number;
   audioPath: string;
   transcriptionOption: string;
-  useSpanishHeadings: boolean;
   fixTimestamps: boolean;
 }
 

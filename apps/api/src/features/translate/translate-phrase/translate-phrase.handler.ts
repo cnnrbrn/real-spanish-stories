@@ -40,7 +40,7 @@ export class TranslatePhraseHandler implements ICommandHandler<TranslatePhraseCo
     }
 
     const [story] = await this.db
-      .select()
+      .select({ transcription: storiesSchema.transcription })
       .from(storiesSchema)
       .where(eq(storiesSchema.id, storyId))
       .limit(1);

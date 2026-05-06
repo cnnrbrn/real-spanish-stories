@@ -1,0 +1,1 @@
+ALTER TABLE "videos" ADD COLUMN "subjunctive_verb_count" integer DEFAULT 2 NOT NULL;

@@ -53,7 +53,6 @@ export class UploadAudioHandler
         .set({
           audioPath: key,
           audioFilename: command.file.originalname,
-          useSpanishHeadings: command.useSpanishHeadings,
           status: "transcribing",
           errorMessage: null,
           transcriptionJson: null,
@@ -71,7 +70,6 @@ export class UploadAudioHandler
           videoId: command.videoId,
           audioPath: key,
           transcriptionOption: command.transcriptionOption,
-          useSpanishHeadings: command.useSpanishHeadings,
           fixTimestamps: command.fixTimestamps,
         });
       } else {
@@ -79,7 +77,6 @@ export class UploadAudioHandler
           videoId: command.videoId,
           audioPath: key,
           transcriptionOption: command.transcriptionOption,
-          useSpanishHeadings: command.useSpanishHeadings,
           fixTimestamps: command.fixTimestamps,
         });
       }

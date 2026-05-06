@@ -17,18 +17,5 @@ function SectionsPage() {
 
   const { data: video } = useSuspenseQuery(videoQueryOptions(videoId))
 
-  if (!video.sectionsJson) {
-    return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Sections: {video.title}</h1>
-        <div className="rounded-lg border border-yellow-600 bg-yellow-50 p-4">
-          <p className="text-sm font-medium text-yellow-900">
-            No sections detected yet. Go to the transcript editor and click "Detect Sections".
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return <SectionsEditor video={video} />
 }

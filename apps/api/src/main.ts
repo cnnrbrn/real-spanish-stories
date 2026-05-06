@@ -23,7 +23,7 @@ async function bootstrap() {
     .build();
   const rawDocument = SwaggerModule.createDocument(app, config);
   const document = cleanupOpenApiDoc(rawDocument);
-  SwaggerModule.setup("docs", app, document);
+  SwaggerModule.setup("v1/docs", app, document);
 
   await app.listen(3001);
   console.log("API running on http://localhost:3001");

@@ -20,7 +20,7 @@ function TranscriptPage() {
   if (!video.transcriptionJson) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Transcript: {video.title}</h1>
+        <h1 className="text-2xl font-bold">Transcript: {video.title}{video.level ? ` (${video.level})` : ''}</h1>
         <div className="rounded-lg border border-red-600 bg-red-50 p-4">
           <p className="text-sm font-medium text-red-900">
             No transcription data available

@@ -40,6 +40,7 @@ export class CreateVideoHandler implements ICommandHandler<CreateVideoCommand> {
         level: command.level,
         status: "draft",
         useSpanishHeadings: false,
+        skipEnglishTitle: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       })

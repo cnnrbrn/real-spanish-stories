@@ -18,7 +18,7 @@ import { ImportSubtitleCommand } from "./import-subtitle/import-subtitle.command
 import { DetectSectionsCommand } from "./detect-sections/detect-sections.command";
 import { TagLanguagesCommand } from "./tag-languages/tag-languages.command";
 import { GenerateVideoCommand } from "./generate-video/generate-video.command";
-import { CreateVideoDto, UpdateVideoDto } from "./videos.dto";
+import { CreateVideoDto, DetectSectionsDto, UpdateVideoDto } from "./videos.dto";
 
 @Controller("videos")
 export class VideosController {
@@ -85,8 +85,17 @@ export class VideosController {
   }
 
   @Post(":id/detect-sections")
-  detectSections(@Param("id", ParseIntPipe) id: number) {
-    return this.commandBus.execute(new DetectSectionsCommand(id));
+  detectSections(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: DetectSectionsDto,
+  ) {
+    return this.commandBus.execute(
+      new DetectSectionsCommand(
+        id,
+        dto.useSpanishHeadings,
+        dto.skipEnglishTitle,
+      ),
+    );
   }
 
   @Post(":id/tag-languages")
@@ -108,11 +117,10 @@ export class VideosController {
     @Param("id", ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
     @Query("transcriptionOption") transcriptionOption: string,
-    @Query("useSpanishHeadings", ParseBoolPipe) useSpanishHeadings: boolean,
     @Query("fixTimestamps", ParseBoolPipe) fixTimestamps: boolean,
   ) {
     return this.commandBus.execute(
-      new UploadAudioCommand(id, file, transcriptionOption, useSpanishHeadings, fixTimestamps),
+      new UploadAudioCommand(id, file, transcriptionOption, fixTimestamps),
     );
   }
 }

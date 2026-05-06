@@ -13,7 +13,6 @@ const updateVideoSchema = z.object({
   altTitle: z.string().min(1).max(200).optional(),
   level: z.string().optional(),
   status: z.enum(VIDEO_STATUS_VALUES).optional(),
-  useSpanishHeadings: z.boolean().optional(),
   transcriptionJson: z.string().optional(),
   sectionsJson: z.string().optional(),
   languageTaggedJson: z.string().optional(),
@@ -22,5 +21,11 @@ const updateVideoSchema = z.object({
   errorMessage: z.string().optional(),
 });
 
+const detectSectionsSchema = z.object({
+  useSpanishHeadings: z.boolean(),
+  skipEnglishTitle: z.boolean(),
+});
+
 export class CreateVideoDto extends createZodDto(createVideoSchema) {}
 export class UpdateVideoDto extends createZodDto(updateVideoSchema) {}
+export class DetectSectionsDto extends createZodDto(detectSectionsSchema) {}

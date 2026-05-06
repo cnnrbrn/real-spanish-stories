@@ -33,6 +33,41 @@ function stripPunctuation(s: string): string {
   return s.replace(/[.,!?;:]/g, "");
 }
 
+interface HeaderMatch {
+  idx: number;
+  phrase: string;
+  phraseLen: number;
+}
+
+function findHeaderWithFallback(
+  words: Word[],
+  preferred: string,
+  fallback: string,
+  startIndex: number,
+): HeaderMatch {
+  const preferredIdx = findPhraseIndex(words, preferred, startIndex);
+  if (preferredIdx >= 0) {
+    return {
+      idx: preferredIdx,
+      phrase: preferred,
+      phraseLen: preferred.split(/\s+/).length,
+    };
+  }
+  const fallbackIdx = findPhraseIndex(words, fallback, startIndex);
+  if (fallbackIdx >= 0) {
+    return {
+      idx: fallbackIdx,
+      phrase: fallback,
+      phraseLen: fallback.split(/\s+/).length,
+    };
+  }
+  return {
+    idx: -1,
+    phrase: preferred,
+    phraseLen: preferred.split(/\s+/).length,
+  };
+}
+
 export function findPhraseIndex(
   words: Word[],
   phrase: string,
@@ -65,16 +100,26 @@ export function detectSections(
   altTitle: string | null,
   useSpanishHeadings: boolean = false,
   level: string | null = null,
+  skipEnglishTitle: boolean = false,
 ): SectionsJson {
-  const vocabPhrase = useSpanishHeadings
+  const vocabPreferred = useSpanishHeadings
     ? VOCABULARY_HEADER_PHRASE_ES
     : VOCABULARY_HEADER_PHRASE;
-  const verbsPhrase = useSpanishHeadings
+  const vocabFallback = useSpanishHeadings
+    ? VOCABULARY_HEADER_PHRASE
+    : VOCABULARY_HEADER_PHRASE_ES;
+  const verbsPreferred = useSpanishHeadings
     ? VERBS_HEADER_PHRASE_ES
     : VERBS_HEADER_PHRASE;
-  const storyPhrase = useSpanishHeadings
+  const verbsFallback = useSpanishHeadings
+    ? VERBS_HEADER_PHRASE
+    : VERBS_HEADER_PHRASE_ES;
+  const storyPreferred = useSpanishHeadings
     ? STORY_HEADER_PHRASE_ES
     : STORY_HEADER_PHRASE;
+  const storyFallback = useSpanishHeadings
+    ? STORY_HEADER_PHRASE
+    : STORY_HEADER_PHRASE_ES;
 
   const transcription = JSON.parse(transcriptionJson);
   const rawWords: { word: string; start: number; end: number }[] =
@@ -106,97 +151,22 @@ export function detectSections(
     currentIndex += titleWordCount;
   }
 
-  // Advanced videos: title_spanish + subjunctive_verbs_header + subjunctive_verbs + story_header + story
+  // Advanced videos: title_spanish + story only
   if (level === "advanced") {
-    const storyIdx = findPhraseIndex(words, STORY_HEADER_PHRASE_ES, currentIndex);
-
-    if (storyIdx >= 0) {
-      const subjunctiveWords = words.slice(currentIndex, storyIdx);
-
-      // Split off the spoken header ("En esta historia vamos a incorporar … en modo subjuntivo")
-      // from the actual verb content. The header is displayed as a static title; its spoken
-      // words don't need to appear in subjunctive_verbs.
-      const HEADER_END_PHRASE = "en modo subjuntivo";
-      const headerPhraseLen = HEADER_END_PHRASE.split(/\s+/).length;
-      const headerEndIdx = findPhraseIndex(subjunctiveWords, HEADER_END_PHRASE, 0);
-      const verbStartIdx = headerEndIdx >= 0 ? headerEndIdx + headerPhraseLen : 0;
-      const headerWords = subjunctiveWords.slice(0, verbStartIdx);
-      const verbWords = subjunctiveWords.slice(verbStartIdx);
-
+    const storyWords = words.slice(currentIndex);
+    if (storyWords.length > 0) {
       sections.push({
-        type: "subjunctive_verbs_header",
-        text: "En esta historia vamos a incorporar 2 verbos en modo subjuntivo.",
-        start_time: headerWords.length > 0 ? headerWords[0].start : 0,
-        end_time: headerWords.length > 0 ? headerWords[headerWords.length - 1].end : 0,
-        words: headerWords,
+        type: "story",
+        start_time: storyWords[0].start,
+        end_time: storyWords[storyWords.length - 1].end,
+        words: storyWords,
       });
-
-      if (verbWords.length > 0) {
-        // Mark lineBreaks to split each verb into 2 screens.
-        // inScreen2 tracks state: Screen 1 ends on ")" word, Screen 2 ends on the
-        // word before the next verb's "(" word. Using a stateful loop avoids
-        // wrongly marking the EN verb word that precedes the grammar note's own "(".
-        const markedWords: (Word & { lineBreak?: boolean })[] = [];
-        let inScreen2 = false;
-        for (let idx = 0; idx < verbWords.length; idx++) {
-          const w = verbWords[idx];
-          const nextWord = verbWords[idx + 1];
-          if (!inScreen2 && w.word.includes(")")) {
-            markedWords.push({ ...w, lineBreak: true });
-            inScreen2 = true;
-          } else if (inScreen2 && nextWord && nextWord.word.includes("(")) {
-            markedWords.push({ ...w, lineBreak: true });
-            inScreen2 = false;
-          } else {
-            markedWords.push(w);
-          }
-        }
-        sections.push({
-          type: "subjunctive_verbs",
-          start_time: markedWords[0].start,
-          end_time: markedWords[markedWords.length - 1].end,
-          words: markedWords,
-        });
-      }
-
-      const storyPhraseLen = STORY_HEADER_PHRASE_ES.split(/\s+/).length;
-      const storyHeaderWords = words.slice(storyIdx, storyIdx + storyPhraseLen);
-      sections.push({
-        type: "story_header",
-        static: true,
-        text: STORY_HEADER_PHRASE_ES,
-        start_time: storyHeaderWords[0].start,
-        end_time: storyHeaderWords[storyHeaderWords.length - 1].end,
-        words: storyHeaderWords,
-      });
-
-      const storyWords = words.slice(storyIdx + storyPhraseLen);
-      if (storyWords.length > 0) {
-        sections.push({
-          type: "story",
-          start_time: storyWords[0].start,
-          end_time: storyWords[storyWords.length - 1].end,
-          words: storyWords,
-        });
-      }
-    } else {
-      // Fallback: no story marker found
-      const storyWords = words.slice(currentIndex);
-      if (storyWords.length > 0) {
-        sections.push({
-          type: "story",
-          start_time: storyWords[0].start,
-          end_time: storyWords[storyWords.length - 1].end,
-          words: storyWords,
-        });
-      }
     }
-
     return { sections };
   }
 
   // 2. Extract title_english (based on word count in alt_title)
-  if (altTitle) {
+  if (!skipEnglishTitle && altTitle) {
     const altTitleWordCount = altTitle.split(/\s+/).length;
     if (currentIndex + altTitleWordCount <= words.length) {
       const altTitleWords = words.slice(
@@ -213,18 +183,30 @@ export function detectSections(
     }
   }
 
-  // Find marker phrase indices
-  const vocabHeaderIdx = findPhraseIndex(words, vocabPhrase, currentIndex);
-  const verbsHeaderIdx = findPhraseIndex(
+  // Find marker phrase indices, with per-header language fallback so audio
+  // that mixes Spanish and English headers (e.g. Spanish vocab/verbs but
+  // English "Now, the story") still gets fully sectioned.
+  const vocabMatch = findHeaderWithFallback(
     words,
-    verbsPhrase,
+    vocabPreferred,
+    vocabFallback,
+    currentIndex,
+  );
+  const vocabHeaderIdx = vocabMatch.idx;
+  const verbsMatch = findHeaderWithFallback(
+    words,
+    verbsPreferred,
+    verbsFallback,
     vocabHeaderIdx >= 0 ? vocabHeaderIdx + 1 : currentIndex,
   );
-  const storyHeaderIdx = findPhraseIndex(
+  const verbsHeaderIdx = verbsMatch.idx;
+  const storyMatch = findHeaderWithFallback(
     words,
-    storyPhrase,
+    storyPreferred,
+    storyFallback,
     verbsHeaderIdx >= 0 ? verbsHeaderIdx + 1 : currentIndex,
   );
+  const storyHeaderIdx = storyMatch.idx;
   // 3. Extract summary (between title_english and vocabulary_header)
   if (vocabHeaderIdx > currentIndex) {
     const summaryWords = words.slice(currentIndex, vocabHeaderIdx);
@@ -240,20 +222,19 @@ export function detectSections(
 
   // 4. Add vocabulary_header (static)
   if (vocabHeaderIdx >= 0) {
-    const vocabPhraseLen = vocabPhrase.split(/\s+/).length;
     const vocabHeaderWords = words.slice(
       vocabHeaderIdx,
-      vocabHeaderIdx + vocabPhraseLen,
+      vocabHeaderIdx + vocabMatch.phraseLen,
     );
     sections.push({
       type: "vocabulary_header",
       static: true,
-      text: vocabPhrase,
+      text: vocabMatch.phrase,
       start_time: vocabHeaderWords[0].start,
       end_time: vocabHeaderWords[vocabHeaderWords.length - 1].end,
       words: vocabHeaderWords,
     });
-    const vocabContentStart = vocabHeaderIdx + vocabPhraseLen;
+    const vocabContentStart = vocabHeaderIdx + vocabMatch.phraseLen;
 
     // 5. Extract vocabulary (between vocabulary_header and verbs_header)
     const vocabContentEnd =
@@ -273,20 +254,19 @@ export function detectSections(
 
   // 6. Add verbs_header (static)
   if (verbsHeaderIdx >= 0) {
-    const verbsPhraseLen = verbsPhrase.split(/\s+/).length;
     const verbsHeaderWords = words.slice(
       verbsHeaderIdx,
-      verbsHeaderIdx + verbsPhraseLen,
+      verbsHeaderIdx + verbsMatch.phraseLen,
     );
     sections.push({
       type: "verbs_header",
       static: true,
-      text: verbsPhrase,
+      text: verbsMatch.phrase,
       start_time: verbsHeaderWords[0].start,
       end_time: verbsHeaderWords[verbsHeaderWords.length - 1].end,
       words: verbsHeaderWords,
     });
-    const verbsContentStart = verbsHeaderIdx + verbsPhraseLen;
+    const verbsContentStart = verbsHeaderIdx + verbsMatch.phraseLen;
 
     // 7. Extract verbs (between verbs_header and story_header)
     const verbsContentEnd =
@@ -306,20 +286,19 @@ export function detectSections(
 
   // 8. Add story_header (static)
   if (storyHeaderIdx >= 0) {
-    const storyPhraseLen = storyPhrase.split(/\s+/).length;
     const storyHeaderWords = words.slice(
       storyHeaderIdx,
-      storyHeaderIdx + storyPhraseLen,
+      storyHeaderIdx + storyMatch.phraseLen,
     );
     sections.push({
       type: "story_header",
       static: true,
-      text: storyPhrase,
+      text: storyMatch.phrase,
       start_time: storyHeaderWords[0].start,
       end_time: storyHeaderWords[storyHeaderWords.length - 1].end,
       words: storyHeaderWords,
     });
-    const storyContentStart = storyHeaderIdx + storyPhraseLen;
+    const storyContentStart = storyHeaderIdx + storyMatch.phraseLen;
 
     // 9. Extract story (between story_header and end of audio)
     const storyContentEnd = words.length;

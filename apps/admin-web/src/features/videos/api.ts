@@ -1,7 +1,7 @@
-import type { Video, VideoCreate, VideoUpdate } from "./types"
+import type { Video, VideoCreate, VideoListItem, VideoUpdate } from "./types"
 import { API_URL } from "@/config"
 
-export async function listVideos(): Promise<Array<Video>> {
+export async function listVideos(): Promise<Array<VideoListItem>> {
   const res = await fetch(`${API_URL}/videos`)
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: "Unknown error" }))
@@ -52,7 +52,6 @@ export async function uploadAudio(
   id: number,
   audioFile: File,
   transcriptionOption: string,
-  useSpanishHeadings: boolean = false,
   fixTimestamps: boolean = false,
 ): Promise<Video> {
   const formData = new FormData()
@@ -60,7 +59,6 @@ export async function uploadAudio(
 
   const url = new URL(`${API_URL}/videos/${id}/upload-audio`)
   url.searchParams.set("transcriptionOption", transcriptionOption)
-  url.searchParams.set("useSpanishHeadings", String(useSpanishHeadings))
   url.searchParams.set("fixTimestamps", String(fixTimestamps))
 
   const res = await fetch(url.toString(), {
@@ -84,9 +82,18 @@ export async function deleteVideo(id: number): Promise<void> {
   }
 }
 
-export async function detectSections(id: number): Promise<Video> {
+export async function detectSections(
+  id: number,
+  useSpanishHeadings: boolean,
+  skipEnglishTitle: boolean,
+): Promise<Video> {
   const res = await fetch(`${API_URL}/videos/${id}/detect-sections`, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      useSpanishHeadings,
+      skipEnglishTitle,
+    }),
   })
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: "Unknown error" }))

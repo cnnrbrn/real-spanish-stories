@@ -13,6 +13,7 @@ import { videoQueryOptions } from "@/features/videos/query-options"
 import {
   TRANSCRIPTION_SERVICES,
   TRANSCRIPTION_SERVICE_OPTIONS,
+  VIDEO_LEVELS,
   videoKeys,
 } from "@/features/videos/constants"
 import { Button } from "@/components/ui/button"
@@ -56,7 +57,6 @@ const audioUploadSchema = z.object({
       return file.size <= 50 * 1024 * 1024 // 50MB
     }, "File size must be less than 50MB"),
   transcriptionOption: z.enum(TRANSCRIPTION_SERVICE_OPTIONS),
-  useSpanishHeadings: z.boolean(),
   fixTimestamps: z.boolean(),
 })
 
@@ -73,7 +73,6 @@ function UploadAudioPage() {
   const form = useForm<AudioUploadFormValues>({
     resolver: zodResolver(audioUploadSchema),
     defaultValues: {
-      useSpanishHeadings: false,
       fixTimestamps: false,
     },
   })
@@ -84,14 +83,12 @@ function UploadAudioPage() {
     mutationFn: ({
       file,
       transcriptionOption,
-      useSpanishHeadings,
       fixTimestamps,
     }: {
       file: File
       transcriptionOption: string
-      useSpanishHeadings: boolean
       fixTimestamps: boolean
-    }) => uploadAudio(videoId, file, transcriptionOption, useSpanishHeadings, fixTimestamps),
+    }) => uploadAudio(videoId, file, transcriptionOption, fixTimestamps),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: videoKeys.detail(videoId) })
       setIsPolling(true)
@@ -127,7 +124,6 @@ function UploadAudioPage() {
     uploadMutation.mutate({
       file,
       transcriptionOption: data.transcriptionOption,
-      useSpanishHeadings: data.useSpanishHeadings,
       fixTimestamps: data.fixTimestamps,
     })
   }
@@ -147,10 +143,15 @@ function UploadAudioPage() {
 
   const statusMessage = getStatusMessage()
 
+  const levelLabel = VIDEO_LEVELS.find((l) => l.value === video.level)?.label
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Upload Audio for: {video.title}</h1>
+        <h1 className="text-2xl font-bold">
+          Upload Audio for: {video.title}
+          {levelLabel ? ` (${levelLabel})` : ""}
+        </h1>
       </div>
 
       <div className="rounded-lg border p-4">
@@ -229,29 +230,6 @@ function UploadAudioPage() {
                   Choose which transcription service to use for this video
                 </FormDescription>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="useSpanishHeadings"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isFormDisabled}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Use Spanish headings</FormLabel>
-                  <FormDescription>
-                    Check if the audio uses Spanish section headers (e.g.,
-                    "Vocabulario de la historia")
-                  </FormDescription>
-                </div>
               </FormItem>
             )}
           />

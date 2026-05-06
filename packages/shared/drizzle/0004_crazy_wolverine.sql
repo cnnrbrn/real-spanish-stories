@@ -1,0 +1,1 @@
+ALTER TABLE "videos" ADD COLUMN "skip_english_title" boolean DEFAULT false NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE "videos" ADD COLUMN "skip_verbs" boolean DEFAULT false NOT NULL;

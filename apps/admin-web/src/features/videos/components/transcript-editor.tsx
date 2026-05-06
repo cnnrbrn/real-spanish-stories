@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { useRef, useState } from "react"
-import { detectSections, downloadTranscriptionSubtitle, updateVideo, uploadTranscriptionSubtitle } from "../api"
+import { downloadTranscriptionSubtitle, updateVideo, uploadTranscriptionSubtitle } from "../api"
 import { videoKeys } from "../constants"
-import { VideoStatus } from "../types"
 import type { Video } from "../types"
 import { Button } from "@/components/ui/button"
 
@@ -40,14 +39,6 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
-    },
-  })
-
-  const detectSectionsMutation = useMutation({
-    mutationFn: () => detectSections(video.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: videoKeys.detail(video.id) })
-      navigate({ to: "/videos/$id/sections", params: { id: video.id.toString() } })
     },
   })
 
@@ -92,17 +83,6 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
     event.target.value = ''
   }
 
-  // Allow re-detecting sections from any status that has transcription
-  // (excluding in-progress states)
-  const inProgressStatuses = [
-    VideoStatus.TRANSCRIBING,
-    VideoStatus.SECTIONING,
-    VideoStatus.LANGUAGE_TAGGING,
-    VideoStatus.GENERATING,
-  ]
-  const canDetectSections =
-    video.transcriptionJson && !inProgressStatuses.includes(video.status)
-
   const handleWordChange = (index: number, newWord: string) => {
     const updated = [...words]
     updated[index] = { ...updated[index], word: newWord }
@@ -111,7 +91,7 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Edit Transcript: {video.title}</h1>
+      <h1 className="text-2xl font-bold">Edit Transcript: {video.title}{video.level ? ` (${video.level})` : ''}</h1>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Button
           variant="outline"
@@ -146,22 +126,12 @@ export function TranscriptEditor({ video }: TranscriptEditorProps) {
           >
             {saveMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
-          {video.sectionsJson && !uploadSubtitleMutation.isPending ? (
-            <Button
-              variant="secondary"
-              onClick={() => navigate({ to: "/videos/$id/sections", params: { id: video.id.toString() } })}
-            >
-              Go to Sections
-            </Button>
-          ) : !uploadSubtitleMutation.isPending && (
-            <Button
-              onClick={() => detectSectionsMutation.mutate()}
-              disabled={!canDetectSections || detectSectionsMutation.isPending}
-              variant="secondary"
-            >
-              {detectSectionsMutation.isPending ? "Detecting..." : "Detect Sections"}
-            </Button>
-          )}
+          <Button
+            variant="secondary"
+            onClick={() => navigate({ to: "/videos/$id/sections", params: { id: video.id.toString() } })}
+          >
+            Go to Sections
+          </Button>
         </div>
       </div>
 

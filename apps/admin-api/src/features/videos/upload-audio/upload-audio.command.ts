@@ -3,7 +3,6 @@ export class UploadAudioCommand {
     public readonly videoId: number,
     public readonly file: Express.Multer.File,
     public readonly transcriptionOption: string,
-    public readonly useSpanishHeadings: boolean,
     public readonly fixTimestamps: boolean,
   ) {}
 }

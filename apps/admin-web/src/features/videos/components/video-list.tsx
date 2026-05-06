@@ -1,8 +1,8 @@
 import { Video } from './video'
-import type { Video as VideoType } from '../types'
+import type { VideoListItem } from '../types'
 
 interface VideoListProps {
-  videos: Array<VideoType>
+  videos: Array<VideoListItem>
 }
 
 export function VideoList({ videos }: VideoListProps) {

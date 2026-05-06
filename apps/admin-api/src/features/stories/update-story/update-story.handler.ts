@@ -28,7 +28,10 @@ export class UpdateStoryHandler
     let slugUpdate: { slug?: string } = {};
     if (needsSlugUpdate) {
       const [current] = await this.database
-        .select()
+        .select({
+          altTitle: storiesSchema.altTitle,
+          level: storiesSchema.level,
+        })
         .from(storiesSchema)
         .where(eq(storiesSchema.id, command.id))
         .limit(1);

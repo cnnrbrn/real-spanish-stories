@@ -20,8 +20,9 @@ function HomePage() {
           v.status as (typeof PROCESSING_STATUSES)[number],
         ),
       )
-      return hasProcessing ? 2500 : false
+      return hasProcessing ? 10_000 : false
     },
+    refetchIntervalInBackground: false,
   })
 
   return (
