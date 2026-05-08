@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Moon, Sun, Menu, X } from 'lucide-react'
+import { Menu, Moon, Sun, X } from 'lucide-react'
 import { useTheme } from '../hooks/use-theme'
+import AuthMenu from './auth-menu'
 
 const navLinks = [
   { to: '/' as const, label: 'Home', exact: true },
   { to: '/series' as const, label: 'Series' },
   { to: '/how-it-works' as const, label: 'How it works' },
+  { to: '/contact' as const, label: 'Contact Us' },
 ]
 
 export default function Header() {
@@ -40,13 +42,17 @@ export default function Header() {
               <Link
                 key={to}
                 to={to}
-                className="font-medium text-foreground hover:text-primary transition-colors"
-                activeProps={{ className: 'font-medium text-primary underline underline-offset-4 transition-colors' }}
+                className="font-medium text-foreground hover:text-primary transition-colors mx-2 lg:mx-3"
+                activeProps={{
+                  className:
+                    'font-medium text-primary underline underline-offset-4 transition-colors',
+                }}
                 activeOptions={exact ? { exact: true } : undefined}
               >
                 {label}
               </Link>
             ))}
+            <AuthMenu />
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
@@ -78,7 +84,11 @@ export default function Header() {
               className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
               aria-label="Toggle menu"
             >
-              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {menuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -93,12 +103,16 @@ export default function Header() {
                   to={to}
                   onClick={() => setMenuOpen(false)}
                   className="font-medium text-foreground hover:text-primary transition-colors py-2"
-                  activeProps={{ className: 'font-medium text-primary underline underline-offset-4 transition-colors py-2' }}
+                  activeProps={{
+                    className:
+                      'font-medium text-primary underline underline-offset-4 transition-colors py-2',
+                  }}
                   activeOptions={exact ? { exact: true } : undefined}
                 >
                   {label}
                 </Link>
               ))}
+              <AuthMenu />
             </nav>
           </div>
         )}

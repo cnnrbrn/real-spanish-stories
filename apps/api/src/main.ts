@@ -14,7 +14,7 @@ async function bootstrap() {
     .getOrThrow<string>("CORS_ORIGIN")
     .split(",");
   app.enableCors({ origin: corsOrigins, credentials: true });
-  app.setGlobalPrefix("v1");
+  app.setGlobalPrefix("api/v1");
 
   const config = new DocumentBuilder()
     .setTitle("Real Spanish Stories API")
@@ -23,10 +23,10 @@ async function bootstrap() {
     .build();
   const rawDocument = SwaggerModule.createDocument(app, config);
   const document = cleanupOpenApiDoc(rawDocument);
-  SwaggerModule.setup("v1/docs", app, document);
+  SwaggerModule.setup("api/v1/docs", app, document);
 
   await app.listen(3001);
   console.log("API running on http://localhost:3001");
-  console.log("Swagger UI available at http://localhost:3001/v1/docs");
+  console.log("Swagger UI available at http://localhost:3001/api/v1/docs");
 }
 bootstrap();

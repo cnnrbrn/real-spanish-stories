@@ -8,4 +8,9 @@ export class UsersController {
   getSession(@Session() session: UserSession | null) {
     return session;
   }
+
+  @Get("me")
+  getMe(@Session() session: UserSession) {
+    return session.user;
+  }
 }

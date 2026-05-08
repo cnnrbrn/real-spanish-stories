@@ -36,7 +36,7 @@ export function StoryListItem({ story }: StoryListItemProps) {
             {story.altTitle || story.title}
             {levelLabel ? ` - ${levelLabel} Spanish` : ''}
           </h2>
-          <LevelBadge level={story.level} />
+          <LevelBadge level={story.level} asSpan />
         </div>
       </div>
     </Link>

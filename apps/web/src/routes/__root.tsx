@@ -12,12 +12,14 @@ import Footer from '../components/footer'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
+import { fetchSession } from '@/lib/session'
 
 interface MyRouterContext {
   queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => ({ session: await fetchSession() }),
   head: () => ({
     meta: [
       {

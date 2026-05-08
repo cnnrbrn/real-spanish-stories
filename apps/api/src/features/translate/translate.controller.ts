@@ -1,16 +1,16 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
+import { OptionalAuth } from "@thallesp/nestjs-better-auth";
 import { TranslatePhraseCommand } from "./translate-phrase/translate-phrase.command";
 import { ZodResponse } from "nestjs-zod";
 import { TranslationRequestDto, TranslationResponseDto } from "./translate.dto";
 
 @ApiTags("translate")
+@OptionalAuth()
 @Controller("translate")
 export class TranslateController {
   constructor(private readonly commandBus: CommandBus) {}
-  @AllowAnonymous()
   @Post("word")
   @ZodResponse({ type: TranslationResponseDto })
   @ApiOperation({ summary: "Translate a word or phrase in context" })

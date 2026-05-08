@@ -50,6 +50,13 @@
       "when": 1778017020610,
       "tag": "0007_lovely_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1778116165563,
+      "tag": "0008_third_spot",
+      "breakpoints": true
     }
   ]
 }

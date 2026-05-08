@@ -7,6 +7,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { DatabaseModule } from "../database/database.module";
 import { DATABASE_CONNECTION } from "../database/database.constants";
+import { emailTemplate } from "./email-template";
 
 @Module({
   imports: [
@@ -21,28 +22,66 @@ import { DATABASE_CONNECTION } from "../database/database.constants";
           },
           auth: betterAuth({
             database: drizzleAdapter(database, { provider: "pg" }),
-            basePath: "/v1/auth",
+            basePath: "/api/v1/auth",
             emailAndPassword: {
               enabled: true,
               requireEmailVerification: true,
+              sendResetPassword: async ({ user, url }) => {
+                await resend.emails.send({
+                  from: configService.getOrThrow("RESEND_FROM_EMAIL"),
+                  to: user.email,
+                  subject: "Reset your Real Spanish Stories password",
+                  html: emailTemplate({
+                    heading: "Reset your password",
+                    body: "Click the button below to choose a new password for your <strong>Real Spanish Stories</strong> account. The link expires in an hour.",
+                    ctaUrl: url,
+                    ctaText: "Reset password",
+                  }),
+                });
+              },
             },
             emailVerification: {
               sendOnSignUp: true,
               autoSignInAfterVerification: true,
               sendVerificationEmail: async ({ user, url }) => {
-                const result = await resend.emails.send({
+                await resend.emails.send({
                   from: configService.getOrThrow("RESEND_FROM_EMAIL"),
                   to: user.email,
-                  subject: "Real Spanish Stories Verfication",
-                  html: `<p>Click the link below to verify your email:</p><p><a href="${url}">${url}</a></p>`,
+                  subject: "Verify your Real Spanish Stories account",
+                  html: emailTemplate({
+                    heading: "Verify your email",
+                    body: "Click the button below to verify your email and start using <strong>Real Spanish Stories</strong>.",
+                    ctaUrl: url,
+                    ctaText: "Verify email",
+                  }),
                 });
-                console.log("[resend]", result);
               },
             },
-            trustedOrigins: [
-              "http://localhost:3000",
-              "https://realspanishstories.com",
-            ],
+            socialProviders: {
+              google: {
+                clientId: configService.getOrThrow("GOOGLE_CLIENT_ID"),
+                clientSecret: configService.getOrThrow("GOOGLE_CLIENT_SECRET"),
+              },
+            },
+            account: {
+              accountLinking: {
+                enabled: true,
+                trustedProviders: ["google"],
+              },
+            },
+            rateLimit: {
+              window: 60,
+              max: 100,
+              customRules: {
+                "/sign-up/email": { window: 3600, max: 5 },
+                "/forget-password": { window: 3600, max: 5 },
+                "/send-verification-email": { window: 3600, max: 5 },
+                "/reset-password": { window: 3600, max: 10 },
+                "/sign-in/email": { window: 60, max: 10 },
+              },
+              storage: "memory",
+            },
+            trustedOrigins: [configService.getOrThrow("CORS_ORIGIN")],
           }),
         };
       },

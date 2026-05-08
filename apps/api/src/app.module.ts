@@ -10,6 +10,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
 import { BetterAuthModule } from "./auth/auth.module";
 import { UsersModule } from "./features/users/users.module";
+import { ContactModule } from "./features/contact/contact.module";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 @Module({
@@ -32,6 +33,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
     StoriesModule,
     TranslateModule,
     UsersModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Download, PanelRightClose, PanelRightOpen, X } from 'lucide-react'
+import { PanelRightClose, PanelRightOpen, X } from 'lucide-react'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { translatePhrase } from '../api'
 import { createStoryTitle } from '../utils/story'
 import { LevelBadge } from './level-badge'
 import { LevelProgressionPanel } from './level-progression-panel'
+import { StoryDownloads } from './story-downloads'
 import { TranscriptDisplay } from './transcript-display'
 import { VideoPlayer } from './video-player'
 import { WordExplanationPanel } from './word-explanation-panel'
@@ -157,30 +158,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
             <div className="self-start">
               <LevelBadge level={story.level} size="lg" />
             </div>
-            {(story.pdfLightPath || story.pdfDarkPath) && (
-              <div className="flex items-center">
-                {story.pdfLightPath && (
-                  <a
-                    href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/light`}
-                    download
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground text-base"
-                  >
-                    <Download className="w-4 h-4" />
-                    PDF (Light)
-                  </a>
-                )}
-                {story.pdfDarkPath && (
-                  <a
-                    href={`${import.meta.env.VITE_API_URL}stories/${story.id}/pdf/dark`}
-                    download
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground text-base"
-                  >
-                    <Download className="w-4 h-4" />
-                    PDF (Dark)
-                  </a>
-                )}
-              </div>
-            )}
+            <StoryDownloads story={story} />
           </div>
         </div>
         {story.summary && (

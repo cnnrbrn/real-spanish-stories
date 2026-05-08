@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { Response } from "express";
-import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
+import { OptionalAuth } from "@thallesp/nestjs-better-auth";
 import { GetStoriesQuery } from "./get-stories/get-stories.query";
 import { GetStoriesGroupedQuery } from "./get-stories-grouped/get-stories-grouped.query";
 import { GetStoryQuery } from "./get-story/get-story.query";
@@ -20,25 +20,25 @@ import { GetStoriesQueryDto, ThemeParamDto } from "./stories.dto";
 export class StoriesController {
   constructor(private readonly queryBus: QueryBus) {}
 
-  @AllowAnonymous()
+  @OptionalAuth()
   @Get()
   getStories(@Query() { level }: GetStoriesQueryDto) {
     return this.queryBus.execute(new GetStoriesQuery(level));
   }
 
-  @AllowAnonymous()
+  @OptionalAuth()
   @Get("grouped")
   getStoriesGrouped() {
     return this.queryBus.execute(new GetStoriesGroupedQuery());
   }
 
-  @AllowAnonymous()
+  @OptionalAuth()
   @Get(":slug")
   getStory(@Param("slug") slug: string) {
     return this.queryBus.execute(new GetStoryQuery(slug));
   }
 
-  @AllowAnonymous()
+  @OptionalAuth()
   @Get(":id/audio")
   async getStoryAudio(
     @Param("id", ParseIntPipe) id: number,
@@ -52,7 +52,6 @@ export class StoriesController {
     res.send(buffer);
   }
 
-  @AllowAnonymous()
   @Get(":id/pdf/:theme")
   async getStoryPdf(
     @Param("id", ParseIntPipe) id: number,

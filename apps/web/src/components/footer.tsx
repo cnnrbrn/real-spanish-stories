@@ -12,7 +12,6 @@ export default function Footer() {
     <footer className="bg-background border-t border-border mt-auto">
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
         <div className="flex flex-col items-center gap-2 mb-4">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Browse by level</p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             {STORY_LEVELS.map((level) => (
               <Link
@@ -20,7 +19,10 @@ export default function Footer() {
                 to="/stories/$levelSlug"
                 params={{ levelSlug: level.urlSlug }}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                activeProps={{ className: 'text-sm text-foreground font-medium underline underline-offset-4' }}
+                activeProps={{
+                  className:
+                    'text-sm text-foreground font-medium underline underline-offset-4',
+                }}
               >
                 {level.label} Spanish Stories
               </Link>
@@ -28,13 +30,10 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className="flex-col sm:flex-row max-w-7xl mx-auto px-4 py-4 flex items-center justify-center gap-4">
-        <a
-          href="mailto:info@realspanishstories.com"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          info@realspanishstories.com
-        </a>
+      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+        <span className="text-sm text-muted-foreground">
+          © {currentYear} Real Spanish Stories
+        </span>
         <ClientOnly>
           <div className="flex gap-2">
             <SocialIcon
@@ -54,9 +53,28 @@ export default function Footer() {
             />
           </div>
         </ClientOnly>
-        <p className="text-sm text-muted-foreground">
-          © {currentYear} Real Spanish Stories
-        </p>
+        <div className="flex gap-4">
+          <Link
+            to="/terms"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            activeProps={{
+              className:
+                'text-sm text-foreground font-medium underline underline-offset-4',
+            }}
+          >
+            Terms &amp; Conditions
+          </Link>
+          <Link
+            to="/privacy"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            activeProps={{
+              className:
+                'text-sm text-foreground font-medium underline underline-offset-4',
+            }}
+          >
+            Privacy Policy
+          </Link>
+        </div>
       </div>
     </footer>
   )

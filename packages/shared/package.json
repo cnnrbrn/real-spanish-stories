@@ -21,7 +21,7 @@
     "db:studio": "node --env-file=../../.env --require tsx/cjs node_modules/drizzle-kit/bin.cjs studio"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.45.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
