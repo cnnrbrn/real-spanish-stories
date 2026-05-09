@@ -52,7 +52,7 @@ jobs:
           file: apps/web/Dockerfile
           push: true
           build-args: |
-            VITE_API_URL=/api/v1/
+            VITE_API_URL=https://realspanishstories.com/api/v1/
             VITE_AUTH_URL=https://realspanishstories.com
             VITE_UMAMI_WEBSITE_ID=${{ secrets.VITE_UMAMI_WEBSITE_ID }}
           tags: ${{ env.IMAGE_PREFIX }}-web:latest
