@@ -6,6 +6,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { useEffect } from 'react'
+import { Toaster } from 'sonner'
 import videojsCss from 'video.js/dist/video-js.css?url'
 import Header from '../components/header'
 import Footer from '../components/footer'
@@ -102,6 +103,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <Toaster richColors position="top-center" />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
