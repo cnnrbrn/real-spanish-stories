@@ -12,6 +12,8 @@ interface PreferencesState {
   setAudioVolume: (volume: number) => void
   audioMuted: boolean
   setAudioMuted: (muted: boolean) => void
+  levelAutoplay: boolean
+  setLevelAutoplay: (autoplay: boolean) => void
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -25,6 +27,8 @@ export const usePreferencesStore = create<PreferencesState>()(
       setAudioVolume: (volume) => set({ audioVolume: volume }),
       audioMuted: false,
       setAudioMuted: (muted) => set({ audioMuted: muted }),
+      levelAutoplay: false,
+      setLevelAutoplay: (autoplay) => set({ levelAutoplay: autoplay }),
     }),
     {
       name: 'preferences',

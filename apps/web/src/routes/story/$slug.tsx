@@ -4,6 +4,13 @@ import { getStoryBySlug } from '@/features/stories/api'
 import { StoryDetails } from '@/features/stories/components/story-details'
 
 export const Route = createFileRoute('/story/$slug')({
+  validateSearch: (search: Record<string, unknown>): { autoplay?: boolean } => {
+    const autoplay =
+      search.autoplay === '1' ||
+      search.autoplay === 1 ||
+      search.autoplay === true
+    return autoplay ? { autoplay: true } : {}
+  },
   loader: async ({ params }) => {
     return getStoryBySlug(params.slug)
   },

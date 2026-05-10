@@ -12,12 +12,16 @@ interface VideoPlayerProps {
   videoUrl: string
   title?: string
   onTimeUpdate?: (time: number) => void
+  onEnded?: () => void
+  autoPlay?: boolean
 }
 
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
-  function VideoPlayer({ videoUrl, title, onTimeUpdate }, ref) {
+  function VideoPlayer({ videoUrl, title, onTimeUpdate, onEnded, autoPlay }, ref) {
     const videoRef = useRef<HTMLDivElement | null>(null)
     const playerRef = useRef<Player | null>(null)
+    const onEndedRef = useRef(onEnded)
+    onEndedRef.current = onEnded
 
     useImperativeHandle(ref, () => ({
       seekTo(time: number) {
@@ -39,6 +43,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
           fluid: true,
           techOrder: ['youtube'],
           poster: thumbnail || undefined,
+          autoplay: !!autoPlay,
           controlBar: {
             fullscreenToggle: true,
           },
@@ -54,6 +59,10 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
           onTimeUpdate?.(player.currentTime() ?? 0)
         })
 
+        player.on('ended', () => {
+          onEndedRef.current?.()
+        })
+
         playerRef.current = player
       } else {
         // Update existing player
@@ -65,8 +74,13 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
           src: videoUrl,
           type: 'video/youtube',
         })
+        if (autoPlay) {
+          player.play()?.catch(() => {
+            // browser blocked autoplay
+          })
+        }
       }
-    }, [videoUrl])
+    }, [videoUrl, autoPlay])
 
     useEffect(() => {
       const player = playerRef.current

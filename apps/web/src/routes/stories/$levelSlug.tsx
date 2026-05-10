@@ -5,6 +5,7 @@ import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
 import { StoryRowList } from '@/features/stories/components/story-row-list'
 import { StoryViewToggle } from '@/features/stories/components/story-view-toggle'
+import { StoryAutoplaySwitch } from '@/features/stories/components/story-autoplay-switch'
 import { LevelLinks } from '@/features/stories/components/level-links'
 import { usePreferencesStore } from '@/stores/preferences'
 
@@ -107,7 +108,8 @@ function LevelStoriesPage() {
         </p>
         <LevelLinks activeLevel={levelData.value} />
       </div>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end items-center gap-4 mb-4">
+        {levelViewMode === 'row' && <StoryAutoplaySwitch />}
         <StoryViewToggle />
       </div>
       {levelViewMode === 'row' ? (

@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { STORY_LEVELS, type StoryResponse } from '@real-spanish-stories/shared'
-import { pauseOthers, registerPlayer } from '../utils/audio-coordinator'
+import { pauseOthers, playNext, registerPlayer } from '../utils/audio-coordinator'
 import { getYouTubeThumbnail } from '../utils/video'
 import { LevelBadge } from './level-badge'
 import { authClient } from '@/lib/auth-client'
@@ -23,8 +23,10 @@ export function StoryAudioRow({ story }: StoryAudioRowProps) {
   const setAudioVolume = usePreferencesStore((s) => s.setAudioVolume)
   const audioMuted = usePreferencesStore((s) => s.audioMuted)
   const setAudioMuted = usePreferencesStore((s) => s.setAudioMuted)
+  const levelAutoplay = usePreferencesStore((s) => s.levelAutoplay)
 
   const audioRef = useRef<HTMLAudioElement>(null)
+  const handleLoadAndPlayRef = useRef<() => void>(() => {})
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -36,7 +38,9 @@ export function StoryAudioRow({ story }: StoryAudioRowProps) {
 
   useEffect(() => {
     if (!audioRef.current) return
-    return registerPlayer(story.id, audioRef.current)
+    return registerPlayer(story.id, audioRef.current, () => {
+      handleLoadAndPlayRef.current()
+    })
   }, [story.id])
 
   useEffect(() => {
@@ -54,6 +58,8 @@ export function StoryAudioRow({ story }: StoryAudioRowProps) {
   useEffect(() => {
     if (audioRef.current) audioRef.current.muted = audioMuted
   }, [audioMuted, audioUrl])
+
+  handleLoadAndPlayRef.current = handleLoadAndPlay
 
   async function handleLoadAndPlay() {
     if (!session) {
@@ -116,6 +122,9 @@ export function StoryAudioRow({ story }: StoryAudioRowProps) {
             src={audioUrl ?? undefined}
             controls
             onPlay={() => pauseOthers(story.id)}
+            onEnded={() => {
+              if (levelAutoplay) playNext(story.id)
+            }}
             onVolumeChange={(e) => {
               setAudioVolume(e.currentTarget.volume)
               setAudioMuted(e.currentTarget.muted)
