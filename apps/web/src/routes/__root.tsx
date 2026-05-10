@@ -5,7 +5,6 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { useEffect } from 'react'
 import { Toaster } from 'sonner'
 import videojsCss from 'video.js/dist/video-js.css?url'
 import Header from '../components/header'
@@ -14,6 +13,36 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { fetchSession } from '@/lib/session'
+
+// Runs synchronously in <head> before first paint to avoid a flash of light
+// theme. Coupled to the persist key 'preferences' and JSON shape used by
+// apps/web/src/stores/preferences.ts — keep both in sync.
+const THEME_INIT_SCRIPT = `
+(function() {
+  try {
+    var raw = localStorage.getItem('preferences');
+    var prefs = {};
+    if (raw) {
+      try { prefs = JSON.parse(raw); } catch (e) {}
+    }
+    if (!prefs.state) prefs.state = {};
+    if (!prefs.state.theme) {
+      var old = localStorage.getItem('theme');
+      if (old === 'dark' || old === 'light') {
+        prefs.state.theme = old;
+        if (typeof prefs.version !== 'number') prefs.version = 0;
+        localStorage.setItem('preferences', JSON.stringify(prefs));
+        localStorage.removeItem('theme');
+      }
+    }
+    var theme = prefs.state.theme || 'system';
+    var resolved = theme === 'system'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : theme;
+    if (resolved === 'dark') document.documentElement.classList.add('dark');
+  } catch (e) {}
+})();
+`
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -76,27 +105,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    // Initialize theme on mount to prevent flash
-    const theme = localStorage.getItem('theme')
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else if (theme === 'light') {
-      document.documentElement.classList.remove('dark')
-    } else {
-      // No stored preference, check system preference
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)',
-      ).matches
-      if (prefersDark) {
-        document.documentElement.classList.add('dark')
-      }
-    }
-  }, [])
-
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body className="flex flex-col min-h-screen">

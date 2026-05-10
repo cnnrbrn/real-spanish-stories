@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Menu, Moon, Sun, X } from 'lucide-react'
-import { useTheme } from '../hooks/use-theme'
+import { usePreferencesStore } from '../stores/preferences'
 import AuthMenu from './auth-menu'
 
 const navLinks = [
@@ -12,13 +12,8 @@ const navLinks = [
 ]
 
 export default function Header() {
-  const { theme, toggleTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const toggleTheme = usePreferencesStore((s) => s.toggleTheme)
   const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
     <>
@@ -26,13 +21,14 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" onClick={() => setMenuOpen(false)}>
             <img
-              src={
-                mounted && theme === 'dark'
-                  ? '/logo-dark.svg'
-                  : '/logo-light.svg'
-              }
+              src="/logo-light.svg"
               alt="Real Spanish Stories Logo"
-              className="h-14"
+              className="h-14 dark:hidden"
+            />
+            <img
+              src="/logo-dark.svg"
+              alt="Real Spanish Stories Logo"
+              className="h-14 hidden dark:block"
             />
           </Link>
 
@@ -58,11 +54,8 @@ export default function Header() {
               className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
               aria-label="Toggle theme"
             >
-              {mounted && theme === 'dark' ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
+              <Moon className="w-5 h-5 dark:hidden" />
+              <Sun className="w-5 h-5 hidden dark:block" />
             </button>
           </div>
 
@@ -73,11 +66,8 @@ export default function Header() {
               className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
               aria-label="Toggle theme"
             >
-              {mounted && theme === 'dark' ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
+              <Moon className="w-5 h-5 dark:hidden" />
+              <Sun className="w-5 h-5 hidden dark:block" />
             </button>
             <button
               onClick={() => setMenuOpen((o) => !o)}
