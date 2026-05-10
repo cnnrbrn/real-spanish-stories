@@ -3,7 +3,11 @@ import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import type { StoryLevel } from '@real-spanish-stories/shared'
 import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
+import { StoryRowList } from '@/features/stories/components/story-row-list'
+import { StoryViewToggle } from '@/features/stories/components/story-view-toggle'
+import { StoryAutoplaySwitch } from '@/features/stories/components/story-autoplay-switch'
 import { LevelLinks } from '@/features/stories/components/level-links'
+import { usePreferencesStore } from '@/stores/preferences'
 
 const levelMeta: Record<StoryLevel, { description: string }> = {
   'just-starting': {
@@ -91,10 +95,11 @@ export const Route = createFileRoute('/stories/$levelSlug')({
 
 function LevelStoriesPage() {
   const { levelData, stories } = Route.useLoaderData()
+  const levelViewMode = usePreferencesStore((s) => s.levelViewMode)
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
-<div className="mb-8 text-center max-w-4xl mx-auto">
+      <div className="mb-8 text-center max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-3">
           {levelData.label} Spanish Stories
         </h1>
@@ -103,7 +108,15 @@ function LevelStoriesPage() {
         </p>
         <LevelLinks activeLevel={levelData.value} />
       </div>
-      <StoryList stories={stories} />
+      <div className="flex justify-end items-center gap-4 mb-4">
+        {levelViewMode === 'row' && <StoryAutoplaySwitch />}
+        <StoryViewToggle />
+      </div>
+      {levelViewMode === 'row' ? (
+        <StoryRowList stories={stories} />
+      ) : (
+        <StoryList stories={stories} />
+      )}
     </div>
   )
 }

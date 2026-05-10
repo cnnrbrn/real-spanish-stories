@@ -6,6 +6,7 @@ import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { StorageService } from "src/storage/storage.service";
+import { DownloadRateLimitService } from "../download-rate-limit.service";
 
 @QueryHandler(GetStoryPdfQuery)
 export class GetStoryPdfHandler implements IQueryHandler<GetStoryPdfQuery> {
@@ -15,6 +16,7 @@ export class GetStoryPdfHandler implements IQueryHandler<GetStoryPdfQuery> {
       stories: typeof storiesSchema;
     }>,
     private readonly storageService: StorageService,
+    private readonly downloadRateLimitService: DownloadRateLimitService,
   ) {}
 
   async execute(
@@ -41,6 +43,13 @@ export class GetStoryPdfHandler implements IQueryHandler<GetStoryPdfQuery> {
         `Story ${query.id} has no ${query.theme} PDF`,
       );
     }
+
+    const kind = query.theme === "light" ? "pdf-light" : "pdf-dark";
+    await this.downloadRateLimitService.checkAndRecord(
+      query.userId,
+      query.id,
+      kind,
+    );
 
     const buffer = await this.storageService.download(pdfPath as string);
     const filename = pdfPath.split("/")[1];

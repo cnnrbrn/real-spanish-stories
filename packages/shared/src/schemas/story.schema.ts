@@ -13,6 +13,7 @@ export const storySchema = z.object({
   level: z.enum(STORY_LEVEL_VALUES),
   status: z.enum(STORY_STATUS_VALUES),
   isPremium: z.boolean(),
+  audioFilename: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
@@ -22,7 +23,6 @@ export type StoryResponse = z.infer<typeof storySchema>;
 export const storyDetailSchema = storySchema.extend({
   summary: z.string().nullable(),
   audioPath: z.string().nullable(),
-  audioFilename: z.string().nullable(),
   pdfLightPath: z.string().nullable(),
   pdfDarkPath: z.string().nullable(),
   transcription: transcriptionSchema,

@@ -13,3 +13,4 @@ export * from "./db/auth.schema.js";
 export * from "./db/translation-cache.schema.js";
 export * from "./db/videos.schema.js";
 export * from "./db/contact.schema.js";
+export * from "./db/story-downloads.schema.js";

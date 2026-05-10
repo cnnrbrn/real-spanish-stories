@@ -57,6 +57,13 @@
       "when": 1778116165563,
       "tag": "0008_third_spot",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1778376196543,
+      "tag": "0009_marvelous_ego",
+      "breakpoints": true
     }
   ]
 }

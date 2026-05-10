@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { PanelRightClose, PanelRightOpen, X } from 'lucide-react'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { translatePhrase } from '../api'
+import { findNextSibling } from '../utils/next-sibling'
 import { createStoryTitle } from '../utils/story'
 import { LevelBadge } from './level-badge'
 import { LevelProgressionPanel } from './level-progression-panel'
@@ -34,6 +35,20 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   const [isLoadingWord, setIsLoadingWord] = useState(false)
   const [englishOnly, setEnglishOnly] = useState(false)
   const { hintDismissed, dismissHint } = usePreferencesStore()
+  const levelAutoplay = usePreferencesStore((s) => s.levelAutoplay)
+  const navigate = useNavigate()
+  const { autoplay } = useSearch({ from: '/story/$slug' })
+
+  function handleVideoEnded() {
+    if (!levelAutoplay) return
+    const next = findNextSibling(story.level, story.siblings)
+    if (!next) return
+    navigate({
+      to: '/story/$slug',
+      params: { slug: next.slug },
+      search: { autoplay: true },
+    })
+  }
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === 'undefined') return true
     return window.matchMedia('(min-width: 768px)').matches
@@ -134,6 +149,8 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               videoUrl={story.videoLink}
               title={story.altTitle || story.title}
               onTimeUpdate={setCurrentTime}
+              onEnded={handleVideoEnded}
+              autoPlay={autoplay}
             />
           </div>
         )}

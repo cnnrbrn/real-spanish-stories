@@ -1,9 +1,19 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+export type LevelViewMode = 'row' | 'grid'
+
 interface PreferencesState {
   hintDismissed: boolean
   dismissHint: () => void
+  levelViewMode: LevelViewMode
+  setLevelViewMode: (mode: LevelViewMode) => void
+  audioVolume: number
+  setAudioVolume: (volume: number) => void
+  audioMuted: boolean
+  setAudioMuted: (muted: boolean) => void
+  levelAutoplay: boolean
+  setLevelAutoplay: (autoplay: boolean) => void
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -11,6 +21,14 @@ export const usePreferencesStore = create<PreferencesState>()(
     (set) => ({
       hintDismissed: false,
       dismissHint: () => set({ hintDismissed: true }),
+      levelViewMode: 'row',
+      setLevelViewMode: (mode) => set({ levelViewMode: mode }),
+      audioVolume: 1,
+      setAudioVolume: (volume) => set({ audioVolume: volume }),
+      audioMuted: false,
+      setAudioMuted: (muted) => set({ audioMuted: muted }),
+      levelAutoplay: false,
+      setLevelAutoplay: (autoplay) => set({ levelAutoplay: autoplay }),
     }),
     {
       name: 'preferences',
