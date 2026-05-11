@@ -121,7 +121,12 @@ export function StoryDetails({ story }: StoryDetailsProps) {
         const level = STORY_LEVELS.find((l) => l.value === story.level)
         return (
           <nav className="mb-4 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors shrink-0">Home</Link>
+            <Link
+              to="/"
+              className="hover:text-foreground transition-colors shrink-0"
+            >
+              Home
+            </Link>
             {level && (
               <>
                 <span className="shrink-0">/</span>
@@ -135,124 +140,126 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               </>
             )}
             <span className="shrink-0">/</span>
-            <span className="text-foreground min-w-0 truncate">{story.altTitle || story.title}</span>
+            <span className="text-foreground min-w-0 truncate">
+              {story.altTitle || story.title}
+            </span>
           </nav>
         )
       })()}
       <div className="flex flex-col md:flex-row gap-6">
-      <div className="flex-1 min-w-0">
-        {story.videoLink && (
-          <div className="mb-6 aspect-video bg-black">
-            <VideoPlayer
-              ref={playerRef}
-              key={story.videoLink}
-              videoUrl={story.videoLink}
-              title={story.altTitle || story.title}
-              onTimeUpdate={setCurrentTime}
-              onEnded={handleVideoEnded}
-              autoPlay={autoplay}
-              startSeconds={startSeconds}
+        <div className="flex-1 min-w-0">
+          {story.videoLink && (
+            <div className="mb-6 aspect-video bg-black">
+              <VideoPlayer
+                ref={playerRef}
+                key={story.videoLink}
+                videoUrl={story.videoLink}
+                title={story.altTitle || story.title}
+                onTimeUpdate={setCurrentTime}
+                onEnded={handleVideoEnded}
+                autoPlay={autoplay}
+                startSeconds={startSeconds}
+              />
+            </div>
+          )}
+          <div className="mb-8">
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+                {createStoryTitle(story)}
+              </h1>
+              <button
+                onClick={() => setSidebarOpen((o) => !o)}
+                className="shrink-0 p-2 rounded-lg hover:bg-muted transition-colors text-foreground md:hidden"
+                aria-label="Toggle translation panel"
+              >
+                {sidebarOpen ? (
+                  <PanelRightClose className="w-6 h-6" />
+                ) : (
+                  <PanelRightOpen className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+            <div className="mt-4 flex flex-col md:flex-row md:items-center gap-2">
+              <div className="self-start">
+                <LevelBadge level={story.level} size="lg" />
+              </div>
+              <StoryDownloads story={story} />
+            </div>
+          </div>
+          {story.summary && (
+            <div className="story-summary mb-6 max-w-none text-lg">
+              <div dangerouslySetInnerHTML={{ __html: story.summary }} />
+            </div>
+          )}
+          {!hintDismissed && (
+            <div className="flex items-center justify-between gap-2 mb-4 px-3 py-2 rounded-lg bg-muted text-sm text-muted-foreground">
+              <span>Select a Spanish word or phrase for a translation.</span>
+              <button
+                onClick={dismissHint}
+                className="shrink-0 p-1 rounded hover:bg-muted-foreground/20 transition-colors"
+                aria-label="Dismiss hint"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 bg-card">
+            <TranscriptDisplay
+              transcription={story.transcription}
+              currentTime={currentTime}
+              onPhraseSelect={handlePhraseSelect}
+              selectedIndices={selectedIndices}
             />
           </div>
-        )}
-        <div className="mb-8">
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
-              {createStoryTitle(story)}
-            </h1>
-            <button
-              onClick={() => setSidebarOpen((o) => !o)}
-              className="shrink-0 p-2 rounded-lg hover:bg-muted transition-colors text-foreground md:hidden"
-              aria-label="Toggle translation panel"
-            >
-              {sidebarOpen ? (
-                <PanelRightClose className="w-6 h-6" />
-              ) : (
-                <PanelRightOpen className="w-6 h-6" />
-              )}
-            </button>
-          </div>
-          <div className="mt-4 flex flex-col md:flex-row md:items-center gap-2">
-            <div className="self-start">
-              <LevelBadge level={story.level} size="lg" />
-            </div>
-            <StoryDownloads story={story} />
-          </div>
         </div>
-        {story.summary && (
-          <div className="story-summary mb-6 max-w-none text-lg">
-            <div dangerouslySetInnerHTML={{ __html: story.summary }} />
-          </div>
-        )}
-        {!hintDismissed && (
-          <div className="flex items-center justify-between gap-2 mb-4 px-3 py-2 rounded-lg bg-muted text-sm text-muted-foreground">
-            <span>Select a Spanish word or phrase for a translation.</span>
-            <button
-              onClick={dismissHint}
-              className="shrink-0 p-1 rounded hover:bg-muted-foreground/20 transition-colors"
-              aria-label="Dismiss hint"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 bg-card">
-          <TranscriptDisplay
-            transcription={story.transcription}
-            currentTime={currentTime}
-            onPhraseSelect={handlePhraseSelect}
-            selectedIndices={selectedIndices}
-          />
-        </div>
-      </div>
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      <aside
-        className={[
-          'fixed top-0 right-0 h-dvh z-50 w-[85vw] shrink-0 overflow-y-auto bg-[#fafafa] dark:bg-card',
-          'transition-transform duration-300 ease-in-out',
-          'md:sticky md:top-4 md:self-start md:h-auto md:w-80 md:translate-x-0 md:transition-none md:overflow-visible md:bg-transparent dark:md:bg-transparent',
-          sidebarOpen ? 'translate-x-0' : 'translate-x-full',
-        ].join(' ')}
-      >
-        <div className="flex justify-end p-2 md:hidden">
-          <button
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
             onClick={() => setSidebarOpen(false)}
-            className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
-            aria-label="Close translation panel"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <div className="px-4 pb-4 md:p-0 space-y-4">
-          <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700">
-            <div className="flex items-center justify-end gap-3">
-              <SkipToStorySwitch />
-              <StoryAutoplaySwitch />
+          />
+        )}
+        <aside
+          className={[
+            'fixed top-0 right-0 h-dvh z-50 w-[85vw] shrink-0 overflow-y-auto bg-[#fafafa] dark:bg-card',
+            'transition-transform duration-300 ease-in-out',
+            'md:sticky md:top-4 md:self-start md:h-auto md:w-80 md:translate-x-0 md:transition-none md:overflow-visible md:bg-transparent dark:md:bg-transparent',
+            sidebarOpen ? 'translate-x-0' : 'translate-x-full',
+          ].join(' ')}
+        >
+          <div className="flex justify-end p-2 md:hidden">
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
+              aria-label="Close translation panel"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="px-4 pb-4 md:p-0 space-y-4">
+            <div className="">
+              <div className="flex items-center justify-end gap-3">
+                <SkipToStorySwitch />
+                <StoryAutoplaySwitch />
+              </div>
+            </div>
+            <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+              <LevelProgressionPanel
+                currentLevel={story.level}
+                levels={story.siblings}
+                altTitle={story.altTitle}
+              />
+            </div>
+            <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+              <WordExplanationPanel
+                phrase={selectedPhrase}
+                translation={wordData?.translation ?? null}
+                explanation={wordData?.explanation ?? null}
+                isLoading={isLoadingWord}
+                englishOnly={englishOnly}
+              />
             </div>
           </div>
-          <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
-            <LevelProgressionPanel
-              currentLevel={story.level}
-              levels={story.siblings}
-              altTitle={story.altTitle}
-            />
-          </div>
-          <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
-            <WordExplanationPanel
-              phrase={selectedPhrase}
-              translation={wordData?.translation ?? null}
-              explanation={wordData?.explanation ?? null}
-              isLoading={isLoadingWord}
-              englishOnly={englishOnly}
-            />
-          </div>
-        </div>
-      </aside>
+        </aside>
       </div>
     </div>
   )
