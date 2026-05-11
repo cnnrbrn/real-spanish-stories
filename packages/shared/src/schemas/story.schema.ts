@@ -13,6 +13,7 @@ export const storySchema = z.object({
   level: z.enum(STORY_LEVEL_VALUES),
   status: z.enum(STORY_STATUS_VALUES),
   isPremium: z.boolean(),
+  storyStartMs: z.number().int().min(0).nullable(),
   audioFilename: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
@@ -41,6 +42,7 @@ export const storyUpdateSchema = storyDetailSchema.pick({
   audioFilename: true,
   videoLink: true,
   isPremium: true,
+  storyStartMs: true,
 }).partial().extend({
   transcription: z.string().optional(),
 });

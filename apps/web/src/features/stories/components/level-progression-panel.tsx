@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { levelColorClasses } from '../utils/level-colors'
 import { getYouTubeThumbnail } from '../utils/video'
-import { StoryAutoplaySwitch } from './story-autoplay-switch'
 import type { StoryLevel, StoryResponse } from '@real-spanish-stories/shared'
 
 interface LevelProgressionPanelProps {
@@ -14,10 +13,7 @@ interface LevelProgressionPanelProps {
 export function LevelProgressionPanel({ currentLevel, levels, altTitle }: LevelProgressionPanelProps) {
   return (
     <div>
-      <div className="flex items-center justify-between gap-2 mb-1">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">All levels</p>
-        <StoryAutoplaySwitch />
-      </div>
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">All levels</p>
       <h2 className="text-base font-semibold text-foreground mt-3 mb-3">{altTitle}</h2>
       <ul className="space-y-2">
         {STORY_LEVELS.map(({ value, label }) => {

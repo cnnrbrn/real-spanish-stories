@@ -56,6 +56,7 @@ const editStorySchema = z.object({
   level: z.enum(STORY_LEVEL_VALUES).optional(),
   videoLink: z.string().url().optional(),
   isPremium: z.boolean(),
+  storyStartMs: z.number().int().min(0).nullable().optional(),
 })
 
 type EditStoryFormValues = z.infer<typeof editStorySchema>
@@ -76,6 +77,7 @@ export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
       level: story.level,
       videoLink: story.videoLink || undefined,
       isPremium: story.isPremium,
+      storyStartMs: story.storyStartMs ?? null,
     },
   })
 
@@ -267,6 +269,28 @@ export function StoryEditModal({ story, trigger }: StoryEditModalProps) {
                   <FormLabel>Video Link</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="https://..." type="url" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="storyStartMs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Story start (ms)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === "" ? null : Number(e.target.value),
+                        )
+                      }
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

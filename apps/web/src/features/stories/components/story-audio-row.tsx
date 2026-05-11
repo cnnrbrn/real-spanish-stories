@@ -24,6 +24,7 @@ export function StoryAudioRow({ story }: StoryAudioRowProps) {
   const audioMuted = usePreferencesStore((s) => s.audioMuted)
   const setAudioMuted = usePreferencesStore((s) => s.setAudioMuted)
   const levelAutoplay = usePreferencesStore((s) => s.levelAutoplay)
+  const skipToStory = usePreferencesStore((s) => s.skipToStory)
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const handleLoadAndPlayRef = useRef<() => void>(() => {})
@@ -121,6 +122,11 @@ export function StoryAudioRow({ story }: StoryAudioRowProps) {
             ref={audioRef}
             src={audioUrl ?? undefined}
             controls
+            onLoadedMetadata={() => {
+              if (audioRef.current && skipToStory && story.storyStartMs) {
+                audioRef.current.currentTime = story.storyStartMs / 1000
+              }
+            }}
             onPlay={() => pauseOthers(story.id)}
             onEnded={() => {
               if (levelAutoplay) playNext(story.id)

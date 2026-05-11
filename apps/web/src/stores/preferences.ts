@@ -15,6 +15,8 @@ interface PreferencesState {
   setAudioMuted: (muted: boolean) => void
   levelAutoplay: boolean
   setLevelAutoplay: (autoplay: boolean) => void
+  skipToStory: boolean
+  setSkipToStory: (skip: boolean) => void
   theme: Theme
   setTheme: (theme: Theme) => void
   toggleTheme: () => void
@@ -33,6 +35,8 @@ export const usePreferencesStore = create<PreferencesState>()(
       setAudioMuted: (muted) => set({ audioMuted: muted }),
       levelAutoplay: false,
       setLevelAutoplay: (autoplay) => set({ levelAutoplay: autoplay }),
+      skipToStory: false,
+      setSkipToStory: (skip) => set({ skipToStory: skip }),
       theme: 'system',
       setTheme: (theme) => set({ theme }),
       toggleTheme: () => {

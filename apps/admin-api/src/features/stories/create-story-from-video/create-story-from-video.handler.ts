@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import {
   createSlug,
   storiesSchema,
+  storyStartMsFromTranscription,
   type Story,
 } from "@real-spanish-stories/shared";
 import { videosSchema } from "@real-spanish-stories/shared";
@@ -51,6 +52,7 @@ export class CreateStoryFromVideoHandler
     }
 
     const transcription = JSON.parse(video.languageTaggedJson);
+    const storyStartMs = storyStartMsFromTranscription(transcription);
 
     const [story] = await this.database
       .insert(storiesSchema)
@@ -63,6 +65,7 @@ export class CreateStoryFromVideoHandler
         audioPath: video.audioPath,
         audioFilename: video.audioFilename,
         transcription,
+        storyStartMs,
         status: "draft",
         isPremium: false,
       })

@@ -7,6 +7,8 @@ import { findNextSibling } from '../utils/next-sibling'
 import { createStoryTitle } from '../utils/story'
 import { LevelBadge } from './level-badge'
 import { LevelProgressionPanel } from './level-progression-panel'
+import { SkipToStorySwitch } from './skip-to-story-switch'
+import { StoryAutoplaySwitch } from './story-autoplay-switch'
 import { StoryDownloads } from './story-downloads'
 import { TranscriptDisplay } from './transcript-display'
 import { VideoPlayer } from './video-player'
@@ -36,6 +38,9 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   const [englishOnly, setEnglishOnly] = useState(false)
   const { hintDismissed, dismissHint } = usePreferencesStore()
   const levelAutoplay = usePreferencesStore((s) => s.levelAutoplay)
+  const skipToStory = usePreferencesStore((s) => s.skipToStory)
+  const startSeconds =
+    skipToStory && story.storyStartMs ? story.storyStartMs / 1000 : undefined
   const navigate = useNavigate()
   const { autoplay } = useSearch({ from: '/story/$slug' })
 
@@ -49,10 +54,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
       search: { autoplay: true },
     })
   }
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window === 'undefined') return true
-    return window.matchMedia('(min-width: 768px)').matches
-  })
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const isMobile = !window.matchMedia('(min-width: 768px)').matches
@@ -138,9 +140,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
         )
       })()}
       <div className="flex flex-col md:flex-row gap-6">
-      <div
-        className={`flex-1 min-w-0${!sidebarOpen ? ' max-w-5xl mx-auto' : ''}`}
-      >
+      <div className="flex-1 min-w-0">
         {story.videoLink && (
           <div className="mb-6 aspect-video bg-black">
             <VideoPlayer
@@ -151,6 +151,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               onTimeUpdate={setCurrentTime}
               onEnded={handleVideoEnded}
               autoPlay={autoplay}
+              startSeconds={startSeconds}
             />
           </div>
         )}
@@ -161,7 +162,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
             </h1>
             <button
               onClick={() => setSidebarOpen((o) => !o)}
-              className="shrink-0 p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
+              className="shrink-0 p-2 rounded-lg hover:bg-muted transition-colors text-foreground md:hidden"
               aria-label="Toggle translation panel"
             >
               {sidebarOpen ? (
@@ -215,7 +216,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
           'fixed top-0 right-0 h-dvh z-50 w-[85vw] shrink-0 overflow-y-auto bg-[#fafafa] dark:bg-card',
           'transition-transform duration-300 ease-in-out',
           'md:sticky md:top-4 md:self-start md:h-auto md:w-80 md:translate-x-0 md:transition-none md:overflow-visible md:bg-transparent dark:md:bg-transparent',
-          sidebarOpen ? 'translate-x-0' : 'translate-x-full md:hidden',
+          sidebarOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
         <div className="flex justify-end p-2 md:hidden">
@@ -228,6 +229,12 @@ export function StoryDetails({ story }: StoryDetailsProps) {
           </button>
         </div>
         <div className="px-4 pb-4 md:p-0 space-y-4">
+          <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700">
+            <div className="flex items-center justify-end gap-3">
+              <SkipToStorySwitch />
+              <StoryAutoplaySwitch />
+            </div>
+          </div>
           <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
             <LevelProgressionPanel
               currentLevel={story.level}
