@@ -40,6 +40,7 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
         status: storiesSchema.status,
         isPremium: storiesSchema.isPremium,
         audioFilename: storiesSchema.audioFilename,
+        storyStartMs: storiesSchema.storyStartMs,
         createdAt: storiesSchema.createdAt,
         updatedAt: storiesSchema.updatedAt,
       })

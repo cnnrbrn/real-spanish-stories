@@ -48,10 +48,10 @@ body {
   --sidebar-border: oklch(0.88 0.01 75);
   --sidebar-ring: var(--primary);
   --level-foreground: #ffffff;
-  --level-just-starting: #dc371e;
-  --level-beginner: #2275d3;
-  --level-intermediate: #a46823;
-  --level-advanced: #4e6f51;
+  --level-just-starting: #a46823;
+  --level-beginner: #dc371e;
+  --level-intermediate: #4e6f51;
+  --level-advanced: #2275d3;
 }
 
 .dark {
@@ -88,10 +88,10 @@ body {
   --sidebar-border: oklch(0.28 0.01 270);
   --sidebar-ring: var(--ring);
   --level-foreground: #ffffff;
-  --level-just-starting: #dc371e;
-  --level-beginner: #2275d3;
-  --level-intermediate: #a46823;
-  --level-advanced: #4e6f51;
+  --level-just-starting: #a46823;
+  --level-beginner: #dc371e;
+  --level-intermediate: #4e6f51;
+  --level-advanced: #2275d3;
 }
 
 @theme inline {
