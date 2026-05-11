@@ -13,6 +13,7 @@ const updateStorySchema = z.object({
   transcription: z.any().optional(),
   videoLink: z.string().optional(),
   isPremium: z.boolean().optional(),
+  storyStartMs: z.number().int().min(0).nullable().optional(),
 });
 
 const updateStoryStatusSchema = z.object({

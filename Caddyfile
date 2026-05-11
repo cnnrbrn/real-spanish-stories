@@ -1,7 +1,8 @@
-realspanishstories.com, www.realspanishstories.com {
-    @www host www.realspanishstories.com
-    redir @www https://realspanishstories.com{uri} permanent
+www.realspanishstories.com {
+    redir https://realspanishstories.com{uri} permanent
+}
 
+realspanishstories.com {
     handle /api/* {
         reverse_proxy localhost:3001
     }

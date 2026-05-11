@@ -5,6 +5,7 @@ import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
 import { StoryRowList } from '@/features/stories/components/story-row-list'
 import { StoryViewToggle } from '@/features/stories/components/story-view-toggle'
+import { SkipToStorySwitch } from '@/features/stories/components/skip-to-story-switch'
 import { StoryAutoplaySwitch } from '@/features/stories/components/story-autoplay-switch'
 import { LevelLinks } from '@/features/stories/components/level-links'
 import { usePreferencesStore } from '@/stores/preferences'
@@ -50,10 +51,21 @@ export const Route = createFileRoute('/stories/$levelSlug')({
         ...(loaderData
           ? [
               { property: 'og:type', content: 'website' },
-              { property: 'og:title', content: `${loaderData.levelData.label} Spanish Stories | Real Spanish Stories` },
-              ...(description ? [{ property: 'og:description', content: description }] : []),
-              { property: 'og:url', content: `https://realspanishstories.com/stories/${params.levelSlug}` },
-              { property: 'og:image', content: 'https://realspanishstories.com/og-image.jpg' },
+              {
+                property: 'og:title',
+                content: `${loaderData.levelData.label} Spanish Stories | Real Spanish Stories`,
+              },
+              ...(description
+                ? [{ property: 'og:description', content: description }]
+                : []),
+              {
+                property: 'og:url',
+                content: `https://realspanishstories.com/stories/${params.levelSlug}`,
+              },
+              {
+                property: 'og:image',
+                content: 'https://realspanishstories.com/og-image.jpg',
+              },
             ]
           : []),
       ],
@@ -100,16 +112,22 @@ function LevelStoriesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="mb-8 text-center max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-3">
-          {levelData.label} Spanish Stories
+        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6 md:mb-3">
+          {levelData.label} <span className="hidden md:inline">Spanish</span>{' '}
+          Stories
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+        <p className="hidden md:block text-lg text-gray-600 dark:text-gray-400 mb-6">
           {levelMeta[levelData.value].description}
         </p>
         <LevelLinks activeLevel={levelData.value} />
       </div>
       <div className="flex justify-end items-center gap-4 mb-4">
-        {levelViewMode === 'row' && <StoryAutoplaySwitch />}
+        {levelViewMode === 'row' && (
+          <>
+            <SkipToStorySwitch />
+            <StoryAutoplaySwitch />
+          </>
+        )}
         <StoryViewToggle />
       </div>
       {levelViewMode === 'row' ? (

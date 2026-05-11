@@ -1,4 +1,4 @@
-name: Deploy to Lightsail
+name: Deploy to VPS
 
 on:
   push:
@@ -6,122 +6,128 @@ on:
       - main
     paths:
       - "apps/api/**"
+      - "apps/web/**"
       - "packages/**"
+      - "docker-compose.prod.yml"
+      - "Caddyfile"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/real-spanish-stories
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          aws-access-key-id: ${{ secrets.DEPLOYER_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEPLOYER_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install lightsailctl
-        run: |
-          sudo curl -Lo /usr/local/bin/lightsailctl \
-            https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl
-          sudo chmod +x /usr/local/bin/lightsailctl
+      - name: Build and push API
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}-api:latest
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
 
-      - name: Build Docker Image
+      - name: Build and push Web
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_URL=https://realspanishstories.com/api/v1/
+            VITE_AUTH_URL=https://realspanishstories.com
+            VITE_UMAMI_WEBSITE_ID=${{ secrets.VITE_UMAMI_WEBSITE_ID }}
+          tags: ${{ env.IMAGE_PREFIX }}-web:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
 
-        run: docker build -f apps/api/Dockerfile -t api:latest .
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Push Image & Get Identifier
-        id: push
-        run: |
-          # 1. Push the image to Lightsail
-          aws lightsail push-container-image \
-            --service-name ${{ secrets.LIGHTSAIL_SERVICE_NAME }} \
-            --label api \
-            --image api:latest
+      - name: Copy infra files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "docker-compose.prod.yml,Caddyfile"
+          target: "/home/ubuntu/apps/real-spanish-stories"
 
-          # 2. Get the official AWS image identifier (e.g., :service.api.1)
-          # We query the first element of the list because it's always the most recent
-          IMAGE=$(aws lightsail get-container-images \
-            --service-name ${{ secrets.LIGHTSAIL_SERVICE_NAME }} \
-            --query 'containerImages[0].image' \
-            --output text)
-
-          echo "image=$IMAGE" >> $GITHUB_OUTPUT
-
-      - name: Deploy to Lightsail
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.2.0
         env:
-          IMAGE: ${{ steps.push.outputs.image }}
-          SERVICE_NAME: ${{ secrets.LIGHTSAIL_SERVICE_NAME }}
-          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          APP_AWS_REGION: ${{ secrets.AWS_REGION }}
-          APP_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          APP_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        run: |
-          # Safety check to prevent deploying an empty image field
-          if [ -z "$IMAGE" ] || [ "$IMAGE" == "None" ]; then
-            echo "Error: Could not retrieve the image identifier from Lightsail."
-            exit 1
-          fi
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: DATABASE_URL,OPENAI_API_KEY,AWS_REGION,S3_BUCKET,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,BETTER_AUTH_URL,BETTER_AUTH_SECRET,CORS_ORIGIN,RESEND_API_KEY,RESEND_FROM_EMAIL,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GHCR_USERNAME,GHCR_TOKEN
+          script: |
+            set -e
+            cd /home/ubuntu/apps/real-spanish-stories
 
-          # Generate the deployment JSON
-          # Note: APP_AWS_* env vars avoid clashing with the deployer's AWS credentials
-          CONTAINERS=$(jq -n \
-            --arg image "$IMAGE" \
-            --arg better_auth_url "$BETTER_AUTH_URL" \
-            --arg better_auth_secret "$BETTER_AUTH_SECRET" \
-            --arg database_url "$DATABASE_URL" \
-            --arg openai_api_key "$OPENAI_API_KEY" \
-            --arg s3_bucket "$S3_BUCKET" \
-            --arg aws_region "$APP_AWS_REGION" \
-            --arg aws_access_key_id "$APP_AWS_ACCESS_KEY_ID" \
-            --arg aws_secret_access_key "$APP_AWS_SECRET_ACCESS_KEY" \
-            --arg cors_origin "$CORS_ORIGIN" \
-            --arg resend_api_key "$RESEND_API_KEY" \
-            --arg resend_from_email "$RESEND_FROM_EMAIL" \
-            --arg google_client_id "$GOOGLE_CLIENT_ID" \
-            --arg google_client_secret "$GOOGLE_CLIENT_SECRET" \
-            '{
-              "api": {
-                "image": $image,
-                "environment": {
-                  "NODE_ENV": "production",
-                  "PORT": "3001",
-                  "BETTER_AUTH_URL": $better_auth_url,
-                  "BETTER_AUTH_SECRET": $better_auth_secret,
-                  "DATABASE_URL": $database_url,
-                  "OPENAI_API_KEY": $openai_api_key,
-                  "S3_BUCKET": $s3_bucket,
-                  "AWS_REGION": $aws_region,
-                  "AWS_ACCESS_KEY_ID": $aws_access_key_id,
-                  "AWS_SECRET_ACCESS_KEY": $aws_secret_access_key,
-                  "CORS_ORIGIN": $cors_origin,
-                  "RESEND_API_KEY": $resend_api_key,
-                  "RESEND_FROM_EMAIL": $resend_from_email,
-                  "GOOGLE_CLIENT_ID": $google_client_id,
-                  "GOOGLE_CLIENT_SECRET": $google_client_secret
-                },
-                "ports": {
-                  "3001": "HTTP"
-                }
-              }
-            }')
+            cat > .env.production <<EOF
+            NODE_ENV=production
+            DATABASE_URL=${DATABASE_URL}
+            OPENAI_API_KEY=${OPENAI_API_KEY}
+            AWS_REGION=${AWS_REGION}
+            S3_BUCKET=${S3_BUCKET}
+            AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            BETTER_AUTH_URL=${BETTER_AUTH_URL}
+            BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+            CORS_ORIGIN=${CORS_ORIGIN}
+            RESEND_API_KEY=${RESEND_API_KEY}
+            RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL}
+            GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+            GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+            EOF
+            chmod 600 .env.production
 
-          # Execute the deployment
-          aws lightsail create-container-service-deployment \
-            --service-name "$SERVICE_NAME" \
-            --containers "$CONTAINERS" \
-            --public-endpoint '{"containerName":"api","containerPort":3001,"healthCheck":{"path":"/","successCodes":"200-499"}}'
+            echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
+
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+
+            sudo cp Caddyfile /etc/caddy/Caddyfile
+            sudo systemctl reload caddy
+
+            docker image prune -f

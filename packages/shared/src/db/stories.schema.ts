@@ -27,6 +27,7 @@ export const storiesSchema = pgTable("stories", {
   transcription: jsonb("transcription").$type<Transcription>(),
   slug: varchar("slug", { length: 300 }).unique(),
   videoLink: varchar("video_link", { length: 500 }),
+  storyStartMs: integer("story_start_ms"),
   isPremium: boolean("is_premium").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

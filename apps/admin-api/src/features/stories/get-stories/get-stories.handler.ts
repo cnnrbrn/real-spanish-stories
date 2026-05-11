@@ -32,6 +32,7 @@ export class GetStoriesHandler implements IQueryHandler<GetStoriesQuery> {
         pdfDarkPath: storiesSchema.pdfDarkPath,
         slug: storiesSchema.slug,
         videoLink: storiesSchema.videoLink,
+        storyStartMs: storiesSchema.storyStartMs,
         isPremium: storiesSchema.isPremium,
         createdAt: storiesSchema.createdAt,
         updatedAt: storiesSchema.updatedAt,

@@ -14,14 +14,20 @@ interface VideoPlayerProps {
   onTimeUpdate?: (time: number) => void
   onEnded?: () => void
   autoPlay?: boolean
+  startSeconds?: number
 }
 
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
-  function VideoPlayer({ videoUrl, title, onTimeUpdate, onEnded, autoPlay }, ref) {
+  function VideoPlayer(
+    { videoUrl, title, onTimeUpdate, onEnded, autoPlay, startSeconds },
+    ref,
+  ) {
     const videoRef = useRef<HTMLDivElement | null>(null)
     const playerRef = useRef<Player | null>(null)
     const onEndedRef = useRef(onEnded)
     onEndedRef.current = onEnded
+    const startSecondsRef = useRef(startSeconds)
+    startSecondsRef.current = startSeconds
 
     useImperativeHandle(ref, () => ({
       seekTo(time: number) {
@@ -61,6 +67,11 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
 
         player.on('ended', () => {
           onEndedRef.current?.()
+        })
+
+        player.on('loadedmetadata', () => {
+          const start = startSecondsRef.current
+          if (start && start > 0) player.currentTime(start)
         })
 
         playerRef.current = player
