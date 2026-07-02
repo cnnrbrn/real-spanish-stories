@@ -9,7 +9,7 @@ export function createStoryTitle(story: {
     ? STORY_LEVELS.find((l) => l.value === story.level)?.label
     : null
 
-  return `${levelLabel ? `${levelLabel} Spanish – ` : ''}${story.altTitle}`
+  return `${levelLabel ? `${levelLabel} Spanish - ` : ''}${story.altTitle}`
 }
 
 interface StorySeoMeta {
@@ -18,21 +18,21 @@ interface StorySeoMeta {
 }
 
 const STORY_SEO_META: Record<StoryLevel, StorySeoMeta> = {
-  'just-starting': {
+  'absolute-beginner': {
     keyword: 'Absolute Beginner Spanish Listening',
     suffix: '(with Transcript)',
   },
   beginner: {
     keyword: 'Beginner Spanish Listening Practice',
-    suffix: '(A1–A2)',
+    suffix: '(A1-A2)',
   },
   intermediate: {
     keyword: 'Intermediate Spanish Listening Practice',
-    suffix: '(A2–B1)',
+    suffix: '(A2-B1)',
   },
   advanced: {
     keyword: 'Advanced Spanish Listening Practice',
-    suffix: '(B1–B2)',
+    suffix: '(B1-B2)',
   },
 }
 

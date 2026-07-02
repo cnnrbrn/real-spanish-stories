@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import { PanelRightClose, PanelRightOpen, X } from 'lucide-react'
+import { PanelRightClose, PanelRightOpen, Volume2, X } from 'lucide-react'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { translatePhrase } from '../api'
 import { findNextSibling } from '../utils/next-sibling'
@@ -36,7 +36,6 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   } | null>(null)
   const [isLoadingWord, setIsLoadingWord] = useState(false)
   const [englishOnly, setEnglishOnly] = useState(false)
-  const { hintDismissed, dismissHint } = usePreferencesStore()
   const levelAutoplay = usePreferencesStore((s) => s.levelAutoplay)
   const skipToStory = usePreferencesStore((s) => s.skipToStory)
   const startSeconds =
@@ -75,7 +74,6 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   }) {
     if (words.length === 0) return
     setSidebarOpen(true)
-    dismissHint()
 
     playerRef.current?.seekTo(words[0].start)
     setSelectedPhrase(phrase)
@@ -186,26 +184,23 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               <StoryDownloads story={story} />
             </div>
           </div>
-          <p className="text-base text-gray-600 dark:text-gray-400 mb-4">
-            Narrated in clear Argentine (rioplatense) Spanish.
-          </p>
+          <div className="mb-4">
+            <span className="inline-flex items-center gap-2 text-lg italic text-muted-foreground">
+              <Volume2 className="w-5 h-5 shrink-0" />
+              Narrated in clear Argentine (rioplatense) Spanish
+            </span>
+          </div>
           {story.summary && (
             <div className="story-summary mb-6 max-w-none text-lg">
               <div dangerouslySetInnerHTML={{ __html: story.summary }} />
             </div>
           )}
-          {!hintDismissed && (
-            <div className="flex items-center justify-between gap-2 mb-4 px-3 py-2 rounded-lg bg-muted text-sm text-muted-foreground">
-              <span>Select a Spanish word or phrase for a translation.</span>
-              <button
-                onClick={dismissHint}
-                className="shrink-0 p-1 rounded hover:bg-muted-foreground/20 transition-colors"
-                aria-label="Dismiss hint"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Transcript
+          </h2>
+          <p className="text-lg text-muted-foreground mb-3">
+            Select a Spanish word or phrase for a translation.
+          </p>
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 bg-card">
             <TranscriptDisplay
               transcription={story.transcription}
@@ -255,15 +250,17 @@ export function StoryDetails({ story }: StoryDetailsProps) {
                 altTitle={story.altTitle}
               />
             </div>
-            <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
-              <WordExplanationPanel
-                phrase={selectedPhrase}
-                translation={wordData?.translation ?? null}
-                explanation={wordData?.explanation ?? null}
-                isLoading={isLoadingWord}
-                englishOnly={englishOnly}
-              />
-            </div>
+            {(selectedPhrase || isLoadingWord) && (
+              <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+                <WordExplanationPanel
+                  phrase={selectedPhrase}
+                  translation={wordData?.translation ?? null}
+                  explanation={wordData?.explanation ?? null}
+                  isLoading={isLoadingWord}
+                  englishOnly={englishOnly}
+                />
+              </div>
+            )}
           </div>
         </aside>
       </div>

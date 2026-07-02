@@ -11,7 +11,7 @@ import { LevelLinks } from '@/features/stories/components/level-links'
 import { usePreferencesStore } from '@/stores/preferences'
 
 const levelMeta: Record<StoryLevel, { description: string; intro: string }> = {
-  'just-starting': {
+  'absolute-beginner': {
     description:
       'Absolute beginner Spanish stories with very short sentences and a tiny vocabulary — the perfect starting point, with full transcripts and English translations.',
     intro:
@@ -38,7 +38,7 @@ const levelMeta: Record<StoryLevel, { description: string; intro: string }> = {
 }
 
 const H1_SUFFIX: Record<StoryLevel, string> = {
-  'just-starting': 'Easy Stories to Start With',
+  'absolute-beginner': 'Easy Stories to Start With',
   beginner: 'Stories to Build Confidence',
   intermediate: 'Stories to Stretch Your Spanish',
   advanced: 'Stories for Near-Native Fluency',

@@ -30,7 +30,7 @@ export class GetStoriesGroupedHandler
           json_agg(
             json_build_object('level', ${storiesSchema.level}, 'slug', ${storiesSchema.slug}, 'videoLink', ${storiesSchema.videoLink})
             ORDER BY array_position(
-              ARRAY['just-starting', 'beginner', 'intermediate', 'advanced']::varchar[],
+              ARRAY['absolute-beginner', 'beginner', 'intermediate', 'advanced']::varchar[],
               ${storiesSchema.level}
             )
           )

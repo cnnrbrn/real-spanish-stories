@@ -5,8 +5,6 @@ export type LevelViewMode = 'row' | 'grid'
 export type Theme = 'light' | 'dark' | 'system'
 
 interface PreferencesState {
-  hintDismissed: boolean
-  dismissHint: () => void
   levelViewMode: LevelViewMode
   setLevelViewMode: (mode: LevelViewMode) => void
   audioVolume: number
@@ -25,8 +23,6 @@ interface PreferencesState {
 export const usePreferencesStore = create<PreferencesState>()(
   persist(
     (set, get) => ({
-      hintDismissed: false,
-      dismissHint: () => set({ hintDismissed: true }),
       levelViewMode: 'row',
       setLevelViewMode: (mode) => set({ levelViewMode: mode }),
       audioVolume: 1,

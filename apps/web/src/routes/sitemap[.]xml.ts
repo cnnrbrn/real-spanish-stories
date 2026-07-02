@@ -7,7 +7,7 @@ const HOST = 'https://realspanishstories.com'
 const STATIC_PAGES = [
   { loc: '/', priority: '1.0', changefreq: 'daily' },
   { loc: '/how-it-works', priority: '0.8', changefreq: 'monthly' },
-  { loc: '/stories/just-starting-spanish-stories', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/stories/absolute-beginner-spanish-stories', priority: '0.8', changefreq: 'weekly' },
   { loc: '/stories/beginner-spanish-stories', priority: '0.8', changefreq: 'weekly' },
   { loc: '/stories/intermediate-spanish-stories', priority: '0.8', changefreq: 'weekly' },
   { loc: '/stories/advanced-spanish-stories', priority: '0.8', changefreq: 'weekly' },

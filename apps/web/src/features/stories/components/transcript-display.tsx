@@ -44,9 +44,9 @@ function TranscriptSectionComponent({
 }: TranscriptSectionProps) {
   if (section.static) {
     return (
-      <p className="text-lg font-semibold text-primary uppercase tracking-wide mt-6 mb-2">
+      <h3 className="text-lg font-semibold text-primary uppercase tracking-wide mt-6 mb-2">
         {section.text}
-      </p>
+      </h3>
     )
   }
 
@@ -286,10 +286,11 @@ function TranscriptSectionComponent({
 
   const isTitle =
     section.type === 'title_spanish' || section.type === 'title_english'
+  const TextTag = isTitle ? 'h3' : 'p'
 
   return (
     <div className="mb-4">
-      <p
+      <TextTag
         className={`leading-relaxed select-none ${isTitle ? 'text-2xl font-bold text-gray-900 dark:text-gray-100' : 'text-gray-900 dark:text-gray-100'}`}
       >
         {section.words.map((word, i: number) => {
@@ -345,7 +346,7 @@ function TranscriptSectionComponent({
             </span>
           )
         })}
-      </p>
+      </TextTag>
     </div>
   )
 }

@@ -48,7 +48,7 @@ body {
   --sidebar-border: oklch(0.88 0.01 75);
   --sidebar-ring: var(--primary);
   --level-foreground: #ffffff;
-  --level-just-starting: #a46823;
+  --level-absolute-beginner: #a46823;
   --level-beginner: #dc371e;
   --level-intermediate: #4e6f51;
   --level-advanced: #2275d3;
@@ -89,7 +89,7 @@ body {
   --sidebar-border: oklch(0.28 0.01 270);
   --sidebar-ring: var(--ring);
   --level-foreground: #ffffff;
-  --level-just-starting: #a46823;
+  --level-absolute-beginner: #a46823;
   --level-beginner: #dc371e;
   --level-intermediate: #4e6f51;
   --level-advanced: #2275d3;
@@ -133,7 +133,7 @@ body {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-level-foreground: var(--level-foreground);
-  --color-level-just-starting: var(--level-just-starting);
+  --color-level-absolute-beginner: var(--level-absolute-beginner);
   --color-level-beginner: var(--level-beginner);
   --color-level-intermediate: var(--level-intermediate);
   --color-level-advanced: var(--level-advanced);

@@ -25,11 +25,7 @@ export function WordExplanationPanel({
   englishOnly,
 }: WordExplanationPanelProps) {
   if (!phrase && !isLoading) {
-    return (
-      <div className="text-base font-bold text-gray-700 dark:text-gray-300">
-        Select a Spanish word or phrase from the transcript below the video for a translation.
-      </div>
-    )
+    return null
   }
 
   if (englishOnly) {

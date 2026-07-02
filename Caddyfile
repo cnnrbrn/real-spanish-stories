@@ -3,6 +3,15 @@ www.realspanishstories.com {
 }
 
 realspanishstories.com {
+    # 301s: "Just Starting" level renamed to "Absolute Beginner" (slug change)
+    # Level listing page
+    redir /stories/just-starting-spanish-stories /stories/absolute-beginner-spanish-stories permanent
+    # Individual story slugs (the 4 existing "just starting" stories)
+    redir /story/maradonas-hand-of-god-just-starting-spanish /story/maradonas-hand-of-god-absolute-beginner-spanish permanent
+    redir /story/the-paraguayan-war-just-starting-spanish /story/the-paraguayan-war-absolute-beginner-spanish permanent
+    redir /story/the-mountain-that-eats-men-just-starting-spanish /story/the-mountain-that-eats-men-absolute-beginner-spanish permanent
+    redir /story/the-cybersyn-project-just-starting-spanish /story/the-cybersyn-project-absolute-beginner-spanish permanent
+
     handle /api/* {
         reverse_proxy localhost:3001
     }
