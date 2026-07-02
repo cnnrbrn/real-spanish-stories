@@ -6,7 +6,7 @@ export const STORY_LEVEL_VALUES = [
 ] as const;
 
 export const STORY_LEVELS = [
-  { value: "just-starting", label: "Just Starting", labelEs: "Empezando",    urlSlug: "just-starting-spanish-stories" },
+  { value: "just-starting", label: "Absolute Beginner", labelEs: "Empezando",    urlSlug: "just-starting-spanish-stories" },
   { value: "beginner",      label: "Beginner",      labelEs: "Principiante", urlSlug: "beginner-spanish-stories" },
   { value: "intermediate",  label: "Intermediate",  labelEs: "Intermedio",   urlSlug: "intermediate-spanish-stories" },
   { value: "advanced",      label: "Advanced",      labelEs: "Avanzado",     urlSlug: "advanced-spanish-stories" },

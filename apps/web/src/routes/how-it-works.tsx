@@ -51,7 +51,7 @@ function HowItWorksPage() {
       <div className="space-y-8 mb-12">
         {[
           {
-            label: 'Just Starting',
+            label: 'Absolute Beginner',
             verbs: '3 unique verbs per story',
             description:
               'Very short sentences and a tiny vocabulary. Ideal if you know little or no Spanish.',

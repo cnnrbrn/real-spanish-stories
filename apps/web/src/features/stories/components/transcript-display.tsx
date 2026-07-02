@@ -50,6 +50,10 @@ function TranscriptSectionComponent({
     )
   }
 
+  // TODO(seo): vocabulary/verbs/subjunctive_verbs sections are only rendered
+  // when present in transcription.sections — a story missing them has less
+  // unique on-page text. No comprehension-questions feature exists yet;
+  // adding one would help thin pages (see story-details.tsx TODO).
   if (section.type === 'vocabulary') {
     const lines: Array<Array<{ word: TranscriptionWord; sectionIdx: number }>> =
       []

@@ -10,23 +10,38 @@ import { StoryAutoplaySwitch } from '@/features/stories/components/story-autopla
 import { LevelLinks } from '@/features/stories/components/level-links'
 import { usePreferencesStore } from '@/stores/preferences'
 
-const levelMeta: Record<StoryLevel, { description: string }> = {
+const levelMeta: Record<StoryLevel, { description: string; intro: string }> = {
   'just-starting': {
     description:
-      'Spanish stories for complete beginners. Very short sentences, small vocabulary, and just 3 unique verbs - the perfect starting point.',
+      'Absolute beginner Spanish stories with very short sentences and a tiny vocabulary — the perfect starting point, with full transcripts and English translations.',
+    intro:
+      'These stories are for absolute beginners just starting out in Spanish — the simplest level, with full transcripts and English translations for every word. Narrated in clear Argentine (rioplatense) Spanish.',
   },
   beginner: {
     description:
-      'Beginner Spanish stories with simple, common vocabulary and straightforward grammar. Build confidence with 6 unique verbs per story.',
+      'Beginner Spanish stories with simple, common vocabulary and straightforward grammar. Build confidence with transcripts, translations, and 6 unique verbs per story.',
+    intro:
+      'Beginner Spanish stories built for learners with the basics down — simple vocabulary and straightforward grammar, narrated in clear Argentine (rioplatense) Spanish with full transcripts and translations.',
   },
   intermediate: {
     description:
-      'Intermediate Spanish stories with broader vocabulary and varied grammar structures. Challenge yourself with 10+ unique verbs per story.',
+      'Intermediate Spanish stories with broader vocabulary and varied grammar structures. Challenge yourself with 10+ unique verbs per story, transcripts, and translations.',
+    intro:
+      'Intermediate Spanish stories for learners ready to stretch beyond the basics — broader vocabulary and varied grammar, narrated in clear Argentine (rioplatense) Spanish.',
   },
   advanced: {
     description:
-      'Advanced Spanish stories with rich vocabulary and complex structures including the subjunctive. 15+ unique verbs per story.',
+      'Advanced Spanish stories with rich vocabulary and complex structures including the subjunctive. 15+ unique verbs per story, with full transcripts and translations.',
+    intro:
+      'Advanced Spanish stories with rich vocabulary and complex grammar, including the subjunctive — narrated in clear Argentine (rioplatense) Spanish for learners aiming for near-native fluency.',
   },
+}
+
+const H1_SUFFIX: Record<StoryLevel, string> = {
+  'just-starting': 'Easy Stories to Start With',
+  beginner: 'Stories to Build Confidence',
+  intermediate: 'Stories to Stretch Your Spanish',
+  advanced: 'Stories for Near-Native Fluency',
 }
 
 export const Route = createFileRoute('/stories/$levelSlug')({
@@ -112,12 +127,11 @@ function LevelStoriesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="mb-8 text-center max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6 md:mb-3">
-          {levelData.label} <span className="hidden md:inline">Spanish</span>{' '}
-          Stories
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6 md:mb-3">
+          {levelData.label} Spanish — {H1_SUFFIX[levelData.value]}
         </h1>
-        <p className="hidden md:block text-lg text-gray-600 dark:text-gray-400 mb-6">
-          {levelMeta[levelData.value].description}
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+          {levelMeta[levelData.value].intro}
         </p>
         <LevelLinks activeLevel={levelData.value} />
       </div>

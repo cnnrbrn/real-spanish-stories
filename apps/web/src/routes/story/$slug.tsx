@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { getStoryBySlug } from '@/features/stories/api'
 import { StoryDetails } from '@/features/stories/components/story-details'
+import { createStorySeoTitle } from '@/features/stories/utils/story'
 
 export const Route = createFileRoute('/story/$slug')({
   validateSearch: (search: Record<string, unknown>): { autoplay?: boolean } => {
@@ -17,21 +18,20 @@ export const Route = createFileRoute('/story/$slug')({
   head: function ({ loaderData, params }) {
     const canonicalUrl = `https://realspanishstories.com/story/${params.slug}`
     const level = STORY_LEVELS.find((l) => l.value === loaderData?.level)
+    const seoTitle = loaderData
+      ? createStorySeoTitle(loaderData)
+      : 'Real Spanish Stories'
 
     return {
       meta: [
-        {
-          title: loaderData
-            ? `${loaderData.altTitle} in ${level?.label ?? ''} Spanish | Real Spanish Stories`
-            : 'Real Spanish Stories',
-        },
+        { title: seoTitle },
         ...(loaderData?.description
           ? [{ name: 'description', content: loaderData.description }]
           : []),
         ...(loaderData
           ? [
               { property: 'og:type', content: 'article' },
-              { property: 'og:title', content: `${loaderData.altTitle} in ${level?.label ?? ''} Spanish | Real Spanish Stories` },
+              { property: 'og:title', content: seoTitle },
               ...(loaderData.description ? [{ property: 'og:description', content: loaderData.description }] : []),
               { property: 'og:url', content: canonicalUrl },
               ...(loaderData.videoLink

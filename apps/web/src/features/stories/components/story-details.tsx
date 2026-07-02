@@ -186,6 +186,9 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               <StoryDownloads story={story} />
             </div>
           </div>
+          <p className="text-base text-gray-600 dark:text-gray-400 mb-4">
+            Narrated in clear Argentine (rioplatense) Spanish.
+          </p>
           {story.summary && (
             <div className="story-summary mb-6 max-w-none text-lg">
               <div dangerouslySetInnerHTML={{ __html: story.summary }} />
@@ -210,6 +213,9 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               onPhraseSelect={handlePhraseSelect}
               selectedIndices={selectedIndices}
             />
+            {/* TODO(seo): consider adding a comprehension-questions block here once
+                the feature exists (see transcript-display.tsx TODO) — would help
+                thin pages, especially at the Absolute Beginner level. */}
           </div>
         </div>
         {sidebarOpen && (
