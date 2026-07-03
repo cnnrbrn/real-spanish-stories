@@ -3,6 +3,7 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
 import { LevelLinks } from '@/features/stories/components/level-links'
+import { PageContainer, PageHeader } from '@/components/ui/page'
 
 const storiesQueryOptions = queryOptions({
   queryKey: ['stories'],
@@ -14,9 +15,7 @@ export const Route = createFileRoute('/')({
     return queryClient.ensureQueryData(storiesQueryOptions)
   },
   head: () => ({
-    meta: [
-      { property: 'og:url', content: 'https://realspanishstories.com/' },
-    ],
+    meta: [{ property: 'og:url', content: 'https://realspanishstories.com/' }],
     links: [{ rel: 'canonical', href: 'https://realspanishstories.com/' }],
     scripts: [
       {
@@ -43,17 +42,17 @@ function HomePage() {
   const { data: stories } = useSuspenseQuery(storiesQueryOptions)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="mb-8 text-center max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-3">
-          Learn Spanish with Latin American History Stories
-        </h1>
-        <p className="hidden sm:block text-lg text-gray-600 dark:text-gray-400">
-          Real historical stories from Latin America, adapted for four levels.
-        </p>
-      </div>
+    <PageContainer width="wide">
+      <PageHeader
+        className="text-center max-w-5xl mx-auto"
+        title="Spanish Listening Practice with Real Latin American Stories"
+        subtitle="Short audio stories from real Latin American history, with full transcripts and English translations, across four levels."
+      />
       <LevelLinks />
+      <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-4">
+        Latest Spanish Audio Stories
+      </h2>
       <StoryList stories={stories} />
-    </div>
+    </PageContainer>
   )
 }

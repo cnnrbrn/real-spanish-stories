@@ -19,6 +19,7 @@ import type {
   TranscriptionWord,
   TranslationResponse,
 } from '@real-spanish-stories/shared'
+import { PageContainer } from '@/components/ui/page'
 import { usePreferencesStore } from '@/stores/preferences'
 
 interface StoryDetailsProps {
@@ -114,7 +115,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <PageContainer width="wide">
       {(() => {
         const level = STORY_LEVELS.find((l) => l.value === story.level)
         return (
@@ -264,6 +265,6 @@ export function StoryDetails({ story }: StoryDetailsProps) {
           </div>
         </aside>
       </div>
-    </div>
+    </PageContainer>
   )
 }

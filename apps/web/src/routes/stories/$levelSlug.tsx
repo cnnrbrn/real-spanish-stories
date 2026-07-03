@@ -9,6 +9,7 @@ import { SkipToStorySwitch } from '@/features/stories/components/skip-to-story-s
 import { StoryAutoplaySwitch } from '@/features/stories/components/story-autoplay-switch'
 import { LevelLinks } from '@/features/stories/components/level-links'
 import { usePreferencesStore } from '@/stores/preferences'
+import { PageContainer, PageHeader } from '@/components/ui/page'
 
 const levelMeta: Record<
   StoryLevel,
@@ -129,16 +130,13 @@ function LevelStoriesPage() {
   const levelViewMode = usePreferencesStore((s) => s.levelViewMode)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      <div className="mb-8 text-center max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6 md:mb-3">
-          {levelMeta[levelData.value].h1}
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-          {levelMeta[levelData.value].intro}
-        </p>
-        <LevelLinks activeLevel={levelData.value} />
-      </div>
+    <PageContainer width="wide">
+      <PageHeader
+        className="text-center max-w-4xl mx-auto"
+        title={levelMeta[levelData.value].h1}
+        subtitle={levelMeta[levelData.value].intro}
+      />
+      <LevelLinks activeLevel={levelData.value} />
       <div className="flex justify-end items-center gap-4 mb-4">
         {levelViewMode === 'row' && (
           <>
@@ -153,6 +151,6 @@ function LevelStoriesPage() {
       ) : (
         <StoryList stories={stories} />
       )}
-    </div>
+    </PageContainer>
   )
 }

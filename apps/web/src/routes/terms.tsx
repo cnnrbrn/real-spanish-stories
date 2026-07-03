@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { PageContainer, PageHeader } from '@/components/ui/page'
 
 export const Route = createFileRoute('/terms')({
   component: RouteComponent,
@@ -6,9 +7,11 @@ export const Route = createFileRoute('/terms')({
 
 function RouteComponent() {
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12 text-gray-800 dark:text-gray-200">
-      <h1 className="text-3xl font-bold mb-1">Terms and Conditions</h1>
-      <p className="text-sm text-gray-500 mb-10">Effective Date: 01 May 2026</p>
+    <PageContainer width="prose" className="text-gray-800 dark:text-gray-200">
+      <PageHeader title="Terms and Conditions" />
+      <p className="text-sm text-muted-foreground mb-10">
+        Effective Date: 01 May 2026
+      </p>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-3">1. Acceptance of Terms</h2>
@@ -145,6 +148,6 @@ function RouteComponent() {
           .
         </p>
       </section>
-    </div>
+    </PageContainer>
   )
 }

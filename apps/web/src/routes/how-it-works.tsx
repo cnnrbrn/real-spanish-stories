@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { PageContainer, PageHeader } from '@/components/ui/page'
 
 export const Route = createFileRoute('/how-it-works')({
   head: () => ({
@@ -33,16 +34,11 @@ export const Route = createFileRoute('/how-it-works')({
 
 function HowItWorksPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-4">
-        Learn Spanish with Real Latin American History
-      </h1>
-      <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-        Beginner and intermediate Spanish content can be a little dull. Real
-        Spanish Stories uses comprehensible input with graded, easy-to-follow
-        language applied to real Latin American history. Each story is narrated
-        by a real human, we don't use AI voices.
-      </p>
+    <PageContainer width="prose">
+      <PageHeader
+        title="Learn Spanish with Real Latin American History"
+        subtitle="Beginner and intermediate Spanish content can be a little dull. Real Spanish Stories uses comprehensible input with graded, easy-to-follow language applied to real Latin American history. Each story is narrated by a real human, we don't use AI voices."
+      />
       <p className="text-lg text-gray-600 dark:text-gray-400 mb-12">
         Each story is available at four levels. Pick the one that matches where
         you are.
@@ -95,6 +91,6 @@ function HowItWorksPage() {
       >
         Browse Stories
       </Link>
-    </div>
+    </PageContainer>
   )
 }

@@ -6,6 +6,7 @@ import type { ContactRequest } from '@real-spanish-stories/shared'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { PageContainer, PageHeader } from '@/components/ui/page'
 import {
   Form,
   FormControl,
@@ -45,15 +46,17 @@ function ContactPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-4">
-        Contact us
-      </h1>
-      <p className="text-muted-foreground mb-8">
-        Have a question, feedback or story suggestion?
-        <br />
-        We'd love to hear from you.
-      </p>
+    <PageContainer width="prose">
+      <PageHeader
+        title="Contact us"
+        subtitle={
+          <>
+            Have a question, feedback or story suggestion?
+            <br />
+            We'd love to hear from you.
+          </>
+        }
+      />
 
       {isSubmitSuccessful && (
         <p className="text-green-600 dark:text-green-400 font-medium mb-6">
@@ -121,6 +124,6 @@ function ContactPage() {
           </Button>
         </form>
       </Form>
-    </div>
+    </PageContainer>
   )
 }
