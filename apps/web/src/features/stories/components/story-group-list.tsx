@@ -14,7 +14,7 @@ export function StoryGroupList({ groups }: StoryGroupListProps) {
       {groups.map((group) => (
         <li key={group.altTitle} className="py-6">
           <p className="font-semibold text-foreground mb-3">{group.altTitle}</p>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {STORY_LEVELS.filter(({ value }) =>
               group.levels.some((l) => l.level === value),
             ).map(({ value, label }) => {
@@ -28,7 +28,7 @@ export function StoryGroupList({ groups }: StoryGroupListProps) {
                   key={value}
                   to="/story/$slug"
                   params={{ slug: levelLink.slug }}
-                  className="group w-36 shrink-0"
+                  className="group"
                 >
                   <div className="aspect-video rounded-md overflow-hidden bg-muted mb-1.5">
                     {thumbnail && (

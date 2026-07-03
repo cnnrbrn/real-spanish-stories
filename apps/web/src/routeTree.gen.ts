@@ -13,7 +13,6 @@ import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SeriesRouteImport } from './routes/series'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
@@ -23,6 +22,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckEmailRouteImport } from './routes/check-email'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StoriesIndexRouteImport } from './routes/stories/index'
 import { Route as StorySlugRouteImport } from './routes/story/$slug'
 import { Route as StoriesLevelSlugRouteImport } from './routes/stories/$levelSlug'
 import { Route as AuthedAccountRouteImport } from './routes/_authed/account'
@@ -45,11 +45,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SeriesRoute = SeriesRouteImport.update({
-  id: '/series',
-  path: '/series',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -96,6 +91,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoriesIndexRoute = StoriesIndexRouteImport.update({
+  id: '/stories/',
+  path: '/stories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StorySlugRoute = StorySlugRouteImport.update({
   id: '/story/$slug',
   path: '/story/$slug',
@@ -121,7 +121,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/series': typeof SeriesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -129,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthedAccountRoute
   '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
+  '/stories/': typeof StoriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -139,7 +139,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/series': typeof SeriesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -147,6 +146,7 @@ export interface FileRoutesByTo {
   '/account': typeof AuthedAccountRoute
   '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
+  '/stories': typeof StoriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,7 +159,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/series': typeof SeriesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -167,6 +166,7 @@ export interface FileRoutesById {
   '/_authed/account': typeof AuthedAccountRoute
   '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
+  '/stories/': typeof StoriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,7 +179,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/reset-password'
-    | '/series'
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
@@ -187,6 +186,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/stories/$levelSlug'
     | '/story/$slug'
+    | '/stories/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -197,7 +197,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/reset-password'
-    | '/series'
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
@@ -205,6 +204,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/stories/$levelSlug'
     | '/story/$slug'
+    | '/stories'
   id:
     | '__root__'
     | '/'
@@ -216,7 +216,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/reset-password'
-    | '/series'
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
@@ -224,6 +223,7 @@ export interface FileRouteTypes {
     | '/_authed/account'
     | '/stories/$levelSlug'
     | '/story/$slug'
+    | '/stories/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,13 +236,13 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SeriesRoute: typeof SeriesRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   StoriesLevelSlugRoute: typeof StoriesLevelSlugRoute
   StorySlugRoute: typeof StorySlugRoute
+  StoriesIndexRoute: typeof StoriesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,13 +273,6 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/series': {
-      id: '/series'
-      path: '/series'
-      fullPath: '/series'
-      preLoaderRoute: typeof SeriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -345,6 +338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stories/': {
+      id: '/stories/'
+      path: '/stories'
+      fullPath: '/stories/'
+      preLoaderRoute: typeof StoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/story/$slug': {
       id: '/story/$slug'
       path: '/story/$slug'
@@ -390,13 +390,13 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  SeriesRoute: SeriesRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   StoriesLevelSlugRoute: StoriesLevelSlugRoute,
   StorySlugRoute: StorySlugRoute,
+  StoriesIndexRoute: StoriesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

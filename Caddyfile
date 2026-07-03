@@ -12,6 +12,9 @@ realspanishstories.com {
     redir /story/the-mountain-that-eats-men-just-starting-spanish /story/the-mountain-that-eats-men-absolute-beginner-spanish permanent
     redir /story/the-cybersyn-project-just-starting-spanish /story/the-cybersyn-project-absolute-beginner-spanish permanent
 
+    # 301: "Series" browse page moved to "Stories"
+    redir /series /stories permanent
+
     handle /api/* {
         reverse_proxy localhost:3001
     }

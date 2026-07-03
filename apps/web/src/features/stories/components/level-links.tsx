@@ -24,7 +24,7 @@ export function LevelLinks({ activeLevel }: LevelLinksProps) {
         </span>
       ) : (
         <Link
-          to="/"
+          to="/stories"
           className={`${baseClasses} bg-gray-600 text-white hover:bg-gray-700`}
         >
           All
