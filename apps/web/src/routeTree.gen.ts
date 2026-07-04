@@ -23,8 +23,10 @@ import { Route as CheckEmailRouteImport } from './routes/check-email'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StoriesIndexRouteImport } from './routes/stories/index'
+import { Route as EasySpanishNewsIndexRouteImport } from './routes/easy-spanish-news/index'
 import { Route as StorySlugRouteImport } from './routes/story/$slug'
 import { Route as StoriesLevelSlugRouteImport } from './routes/stories/$levelSlug'
+import { Route as EasySpanishNewsDateRouteImport } from './routes/easy-spanish-news/$date'
 import { Route as AuthedAccountRouteImport } from './routes/_authed/account'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -96,6 +98,11 @@ const StoriesIndexRoute = StoriesIndexRouteImport.update({
   path: '/stories/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EasySpanishNewsIndexRoute = EasySpanishNewsIndexRouteImport.update({
+  id: '/easy-spanish-news/',
+  path: '/easy-spanish-news/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StorySlugRoute = StorySlugRouteImport.update({
   id: '/story/$slug',
   path: '/story/$slug',
@@ -104,6 +111,11 @@ const StorySlugRoute = StorySlugRouteImport.update({
 const StoriesLevelSlugRoute = StoriesLevelSlugRouteImport.update({
   id: '/stories/$levelSlug',
   path: '/stories/$levelSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EasySpanishNewsDateRoute = EasySpanishNewsDateRouteImport.update({
+  id: '/easy-spanish-news/$date',
+  path: '/easy-spanish-news/$date',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedAccountRoute = AuthedAccountRouteImport.update({
@@ -126,8 +138,10 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/account': typeof AuthedAccountRoute
+  '/easy-spanish-news/$date': typeof EasySpanishNewsDateRoute
   '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
+  '/easy-spanish-news/': typeof EasySpanishNewsIndexRoute
   '/stories/': typeof StoriesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -144,8 +158,10 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/account': typeof AuthedAccountRoute
+  '/easy-spanish-news/$date': typeof EasySpanishNewsDateRoute
   '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
+  '/easy-spanish-news': typeof EasySpanishNewsIndexRoute
   '/stories': typeof StoriesIndexRoute
 }
 export interface FileRoutesById {
@@ -164,8 +180,10 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/_authed/account': typeof AuthedAccountRoute
+  '/easy-spanish-news/$date': typeof EasySpanishNewsDateRoute
   '/stories/$levelSlug': typeof StoriesLevelSlugRoute
   '/story/$slug': typeof StorySlugRoute
+  '/easy-spanish-news/': typeof EasySpanishNewsIndexRoute
   '/stories/': typeof StoriesIndexRoute
 }
 export interface FileRouteTypes {
@@ -184,8 +202,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/account'
+    | '/easy-spanish-news/$date'
     | '/stories/$levelSlug'
     | '/story/$slug'
+    | '/easy-spanish-news/'
     | '/stories/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -202,8 +222,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/account'
+    | '/easy-spanish-news/$date'
     | '/stories/$levelSlug'
     | '/story/$slug'
+    | '/easy-spanish-news'
     | '/stories'
   id:
     | '__root__'
@@ -221,8 +243,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/_authed/account'
+    | '/easy-spanish-news/$date'
     | '/stories/$levelSlug'
     | '/story/$slug'
+    | '/easy-spanish-news/'
     | '/stories/'
   fileRoutesById: FileRoutesById
 }
@@ -240,8 +264,10 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  EasySpanishNewsDateRoute: typeof EasySpanishNewsDateRoute
   StoriesLevelSlugRoute: typeof StoriesLevelSlugRoute
   StorySlugRoute: typeof StorySlugRoute
+  EasySpanishNewsIndexRoute: typeof EasySpanishNewsIndexRoute
   StoriesIndexRoute: typeof StoriesIndexRoute
 }
 
@@ -345,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoriesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/easy-spanish-news/': {
+      id: '/easy-spanish-news/'
+      path: '/easy-spanish-news'
+      fullPath: '/easy-spanish-news/'
+      preLoaderRoute: typeof EasySpanishNewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/story/$slug': {
       id: '/story/$slug'
       path: '/story/$slug'
@@ -357,6 +390,13 @@ declare module '@tanstack/react-router' {
       path: '/stories/$levelSlug'
       fullPath: '/stories/$levelSlug'
       preLoaderRoute: typeof StoriesLevelSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/easy-spanish-news/$date': {
+      id: '/easy-spanish-news/$date'
+      path: '/easy-spanish-news/$date'
+      fullPath: '/easy-spanish-news/$date'
+      preLoaderRoute: typeof EasySpanishNewsDateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/account': {
@@ -394,8 +434,10 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  EasySpanishNewsDateRoute: EasySpanishNewsDateRoute,
   StoriesLevelSlugRoute: StoriesLevelSlugRoute,
   StorySlugRoute: StorySlugRoute,
+  EasySpanishNewsIndexRoute: EasySpanishNewsIndexRoute,
   StoriesIndexRoute: StoriesIndexRoute,
 }
 export const routeTree = rootRouteImport

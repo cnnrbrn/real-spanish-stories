@@ -7,6 +7,7 @@ import AuthMenu from './auth-menu'
 const navLinks = [
   { to: '/' as const, label: 'Home', exact: true },
   { to: '/stories' as const, label: 'Stories' },
+  { to: '/easy-spanish-news' as const, label: 'News' },
   { to: '/how-it-works' as const, label: 'How it works' },
   { to: '/contact' as const, label: 'Contact Us' },
 ]

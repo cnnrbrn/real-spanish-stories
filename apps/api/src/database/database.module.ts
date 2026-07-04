@@ -3,7 +3,7 @@ import { DATABASE_CONNECTION } from "./database.constants";
 import { ConfigService } from "@nestjs/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { storiesSchema, storyDownloadsSchema, user, session, account, verification } from "@real-spanish-stories/shared";
+import { storiesSchema, storyDownloadsSchema, user, session, account, verification, newsSchema } from "@real-spanish-stories/shared";
 
 @Module({
   providers: [
@@ -17,6 +17,7 @@ import { storiesSchema, storyDownloadsSchema, user, session, account, verificati
           schema: {
             stories: storiesSchema,
             storyDownloads: storyDownloadsSchema,
+            news: newsSchema,
             user,
             session,
             account,

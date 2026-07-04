@@ -4,6 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { DatabaseModule } from "./database/database.module";
 import { StoriesModule } from "./features/stories/stories.module";
+import { NewsModule } from "./features/news/news.module";
 import { TranslateModule } from "./features/translate/translate.module";
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
@@ -31,6 +32,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
     }),
     BetterAuthModule,
     StoriesModule,
+    NewsModule,
     TranslateModule,
     UsersModule,
     ContactModule,

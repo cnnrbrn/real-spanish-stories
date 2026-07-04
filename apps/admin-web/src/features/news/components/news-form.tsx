@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 
 const newsFormSchema = z.object({
   date: z.string().min(1, 'Date is required'),
@@ -109,7 +109,7 @@ export function NewsForm() {
             <FormItem>
               <FormLabel>Transcript</FormLabel>
               <FormControl>
-                <Textarea rows={10} placeholder="Paste the transcript..." {...field} />
+                <RichTextEditor value={field.value ?? ''} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

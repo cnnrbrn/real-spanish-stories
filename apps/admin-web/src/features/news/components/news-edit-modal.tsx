@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
 interface NewsEditModalProps {
   news: NewsDetail
@@ -132,7 +132,7 @@ export function NewsEditModal({ news, trigger }: NewsEditModalProps) {
                 <FormItem>
                   <FormLabel>Transcript</FormLabel>
                   <FormControl>
-                    <Textarea rows={10} {...field} />
+                    <RichTextEditor value={field.value ?? ""} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

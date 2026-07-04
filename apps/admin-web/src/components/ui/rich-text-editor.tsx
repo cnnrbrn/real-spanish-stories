@@ -1,7 +1,7 @@
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { useEffect, useState } from "react"
-import { Bold, Italic, List, ListOrdered } from "lucide-react"
+import { Bold, Heading2, Heading3, Italic, List, ListOrdered } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./button"
 
@@ -44,6 +44,24 @@ export function RichTextEditor({ value, onChange, className }: RichTextEditorPro
   return (
     <div className={cn("rounded-md border border-input bg-background text-sm", className)}>
       <div className="flex gap-1 border-b border-input p-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className={cn("h-7 w-7 p-0", editor?.isActive("heading", { level: 2 }) && "bg-muted")}
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+        >
+          <Heading2 className="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className={cn("h-7 w-7 p-0", editor?.isActive("heading", { level: 3 }) && "bg-muted")}
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+        >
+          <Heading3 className="h-3.5 w-3.5" />
+        </Button>
         <Button
           type="button"
           variant="ghost"
@@ -92,7 +110,7 @@ export function RichTextEditor({ value, onChange, className }: RichTextEditorPro
       </div>
       <EditorContent
         editor={editor}
-        className="px-3 py-2 focus-within:outline-none [&_.tiptap]:outline-none [&_.tiptap]:min-h-20 [&_.tiptap_p]:my-1 [&_.tiptap_ul]:list-disc [&_.tiptap_ul]:pl-5 [&_.tiptap_ol]:list-decimal [&_.tiptap_ol]:pl-5 [&_.tiptap_li]:my-0.5 [&_.tiptap_strong]:font-bold [&_.tiptap_em]:italic"
+        className="prose dark:prose-invert prose-sm max-w-none px-3 py-2 focus-within:outline-none [&_.tiptap]:outline-none [&_.tiptap]:min-h-20"
       />
       {showHtml && (
         <div className="border-t border-input">
