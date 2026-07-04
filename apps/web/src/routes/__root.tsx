@@ -62,17 +62,27 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         name: 'description',
         content:
-          'Learn Spanish with real-voice audio stories about history. Choose from four levels - absolute beginner to advanced - and build vocabulary naturally.',
+          'Learn Spanish by listening to short audio stories from real Latin American history, across four levels. Narrated in clear Argentine Spanish with full transcripts and English translations.',
       },
       {
-        title: 'Real Spanish Stories | Learn Spanish with History',
+        title: 'Spanish Listening Practice with Real Latin American Stories',
       },
       { name: 'twitter:card', content: 'summary_large_image' },
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'Real Spanish Stories' },
-      { property: 'og:title', content: 'Real Spanish Stories | Learn Spanish with History' },
-      { property: 'og:description', content: 'Learn Spanish with real-voice audio stories about history. Choose from four levels - absolute beginner to advanced - and build vocabulary naturally.' },
-      { property: 'og:image', content: 'https://realspanishstories.com/og-image.jpg' },
+      {
+        property: 'og:title',
+        content: 'Spanish Listening Practice with Real Latin American Stories',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Learn Spanish by listening to short audio stories from real Latin American history, across four levels. Narrated in clear Argentine Spanish with full transcripts and English translations.',
+      },
+      {
+        property: 'og:image',
+        content: 'https://realspanishstories.com/og-image.jpg',
+      },
     ],
     scripts: [
       {
