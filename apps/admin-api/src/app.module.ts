@@ -6,6 +6,7 @@ import { BullModule } from "@nestjs/bullmq";
 import { DatabaseModule } from "./database/database.module";
 import { VideosModule } from "./features/videos/videos.module";
 import { StoriesModule } from "./features/stories/stories.module";
+import { NewsModule } from "./features/news/news.module";
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
@@ -29,6 +30,7 @@ import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
     DatabaseModule,
     VideosModule,
     StoriesModule,
+    NewsModule,
   ],
   controllers: [AppController],
   providers: [

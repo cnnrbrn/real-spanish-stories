@@ -1,4 +1,4 @@
-import { Home, BookOpen } from 'lucide-react'
+import { Home, BookOpen, Newspaper } from 'lucide-react'
 import { Link, useLocation } from '@tanstack/react-router'
 import {
   Sidebar,
@@ -23,6 +23,11 @@ const menuItems = [
     title: 'Stories',
     url: '/stories',
     icon: BookOpen,
+  },
+  {
+    title: 'News',
+    url: '/news',
+    icon: Newspaper,
   },
 ]
 

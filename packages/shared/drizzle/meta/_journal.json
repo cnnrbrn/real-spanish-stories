@@ -71,6 +71,13 @@
       "when": 1778447418995,
       "tag": "0010_light_sentry",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1783187246541,
+      "tag": "0011_wandering_oracle",
+      "breakpoints": true
     }
   ]
 }

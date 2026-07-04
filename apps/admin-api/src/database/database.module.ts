@@ -5,6 +5,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { videosSchema } from "@real-spanish-stories/shared";
 import { storiesSchema } from "@real-spanish-stories/shared";
+import { newsSchema } from "@real-spanish-stories/shared";
 
 @Module({
   providers: [
@@ -15,7 +16,7 @@ import { storiesSchema } from "@real-spanish-stories/shared";
           connectionString: configService.getOrThrow("DATABASE_URL"),
         });
         return drizzle(pool, {
-          schema: { videos: videosSchema, stories: storiesSchema },
+          schema: { videos: videosSchema, stories: storiesSchema, news: newsSchema },
         });
       },
       inject: [ConfigService],

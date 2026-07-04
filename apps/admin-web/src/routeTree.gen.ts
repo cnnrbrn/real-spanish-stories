@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StoriesIndexRouteImport } from './routes/stories/index'
+import { Route as NewsIndexRouteImport } from './routes/news/index'
 import { Route as VideosNewRouteImport } from './routes/videos/new'
+import { Route as NewsNewRouteImport } from './routes/news/new'
 import { Route as VideosIdUploadRouteImport } from './routes/videos/$id.upload'
 import { Route as VideosIdTranscriptRouteImport } from './routes/videos/$id.transcript'
 import { Route as VideosIdSectionsRouteImport } from './routes/videos/$id.sections'
@@ -27,9 +29,19 @@ const StoriesIndexRoute = StoriesIndexRouteImport.update({
   path: '/stories/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VideosNewRoute = VideosNewRouteImport.update({
   id: '/videos/new',
   path: '/videos/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsNewRoute = NewsNewRouteImport.update({
+  id: '/news/new',
+  path: '/news/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VideosIdUploadRoute = VideosIdUploadRouteImport.update({
@@ -55,7 +67,9 @@ const VideosIdLanguageTaggedRoute = VideosIdLanguageTaggedRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/news/new': typeof NewsNewRoute
   '/videos/new': typeof VideosNewRoute
+  '/news/': typeof NewsIndexRoute
   '/stories/': typeof StoriesIndexRoute
   '/videos/$id/language-tagged': typeof VideosIdLanguageTaggedRoute
   '/videos/$id/sections': typeof VideosIdSectionsRoute
@@ -64,7 +78,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/news/new': typeof NewsNewRoute
   '/videos/new': typeof VideosNewRoute
+  '/news': typeof NewsIndexRoute
   '/stories': typeof StoriesIndexRoute
   '/videos/$id/language-tagged': typeof VideosIdLanguageTaggedRoute
   '/videos/$id/sections': typeof VideosIdSectionsRoute
@@ -74,7 +90,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/news/new': typeof NewsNewRoute
   '/videos/new': typeof VideosNewRoute
+  '/news/': typeof NewsIndexRoute
   '/stories/': typeof StoriesIndexRoute
   '/videos/$id/language-tagged': typeof VideosIdLanguageTaggedRoute
   '/videos/$id/sections': typeof VideosIdSectionsRoute
@@ -85,7 +103,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/news/new'
     | '/videos/new'
+    | '/news/'
     | '/stories/'
     | '/videos/$id/language-tagged'
     | '/videos/$id/sections'
@@ -94,7 +114,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/news/new'
     | '/videos/new'
+    | '/news'
     | '/stories'
     | '/videos/$id/language-tagged'
     | '/videos/$id/sections'
@@ -103,7 +125,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/news/new'
     | '/videos/new'
+    | '/news/'
     | '/stories/'
     | '/videos/$id/language-tagged'
     | '/videos/$id/sections'
@@ -113,7 +137,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NewsNewRoute: typeof NewsNewRoute
   VideosNewRoute: typeof VideosNewRoute
+  NewsIndexRoute: typeof NewsIndexRoute
   StoriesIndexRoute: typeof StoriesIndexRoute
   VideosIdLanguageTaggedRoute: typeof VideosIdLanguageTaggedRoute
   VideosIdSectionsRoute: typeof VideosIdSectionsRoute
@@ -137,11 +163,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoriesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news/': {
+      id: '/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/videos/new': {
       id: '/videos/new'
       path: '/videos/new'
       fullPath: '/videos/new'
       preLoaderRoute: typeof VideosNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/new': {
+      id: '/news/new'
+      path: '/news/new'
+      fullPath: '/news/new'
+      preLoaderRoute: typeof NewsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/videos/$id/upload': {
@@ -177,7 +217,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NewsNewRoute: NewsNewRoute,
   VideosNewRoute: VideosNewRoute,
+  NewsIndexRoute: NewsIndexRoute,
   StoriesIndexRoute: StoriesIndexRoute,
   VideosIdLanguageTaggedRoute: VideosIdLanguageTaggedRoute,
   VideosIdSectionsRoute: VideosIdSectionsRoute,
