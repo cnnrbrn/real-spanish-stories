@@ -9,9 +9,9 @@ const newsListQueryOptions = queryOptions({
   queryFn: () => getNews(),
 })
 
-const TITLE = 'Easy Spanish News | Real Spanish Stories'
+const TITLE = 'Easy Spanish News for Beginners – Slow Spanish with Transcripts'
 const DESCRIPTION =
-  'Daily Spanish news read in clear, easy-to-follow Spanish, with video and transcript for every entry.'
+  'Easy Spanish news for learners: real Latin American stories read slowly in clear Argentine Spanish, with full transcript and interactive translation.'
 
 export const Route = createFileRoute('/easy-spanish-news/')({
   loader: ({ context: { queryClient } }) =>
