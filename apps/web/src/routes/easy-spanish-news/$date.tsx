@@ -1,9 +1,7 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { ChevronRight } from 'lucide-react'
+import { createFileRoute } from '@tanstack/react-router'
 import { getNewsByDate } from '@/features/news/api'
 import { formatNewsDate } from '@/features/news/utils/date'
-import { PageContainer, PageHeader } from '@/components/ui/page'
-import { VideoPlayer } from '@/features/stories/components/video-player'
+import { NewsDetails } from '@/features/news/components/news-details'
 
 export const Route = createFileRoute('/easy-spanish-news/$date')({
   loader: async ({ params }) => getNewsByDate(params.date),
@@ -81,33 +79,5 @@ export const Route = createFileRoute('/easy-spanish-news/$date')({
 
 function NewsDetailPage() {
   const news = Route.useLoaderData()
-  const formattedDate = formatNewsDate(news.date)
-
-  return (
-    <PageContainer width="wide">
-      <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <Link to="/easy-spanish-news" className="hover:text-primary transition-colors">
-          Easy Spanish News
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-foreground">{news.title ?? formattedDate}</span>
-      </nav>
-      <PageHeader title={news.title ?? formattedDate} subtitle={news.title ? formattedDate : undefined} />
-      {news.videoLink && (
-        <div className="mb-6 aspect-video bg-black">
-          <VideoPlayer videoUrl={news.videoLink} />
-        </div>
-      )}
-      {news.transcript && (
-        <div
-          className="prose prose-lg dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: news.transcript }}
-        />
-      )}
-    </PageContainer>
-  )
+  return <NewsDetails news={news} />
 }

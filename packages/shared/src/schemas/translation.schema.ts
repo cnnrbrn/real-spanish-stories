@@ -1,9 +1,14 @@
 import { z } from "zod";
 
-export const translationRequestSchema = z.object({
-  phrase: z.string(),
-  storyId: z.number(),
-});
+export const translationRequestSchema = z
+  .object({
+    phrase: z.string(),
+    storyId: z.number().optional(),
+    newsId: z.number().optional(),
+  })
+  .refine((v) => (v.storyId == null) !== (v.newsId == null), {
+    message: "Provide exactly one of storyId or newsId",
+  });
 
 export type TranslationRequest = z.infer<typeof translationRequestSchema>;
 

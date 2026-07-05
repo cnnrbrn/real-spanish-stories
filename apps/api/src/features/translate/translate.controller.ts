@@ -16,7 +16,7 @@ export class TranslateController {
   @ApiOperation({ summary: "Translate a word or phrase in context" })
   translateWord(@Body() body: TranslationRequestDto) {
     return this.commandBus.execute(
-      new TranslatePhraseCommand(body.phrase, body.storyId),
+      new TranslatePhraseCommand(body.phrase, body.storyId, body.newsId),
     );
   }
 }

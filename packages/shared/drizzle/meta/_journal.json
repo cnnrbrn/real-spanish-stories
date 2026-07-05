@@ -78,6 +78,13 @@
       "when": 1783187246541,
       "tag": "0011_wandering_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1783207738931,
+      "tag": "0012_lazy_the_order",
+      "breakpoints": true
     }
   ]
 }
