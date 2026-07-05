@@ -9,7 +9,12 @@ import { SkipToStorySwitch } from '@/features/stories/components/skip-to-story-s
 import { StoryAutoplaySwitch } from '@/features/stories/components/story-autoplay-switch'
 import { LevelLinks } from '@/features/stories/components/level-links'
 import { usePreferencesStore } from '@/stores/preferences'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import {
+  PageContainer,
+  pageDescriptionClass,
+  pageHeaderCenteredClass,
+  pageTitleClass,
+} from '@/components/ui/page'
 
 const levelMeta: Record<
   StoryLevel,
@@ -131,11 +136,12 @@ function LevelStoriesPage() {
 
   return (
     <PageContainer width="wide">
-      <PageHeader
-        className="text-center max-w-4xl mx-auto"
-        title={levelMeta[levelData.value].h1}
-        subtitle={levelMeta[levelData.value].intro}
-      />
+      <div className={pageHeaderCenteredClass}>
+        <h1 className={pageTitleClass}>{levelMeta[levelData.value].h1}</h1>
+        <p className={pageDescriptionClass}>
+          {levelMeta[levelData.value].intro}
+        </p>
+      </div>
       <LevelLinks activeLevel={levelData.value} />
       <div className="flex justify-end items-center gap-4 mb-4">
         {levelViewMode === 'row' && (

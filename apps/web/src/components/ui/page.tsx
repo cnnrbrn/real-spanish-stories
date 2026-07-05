@@ -24,21 +24,7 @@ export function PageContainer({
   )
 }
 
-interface PageHeaderProps {
-  title: React.ReactNode
-  subtitle?: React.ReactNode
-  className?: string
-}
-
-export function PageHeader({ title, subtitle, className }: PageHeaderProps) {
-  return (
-    <div className={className}>
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
-        {title}
-      </h1>
-      {subtitle && (
-        <p className="text-lg text-muted-foreground mb-8">{subtitle}</p>
-      )}
-    </div>
-  )
-}
+export const pageTitleClass =
+  'text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3'
+export const pageDescriptionClass = 'text-lg text-muted-foreground mb-8'
+export const pageHeaderCenteredClass = 'text-center max-w-4xl mx-auto'

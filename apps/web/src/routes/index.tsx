@@ -3,7 +3,12 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { getStories } from '@/features/stories/api'
 import { StoryList } from '@/features/stories/components/story-list'
 import { LevelLinks } from '@/features/stories/components/level-links'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import {
+  PageContainer,
+  pageDescriptionClass,
+  pageHeaderCenteredClass,
+  pageTitleClass,
+} from '@/components/ui/page'
 
 const storiesQueryOptions = queryOptions({
   queryKey: ['stories'],
@@ -43,11 +48,15 @@ function HomePage() {
 
   return (
     <PageContainer width="wide">
-      <PageHeader
-        className="text-center max-w-5xl mx-auto"
-        title="Spanish Listening Practice with Real Latin American Stories"
-        subtitle="Short audio stories from real Latin American history, with full transcripts and English translations, across four levels."
-      />
+      <div className={pageHeaderCenteredClass}>
+        <h1 className={pageTitleClass}>
+          Spanish Listening Practice with Real Latin American Stories
+        </h1>
+        <p className={pageDescriptionClass}>
+          Short audio stories from real Latin American history, with full
+          transcripts and English translations, across four levels.
+        </p>
+      </div>
       <LevelLinks />
       <h2 className="text-2xl font-semibold tracking-tight text-foreground mb-4">
         Latest Spanish Audio Stories

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getMe } from '@/features/users/api'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import { PageContainer, pageTitleClass } from '@/components/ui/page'
 
 export const Route = createFileRoute('/_authed/account')({
   component: AccountPage,
@@ -17,7 +17,7 @@ function AccountPage() {
 
   return (
     <PageContainer width="prose">
-      <PageHeader title="Account" />
+      <h1 className={pageTitleClass}>Account</h1>
       <p className="text-muted-foreground">Signed in as {user.email}</p>
     </PageContainer>
   )

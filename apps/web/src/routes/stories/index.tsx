@@ -3,7 +3,12 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { getStoriesGrouped } from '@/features/stories/api'
 import { StoryGroupList } from '@/features/stories/components/story-group-list'
 import { LevelLinks } from '@/features/stories/components/level-links'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import {
+  PageContainer,
+  pageDescriptionClass,
+  pageHeaderCenteredClass,
+  pageTitleClass,
+} from '@/components/ui/page'
 
 const storiesGroupedQueryOptions = queryOptions({
   queryKey: ['stories', 'grouped'],
@@ -41,11 +46,18 @@ function StoriesPage() {
 
   return (
     <PageContainer width="wide">
-      <PageHeader
-        className="text-center max-w-4xl mx-auto"
-        title="Spanish Audio Stories for Every Level"
-        subtitle="Learn Spanish with short audio stories drawn from real Latin American history, graded across four levels from absolute beginner to advanced. Every story is narrated by a human in clear Argentine (rioplatense) Spanish, with an interactive transcript and English translations."
-      />
+      <div className={pageHeaderCenteredClass}>
+        <h1 className={pageTitleClass}>
+          Spanish Audio Stories for Every Level
+        </h1>
+        <p className={pageDescriptionClass}>
+          Learn Spanish with short audio stories drawn from real Latin
+          American history, graded across four levels from absolute beginner
+          to advanced. Every story is narrated by a human in clear Argentine
+          (rioplatense) Spanish, with an interactive transcript and English
+          translations.
+        </p>
+      </div>
       <LevelLinks />
       <StoryGroupList groups={groups} />
     </PageContainer>

@@ -6,7 +6,11 @@ import type { ContactRequest } from '@real-spanish-stories/shared'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import {
+  PageContainer,
+  pageDescriptionClass,
+  pageTitleClass,
+} from '@/components/ui/page'
 import {
   Form,
   FormControl,
@@ -47,16 +51,11 @@ function ContactPage() {
 
   return (
     <PageContainer width="prose">
-      <PageHeader
-        title="Contact us"
-        subtitle={
-          <>
-            Have a question, feedback or story suggestion?
-            <br />
-            We'd love to hear from you.
-          </>
-        }
-      />
+      <h1 className={pageTitleClass}>Contact us</h1>
+      <p className={pageDescriptionClass}>
+        Have a question, feedback or story suggestion?
+      </p>
+      <p className={pageDescriptionClass}>We'd love to hear from you.</p>
 
       {isSubmitSuccessful && (
         <p className="text-green-600 dark:text-green-400 font-medium mb-6">

@@ -1,17 +1,23 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import { ChevronRight, Mic } from 'lucide-react'
 import { getNews } from '@/features/news/api'
 import { formatNewsDate } from '@/features/news/utils/date'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import { newsHeading } from '@/features/news/utils/title'
+import {
+  PageContainer,
+  pageDescriptionClass,
+  pageTitleClass,
+} from '@/components/ui/page'
 
 const newsListQueryOptions = queryOptions({
   queryKey: ['news', 'list'],
   queryFn: () => getNews(),
 })
 
-const TITLE = 'Easy Spanish News for Beginners – Slow Spanish with Transcripts'
+const TITLE = 'Easy Spanish News: Slow Spanish Listening with Transcripts'
 const DESCRIPTION =
-  'Easy Spanish news for learners: real Latin American stories read slowly in clear Argentine Spanish, with full transcript and interactive translation.'
+  'Weekly Latin American news read slowly in clear, easy Argentine Spanish for learners, with video and full transcripts you can click for instant translation.'
 
 export const Route = createFileRoute('/easy-spanish-news/')({
   loader: ({ context: { queryClient } }) =>
@@ -42,27 +48,42 @@ function NewsListPage() {
   const { data: news } = useSuspenseQuery(newsListQueryOptions)
 
   return (
-    <PageContainer width="wide">
-      <PageHeader
-        title="Easy Spanish News"
-        subtitle="Daily news read in clear, easy-to-follow Spanish, with video and a full transcript."
-      />
+    <PageContainer width="prose">
+      <h1 className={pageTitleClass}>Easy Spanish News</h1>
+      <p className={pageDescriptionClass}>
+        Weekly Latin American news read in clear, slow Argentine (rioplatense)
+        Spanish, with a full transcript you can click for translation.
+      </p>
+      <p className={pageDescriptionClass}>
+        New episode every week, narrated in clear Argentine (rioplatense)
+        Spanish. Perfect listening practice for beginner and intermediate
+        learners who want real, current Spanish.
+      </p>
+
       {news.length === 0 ? (
         <p className="text-muted-foreground">No news items yet.</p>
       ) : (
         <ul className="divide-y divide-border">
           {news.map((item) => (
-            <li key={item.id} className="py-4">
+            <li key={item.id}>
               <Link
                 to="/easy-spanish-news/$date"
                 params={{ date: item.date }}
-                className="text-lg font-medium text-foreground hover:text-primary transition-colors"
+                className="group flex items-center gap-3 py-4 px-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"
               >
-                {formatNewsDate(item.date)}
+                <Mic className="w-5 h-5 shrink-0 text-muted-foreground" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
+                    {newsHeading(item)}
+                  </p>
+                  {item.title && (
+                    <p className="text-muted-foreground mt-1">
+                      {formatNewsDate(item.date)}
+                    </p>
+                  )}
+                </div>
+                <ChevronRight className="w-5 h-5 shrink-0 text-muted-foreground" />
               </Link>
-              {item.title && (
-                <p className="text-muted-foreground mt-1">{item.title}</p>
-              )}
             </li>
           ))}
         </ul>

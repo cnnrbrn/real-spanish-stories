@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { PageContainer, PageHeader } from '@/components/ui/page'
+import { PageContainer, pageTitleClass } from '@/components/ui/page'
 
 export const Route = createFileRoute('/terms')({
   component: RouteComponent,
@@ -8,7 +8,7 @@ export const Route = createFileRoute('/terms')({
 function RouteComponent() {
   return (
     <PageContainer width="prose" className="text-gray-800 dark:text-gray-200">
-      <PageHeader title="Terms and Conditions" />
+      <h1 className={pageTitleClass}>Terms and Conditions</h1>
       <p className="text-sm text-muted-foreground mb-10">
         Effective Date: 01 May 2026
       </p>

@@ -5,7 +5,7 @@ import { translateNewsPhrase } from '../api'
 import { formatNewsDate } from '../utils/date'
 import { newsHeading } from '../utils/title'
 import type { NewsDetail, TranslationResponse } from '@real-spanish-stories/shared'
-import { PageContainer } from '@/components/ui/page'
+import { PageContainer, pageTitleClass } from '@/components/ui/page'
 import { VideoPlayer } from '@/features/stories/components/video-player'
 import { WordExplanationPanel } from '@/features/stories/components/word-explanation-panel'
 
@@ -149,9 +149,7 @@ export function NewsDetails({ news }: NewsDetailsProps) {
         <div className="flex-1 min-w-0">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-                {newsHeading(news)}
-              </h1>
+              <h1 className={pageTitleClass}>{newsHeading(news)}</h1>
               {news.title && (
                 <p className="mt-3 text-lg text-muted-foreground">
                   {formattedDate}
@@ -185,16 +183,18 @@ export function NewsDetails({ news }: NewsDetailsProps) {
               <p className="text-lg text-muted-foreground mb-3">
                 Select a Spanish word or phrase for a translation.
               </p>
-              <div
-                ref={transcriptRef}
-                onMouseUp={(e) => handleSelect(e.clientX, e.clientY)}
-                onTouchEnd={(e) => {
-                  const touch = e.changedTouches[0]
-                  if (touch) handleSelect(touch.clientX, touch.clientY)
-                }}
-                className="prose prose-lg dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: news.transcript }}
-              />
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 bg-card">
+                <div
+                  ref={transcriptRef}
+                  onMouseUp={(e) => handleSelect(e.clientX, e.clientY)}
+                  onTouchEnd={(e) => {
+                    const touch = e.changedTouches[0]
+                    if (touch) handleSelect(touch.clientX, touch.clientY)
+                  }}
+                  className="prose prose-lg dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: news.transcript }}
+                />
+              </div>
             </>
           )}
         </div>
