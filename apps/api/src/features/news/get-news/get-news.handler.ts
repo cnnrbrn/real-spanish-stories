@@ -27,6 +27,7 @@ export class GetNewsHandler implements IQueryHandler<GetNewsQuery> {
         date: newsSchema.date,
         title: newsSchema.title,
         videoLink: newsSchema.videoLink,
+        pdfPath: newsSchema.pdfPath,
         status: newsSchema.status,
         createdAt: newsSchema.createdAt,
         updatedAt: newsSchema.updatedAt,

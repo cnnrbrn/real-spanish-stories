@@ -1,0 +1,1 @@
+ALTER TABLE "news" ADD COLUMN "pdf_path" varchar(500);

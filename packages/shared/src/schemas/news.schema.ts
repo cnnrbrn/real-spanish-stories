@@ -8,6 +8,7 @@ export const newsResponseSchema = z.object({
   date: z.string(),
   title: z.string().nullable(),
   videoLink: z.string().nullable(),
+  pdfPath: z.string().nullable(),
   status: z.enum(STORY_STATUS_VALUES),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),

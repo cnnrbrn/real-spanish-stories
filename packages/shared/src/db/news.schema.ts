@@ -13,6 +13,7 @@ export const newsSchema = pgTable("news", {
   title: varchar("title", { length: 200 }),
   videoLink: varchar("video_link", { length: 500 }),
   transcript: text("transcript"),
+  pdfPath: varchar("pdf_path", { length: 500 }),
   status: varchar("status", { length: 50 }).notNull().default("draft"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

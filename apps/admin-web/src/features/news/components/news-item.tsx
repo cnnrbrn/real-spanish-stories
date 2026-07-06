@@ -1,8 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { NewsDetail } from '@real-spanish-stories/shared'
-import { updateNewsStatus, deleteNews } from '../api'
+import {
+  updateNewsStatus,
+  deleteNews,
+  createNewsPdf,
+  deleteNewsPdf,
+} from '../api'
 import { newsKeys } from '../constants'
-import { Trash2, ExternalLink, Edit } from 'lucide-react'
+import { Trash2, ExternalLink, Edit, FileText, FileX } from 'lucide-react'
+import { API_URL } from '@/config'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,6 +46,22 @@ export function NewsItem({ news }: NewsItemProps) {
     mutationFn: () => deleteNews(news.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: newsKeys.list() })
+    },
+  })
+
+  const createPdfMutation = useMutation({
+    mutationFn: () => createNewsPdf(news.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: newsKeys.list() })
+      queryClient.invalidateQueries({ queryKey: newsKeys.detail(news.id) })
+    },
+  })
+
+  const deletePdfMutation = useMutation({
+    mutationFn: () => deleteNewsPdf(news.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: newsKeys.list() })
+      queryClient.invalidateQueries({ queryKey: newsKeys.detail(news.id) })
     },
   })
 
@@ -132,7 +154,7 @@ export function NewsItem({ news }: NewsItemProps) {
       </CardHeader>
 
       <Separator />
-      <CardContent className="pt-4 flex gap-2">
+      <CardContent className="pt-4 flex flex-wrap gap-2">
         <Button
           size="sm"
           variant={isDraft ? 'default' : 'secondary'}
@@ -145,7 +167,56 @@ export function NewsItem({ news }: NewsItemProps) {
             ? 'Publish'
             : 'Unpublish'}
         </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => createPdfMutation.mutate()}
+          disabled={createPdfMutation.isPending || !news.transcript}
+          title={
+            news.transcript
+              ? undefined
+              : 'Add a transcript before creating a PDF'
+          }
+        >
+          <FileText className="h-4 w-4 mr-1.5" />
+          {createPdfMutation.isPending
+            ? 'Generating...'
+            : news.pdfPath
+            ? 'Regenerate PDF'
+            : 'Create PDF'}
+        </Button>
+
+        {news.pdfPath && (
+          <>
+            <a
+              href={`${API_URL}/news/${news.id}/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 h-8 text-sm font-medium hover:bg-muted transition-colors"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span>Download PDF</span>
+            </a>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="hover:text-destructive"
+              onClick={() => deletePdfMutation.mutate()}
+              disabled={deletePdfMutation.isPending}
+              title="Delete PDF"
+            >
+              <FileX className="h-4 w-4" />
+            </Button>
+          </>
+        )}
       </CardContent>
+      {(createPdfMutation.isError || deletePdfMutation.isError) && (
+        <CardContent className="pt-0 text-sm text-destructive">
+          {(createPdfMutation.error as Error)?.message ??
+            (deletePdfMutation.error as Error)?.message}
+        </CardContent>
+      )}
     </Card>
   )
 }

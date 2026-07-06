@@ -27,6 +27,7 @@
     "bullmq": "^5.70.1",
     "drizzle-orm": "^0.45.2",
     "nestjs-zod": "^5.1.1",
+    "node-html-parser": "^8.0.4",
     "openai": "^6.22.0",
     "pdfkit": "^0.17.2",
     "pg": "^8.18.0",

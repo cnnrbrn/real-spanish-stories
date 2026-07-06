@@ -5,6 +5,7 @@ import { translateNewsPhrase } from '../api'
 import { formatNewsDate } from '../utils/date'
 import { newsHeading } from '../utils/title'
 import type { NewsDetail, TranslationResponse } from '@real-spanish-stories/shared'
+import { NewsDownloads } from './news-downloads'
 import { PageContainer, pageTitleClass } from '@/components/ui/page'
 import { VideoPlayer } from '@/features/stories/components/video-player'
 import { WordExplanationPanel } from '@/features/stories/components/word-explanation-panel'
@@ -177,9 +178,12 @@ export function NewsDetails({ news }: NewsDetailsProps) {
 
           {news.transcript && (
             <>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                Transcript
-              </h2>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  Transcript
+                </h2>
+                <NewsDownloads news={news} />
+              </div>
               <p className="text-lg text-muted-foreground mb-3">
                 Select a Spanish word or phrase for a translation.
               </p>

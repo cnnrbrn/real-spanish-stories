@@ -69,3 +69,24 @@ export async function deleteNews(id: number): Promise<void> {
     throw new Error(error.message || `HTTP ${res.status}`)
   }
 }
+
+export async function createNewsPdf(id: number): Promise<{ pdfPath: string }> {
+  const res = await fetch(`${API_URL}/news/${id}/create-pdf`, {
+    method: "POST",
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
+export async function deleteNewsPdf(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/news/${id}/pdf`, {
+    method: "DELETE",
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+}
