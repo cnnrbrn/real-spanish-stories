@@ -15,11 +15,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 
 const newsFormSchema = z.object({
   date: z.string().min(1, 'Date is required'),
   title: z.string().max(200).optional(),
+  metaDescription: z.string().max(160).optional(),
   videoLink: z.string().url().optional().or(z.literal('')),
   transcript: z.string().optional(),
 })
@@ -35,6 +37,7 @@ export function NewsForm() {
     defaultValues: {
       date: '',
       title: '',
+      metaDescription: '',
       videoLink: '',
       transcript: '',
     },
@@ -52,6 +55,7 @@ export function NewsForm() {
     createMutation.mutate({
       date: data.date,
       title: data.title || undefined,
+      metaDescription: data.metaDescription || undefined,
       videoLink: data.videoLink || undefined,
       transcript: data.transcript || undefined,
     })
@@ -82,6 +86,23 @@ export function NewsForm() {
               <FormLabel>Title (optional)</FormLabel>
               <FormControl>
                 <Input placeholder="Enter a title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="metaDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Meta description (optional)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Short SEO description shown in search results"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -15,11 +15,22 @@ export const Route = createFileRoute('/easy-spanish-news/$date')({
     return {
       meta: [
         { title: seoTitle },
+        ...(loaderData?.metaDescription
+          ? [{ name: 'description', content: loaderData.metaDescription }]
+          : []),
         ...(loaderData
           ? [
               { property: 'og:type', content: 'article' },
               { property: 'og:title', content: seoTitle },
               { property: 'og:url', content: canonicalUrl },
+              ...(loaderData.metaDescription
+                ? [
+                    {
+                      property: 'og:description',
+                      content: loaderData.metaDescription,
+                    },
+                  ]
+                : []),
             ]
           : []),
       ],
@@ -32,6 +43,9 @@ export const Route = createFileRoute('/easy-spanish-news/$date')({
                 '@context': 'https://schema.org',
                 '@type': 'NewsArticle',
                 headline: loaderData.title ?? formattedDate,
+                ...(loaderData.metaDescription
+                  ? { description: loaderData.metaDescription }
+                  : {}),
                 url: canonicalUrl,
                 inLanguage: 'es',
                 datePublished: new Date(loaderData.createdAt).toISOString(),
