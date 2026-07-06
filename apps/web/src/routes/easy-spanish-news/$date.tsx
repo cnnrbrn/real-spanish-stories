@@ -9,8 +9,8 @@ export const Route = createFileRoute('/easy-spanish-news/$date')({
     const canonicalUrl = `https://realspanishstories.com/easy-spanish-news/${params.date}`
     const formattedDate = formatNewsDate(params.date)
     const seoTitle = loaderData?.title
-      ? `${loaderData.title} | Easy Spanish News`
-      : `Easy Spanish News: ${formattedDate}`
+      ? `${loaderData.title} - Easy Spanish News`
+      : `Easy Spanish News: Slow Spanish Listening (Rioplatense) - ${formattedDate}`
 
     return {
       meta: [
