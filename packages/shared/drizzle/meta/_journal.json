@@ -106,6 +106,13 @@
       "when": 1783338642740,
       "tag": "0015_plain_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1783362760717,
+      "tag": "0016_nifty_satana",
+      "breakpoints": true
     }
   ]
 }

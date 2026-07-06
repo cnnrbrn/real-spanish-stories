@@ -12,6 +12,7 @@ export const newsSchema = pgTable("news", {
   date: date("date").notNull().unique(),
   title: varchar("title", { length: 200 }),
   metaDescription: varchar("meta_description", { length: 160 }),
+  summary: text("summary"),
   videoLink: varchar("video_link", { length: 500 }),
   transcript: text("transcript"),
   pdfPath: varchar("pdf_path", { length: 500 }),

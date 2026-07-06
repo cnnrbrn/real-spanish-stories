@@ -18,6 +18,7 @@ export type NewsResponse = z.infer<typeof newsResponseSchema>;
 
 export const newsDetailSchema = newsResponseSchema.extend({
   metaDescription: z.string().max(160).nullable(),
+  summary: z.string().nullable(),
   transcript: z.string().nullable(),
 });
 
@@ -27,6 +28,7 @@ export const newsCreateSchema = z.object({
   date: z.string().regex(DATE_PATTERN),
   title: z.string().max(200).optional(),
   metaDescription: z.string().max(160).optional(),
+  summary: z.string().optional(),
   videoLink: z.string().url().optional(),
   transcript: z.string().optional(),
 });

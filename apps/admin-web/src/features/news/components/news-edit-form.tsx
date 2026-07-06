@@ -27,6 +27,7 @@ const editNewsSchema = z.object({
   date: z.string().min(1, "Date is required"),
   title: z.string().max(200).optional(),
   metaDescription: z.string().max(160).optional(),
+  summary: z.string().optional(),
   videoLink: z.string().url().optional().or(z.literal("")),
   transcript: z.string().optional(),
 })
@@ -43,6 +44,7 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
       date: news.date,
       title: news.title ?? "",
       metaDescription: news.metaDescription ?? "",
+      summary: news.summary ?? "",
       videoLink: news.videoLink ?? "",
       transcript: news.transcript ?? "",
     },
@@ -54,6 +56,7 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
         date: data.date,
         title: data.title || undefined,
         metaDescription: data.metaDescription || undefined,
+        summary: data.summary || undefined,
         videoLink: data.videoLink || undefined,
         transcript: data.transcript || undefined,
       }),
@@ -108,6 +111,19 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
                   placeholder="Short SEO description shown in search results"
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="summary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Summary (optional)</FormLabel>
+              <FormControl>
+                <RichTextEditor value={field.value ?? ""} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

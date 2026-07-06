@@ -176,6 +176,18 @@ export function NewsDetails({ news }: NewsDetailsProps) {
             </div>
           )}
 
+          {news.summary && (
+            <div className="mb-6">
+              <h2 className="mb-2 text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                Summary
+              </h2>
+              <div
+                className="prose prose-lg dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: news.summary }}
+              />
+            </div>
+          )}
+
           {news.transcript && (
             <>
               <div className="mb-2 flex items-center justify-between gap-3">

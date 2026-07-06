@@ -22,6 +22,7 @@ const newsFormSchema = z.object({
   date: z.string().min(1, 'Date is required'),
   title: z.string().max(200).optional(),
   metaDescription: z.string().max(160).optional(),
+  summary: z.string().optional(),
   videoLink: z.string().url().optional().or(z.literal('')),
   transcript: z.string().optional(),
 })
@@ -38,6 +39,7 @@ export function NewsForm() {
       date: '',
       title: '',
       metaDescription: '',
+      summary: '',
       videoLink: '',
       transcript: '',
     },
@@ -56,6 +58,7 @@ export function NewsForm() {
       date: data.date,
       title: data.title || undefined,
       metaDescription: data.metaDescription || undefined,
+      summary: data.summary || undefined,
       videoLink: data.videoLink || undefined,
       transcript: data.transcript || undefined,
     })
@@ -103,6 +106,20 @@ export function NewsForm() {
                   placeholder="Short SEO description shown in search results"
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="summary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Summary (optional)</FormLabel>
+              <FormControl>
+                <RichTextEditor value={field.value ?? ''} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
