@@ -2,7 +2,7 @@ import { useRouteContext } from '@tanstack/react-router'
 import { Download } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import type { NewsDetail } from '@real-spanish-stories/shared'
+import { newsPdfFilename, type NewsDetail } from '@real-spanish-stories/shared'
 import { authClient } from '@/lib/auth-client'
 import { useAuthModals } from '@/stores/auth-modals'
 
@@ -60,7 +60,7 @@ export function NewsDownloads({ news }: NewsDownloadsProps) {
 
       const blob = await res.blob()
       const headerName = filenameFromContentDisposition(res.headers.get('Content-Disposition'))
-      const filename = headerName ?? `easy-spanish-news-${news.date}.pdf`
+      const filename = headerName ?? newsPdfFilename(news)
       triggerBrowserDownload(blob, filename)
     } catch {
       toast.error('Download failed. Please try again.')

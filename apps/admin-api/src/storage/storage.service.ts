@@ -55,10 +55,18 @@ export class StorageService {
     );
   }
 
-  async getPresignedUrl(key: string, expiresIn = 3600): Promise<string> {
+  async getPresignedUrl(
+    key: string,
+    expiresIn = 3600,
+    responseContentDisposition?: string,
+  ): Promise<string> {
     return getSignedUrl(
       this.client,
-      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+      new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        ResponseContentDisposition: responseContentDisposition,
+      }),
       { expiresIn },
     );
   }

@@ -2,7 +2,7 @@ import { Inject, NotFoundException } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
-import { newsSchema } from "@real-spanish-stories/shared";
+import { newsSchema, newsPdfFilename } from "@real-spanish-stories/shared";
 import { GetNewsPdfQuery } from "./get-news-pdf.query";
 import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { StorageService } from "src/storage/storage.service";
@@ -24,7 +24,7 @@ export class GetNewsPdfHandler implements IQueryHandler<GetNewsPdfQuery> {
   ): Promise<{ buffer: Buffer; filename: string }> {
     const news = await this.database.query.news.findFirst({
       where: eq(newsSchema.id, query.id),
-      columns: { pdfPath: true },
+      columns: { pdfPath: true, title: true, date: true },
     });
 
     if (!news) {
@@ -41,8 +41,7 @@ export class GetNewsPdfHandler implements IQueryHandler<GetNewsPdfQuery> {
     );
 
     const buffer = await this.storageService.download(news.pdfPath);
-    // News keys are `pdf/news/<file>.pdf`, so take the final path segment.
-    const filename = news.pdfPath.split("/").pop() ?? "news.pdf";
+    const filename = newsPdfFilename({ title: news.title, date: news.date });
     return { buffer, filename };
   }
 }

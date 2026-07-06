@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import type { Response } from "express";
-import type { News } from "@real-spanish-stories/shared";
+import { newsPdfFilename, type News } from "@real-spanish-stories/shared";
 import { StorageService } from "src/storage/storage.service";
 import { GetNewsListQuery } from "./get-news-list/get-news-list.query";
 import { GetNewsQuery } from "./get-news/get-news.query";
@@ -91,7 +91,12 @@ export class NewsController {
     if (!news.pdfPath) {
       throw new NotFoundException(`News ${id} has no PDF`);
     }
-    const url = await this.storageService.getPresignedUrl(news.pdfPath);
+    const filename = newsPdfFilename(news);
+    const url = await this.storageService.getPresignedUrl(
+      news.pdfPath,
+      undefined,
+      `attachment; filename="${filename}"`,
+    );
     res.redirect(url);
   }
 }

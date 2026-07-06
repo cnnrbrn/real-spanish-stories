@@ -9,6 +9,7 @@ export * from "./schemas/translation.schema.js";
 export * from "./schemas/contact.schema.js";
 export * from "./utils/string-utils.js";
 export * from "./utils/slug.js";
+export * from "./utils/news-filename.js";
 export * from "./utils/story-start.js";
 export * from "./db/stories.schema.js";
 export * from "./db/news.schema.js";
