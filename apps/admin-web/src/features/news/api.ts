@@ -15,6 +15,15 @@ export async function listNews(): Promise<Array<NewsDetail>> {
   return res.json()
 }
 
+export async function getNews(id: number): Promise<NewsDetail> {
+  const res = await fetch(`${API_URL}/news/${id}`)
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function createNews(data: NewsCreate): Promise<NewsDetail> {
   const res = await fetch(`${API_URL}/news`, {
     method: "POST",

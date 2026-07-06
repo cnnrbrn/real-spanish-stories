@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import type { StoryDetail as StoryType } from '@real-spanish-stories/shared'
 import { updateStoryStatus, deleteStory, createStoryPdfs, deleteStoryPdfs } from '../api'
 import { storyKeys } from '../constants'
@@ -19,8 +20,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { API_URL } from '@/config'
-import { StoryEditModal } from './story-edit-modal'
-import { StoryAudioUploadModal } from './story-audio-upload-modal'
 
 interface StoryProps {
   story: StoryType
@@ -93,15 +92,21 @@ export function Story({ story }: StoryProps) {
               </CardDescription>
             </div>
             <div className="flex gap-1">
-              <StoryEditModal story={story} trigger={<Button variant="ghost" size="icon" title="Edit"><Edit className="h-4 w-4" /></Button>} />
-              <StoryAudioUploadModal
-                story={story}
-                trigger={
-                  <Button variant="ghost" size="icon" title={hasAudio ? 'Replace Audio' : 'Upload Audio'}>
-                    {hasAudio ? <Music2 className="h-4 w-4" /> : <Music className="h-4 w-4" />}
-                  </Button>
-                }
-              />
+              <Button variant="ghost" size="icon" title="Edit" asChild>
+                <Link to="/stories/$id/edit" params={{ id: String(story.id) }}>
+                  <Edit className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                title={hasAudio ? 'Replace Audio' : 'Upload Audio'}
+                asChild
+              >
+                <Link to="/stories/$id/audio" params={{ id: String(story.id) }}>
+                  {hasAudio ? <Music2 className="h-4 w-4" /> : <Music className="h-4 w-4" />}
+                </Link>
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"

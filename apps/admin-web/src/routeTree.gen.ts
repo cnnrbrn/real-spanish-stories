@@ -18,6 +18,9 @@ import { Route as VideosIdUploadRouteImport } from './routes/videos/$id.upload'
 import { Route as VideosIdTranscriptRouteImport } from './routes/videos/$id.transcript'
 import { Route as VideosIdSectionsRouteImport } from './routes/videos/$id.sections'
 import { Route as VideosIdLanguageTaggedRouteImport } from './routes/videos/$id.language-tagged'
+import { Route as StoriesIdEditRouteImport } from './routes/stories/$id.edit'
+import { Route as StoriesIdAudioRouteImport } from './routes/stories/$id.audio'
+import { Route as NewsIdEditRouteImport } from './routes/news/$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +67,21 @@ const VideosIdLanguageTaggedRoute = VideosIdLanguageTaggedRouteImport.update({
   path: '/videos/$id/language-tagged',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoriesIdEditRoute = StoriesIdEditRouteImport.update({
+  id: '/stories/$id/edit',
+  path: '/stories/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesIdAudioRoute = StoriesIdAudioRouteImport.update({
+  id: '/stories/$id/audio',
+  path: '/stories/$id/audio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsIdEditRoute = NewsIdEditRouteImport.update({
+  id: '/news/$id/edit',
+  path: '/news/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -71,6 +89,9 @@ export interface FileRoutesByFullPath {
   '/videos/new': typeof VideosNewRoute
   '/news/': typeof NewsIndexRoute
   '/stories/': typeof StoriesIndexRoute
+  '/news/$id/edit': typeof NewsIdEditRoute
+  '/stories/$id/audio': typeof StoriesIdAudioRoute
+  '/stories/$id/edit': typeof StoriesIdEditRoute
   '/videos/$id/language-tagged': typeof VideosIdLanguageTaggedRoute
   '/videos/$id/sections': typeof VideosIdSectionsRoute
   '/videos/$id/transcript': typeof VideosIdTranscriptRoute
@@ -82,6 +103,9 @@ export interface FileRoutesByTo {
   '/videos/new': typeof VideosNewRoute
   '/news': typeof NewsIndexRoute
   '/stories': typeof StoriesIndexRoute
+  '/news/$id/edit': typeof NewsIdEditRoute
+  '/stories/$id/audio': typeof StoriesIdAudioRoute
+  '/stories/$id/edit': typeof StoriesIdEditRoute
   '/videos/$id/language-tagged': typeof VideosIdLanguageTaggedRoute
   '/videos/$id/sections': typeof VideosIdSectionsRoute
   '/videos/$id/transcript': typeof VideosIdTranscriptRoute
@@ -94,6 +118,9 @@ export interface FileRoutesById {
   '/videos/new': typeof VideosNewRoute
   '/news/': typeof NewsIndexRoute
   '/stories/': typeof StoriesIndexRoute
+  '/news/$id/edit': typeof NewsIdEditRoute
+  '/stories/$id/audio': typeof StoriesIdAudioRoute
+  '/stories/$id/edit': typeof StoriesIdEditRoute
   '/videos/$id/language-tagged': typeof VideosIdLanguageTaggedRoute
   '/videos/$id/sections': typeof VideosIdSectionsRoute
   '/videos/$id/transcript': typeof VideosIdTranscriptRoute
@@ -107,6 +134,9 @@ export interface FileRouteTypes {
     | '/videos/new'
     | '/news/'
     | '/stories/'
+    | '/news/$id/edit'
+    | '/stories/$id/audio'
+    | '/stories/$id/edit'
     | '/videos/$id/language-tagged'
     | '/videos/$id/sections'
     | '/videos/$id/transcript'
@@ -118,6 +148,9 @@ export interface FileRouteTypes {
     | '/videos/new'
     | '/news'
     | '/stories'
+    | '/news/$id/edit'
+    | '/stories/$id/audio'
+    | '/stories/$id/edit'
     | '/videos/$id/language-tagged'
     | '/videos/$id/sections'
     | '/videos/$id/transcript'
@@ -129,6 +162,9 @@ export interface FileRouteTypes {
     | '/videos/new'
     | '/news/'
     | '/stories/'
+    | '/news/$id/edit'
+    | '/stories/$id/audio'
+    | '/stories/$id/edit'
     | '/videos/$id/language-tagged'
     | '/videos/$id/sections'
     | '/videos/$id/transcript'
@@ -141,6 +177,9 @@ export interface RootRouteChildren {
   VideosNewRoute: typeof VideosNewRoute
   NewsIndexRoute: typeof NewsIndexRoute
   StoriesIndexRoute: typeof StoriesIndexRoute
+  NewsIdEditRoute: typeof NewsIdEditRoute
+  StoriesIdAudioRoute: typeof StoriesIdAudioRoute
+  StoriesIdEditRoute: typeof StoriesIdEditRoute
   VideosIdLanguageTaggedRoute: typeof VideosIdLanguageTaggedRoute
   VideosIdSectionsRoute: typeof VideosIdSectionsRoute
   VideosIdTranscriptRoute: typeof VideosIdTranscriptRoute
@@ -212,6 +251,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VideosIdLanguageTaggedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stories/$id/edit': {
+      id: '/stories/$id/edit'
+      path: '/stories/$id/edit'
+      fullPath: '/stories/$id/edit'
+      preLoaderRoute: typeof StoriesIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stories/$id/audio': {
+      id: '/stories/$id/audio'
+      path: '/stories/$id/audio'
+      fullPath: '/stories/$id/audio'
+      preLoaderRoute: typeof StoriesIdAudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$id/edit': {
+      id: '/news/$id/edit'
+      path: '/news/$id/edit'
+      fullPath: '/news/$id/edit'
+      preLoaderRoute: typeof NewsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -221,6 +281,9 @@ const rootRouteChildren: RootRouteChildren = {
   VideosNewRoute: VideosNewRoute,
   NewsIndexRoute: NewsIndexRoute,
   StoriesIndexRoute: StoriesIndexRoute,
+  NewsIdEditRoute: NewsIdEditRoute,
+  StoriesIdAudioRoute: StoriesIdAudioRoute,
+  StoriesIdEditRoute: StoriesIdEditRoute,
   VideosIdLanguageTaggedRoute: VideosIdLanguageTaggedRoute,
   VideosIdSectionsRoute: VideosIdSectionsRoute,
   VideosIdTranscriptRoute: VideosIdTranscriptRoute,

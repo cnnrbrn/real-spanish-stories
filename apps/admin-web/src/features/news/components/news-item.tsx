@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import type { NewsDetail } from '@real-spanish-stories/shared'
 import {
   updateNewsStatus,
@@ -24,7 +25,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { NewsEditModal } from './news-edit-modal'
 
 interface NewsItemProps {
   news: NewsDetail
@@ -94,14 +94,11 @@ export function NewsItem({ news }: NewsItemProps) {
               )}
             </div>
             <div className="flex gap-1">
-              <NewsEditModal
-                news={news}
-                trigger={
-                  <Button variant="ghost" size="icon" title="Edit">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                }
-              />
+              <Button variant="ghost" size="icon" title="Edit" asChild>
+                <Link to="/news/$id/edit" params={{ id: String(news.id) }}>
+                  <Edit className="h-4 w-4" />
+                </Link>
+              </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button

@@ -10,6 +10,15 @@ export async function listStories(): Promise<Array<StoryDetail>> {
   return res.json()
 }
 
+export async function getStory(id: number): Promise<StoryDetail> {
+  const res = await fetch(`${API_URL}/stories/${id}`)
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function getStoryByVideoId(videoId: number): Promise<StoryDetail> {
   const res = await fetch(`${API_URL}/stories/by-video/${videoId}`)
   if (!res.ok) {
