@@ -1,9 +1,14 @@
-import { useRef, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import type {
+  WordSelectionHandlers,
+  WordSelectionRange,
+} from '@/features/translate/use-word-selection'
 import type {
   Transcription,
   TranscriptionSection,
   TranscriptionWord,
 } from '@real-spanish-stories/shared'
+import { useWordSelection } from '@/features/translate/use-word-selection'
 
 interface PhraseSelection {
   words: TranscriptionWord[]
@@ -21,26 +26,18 @@ interface TranscriptSectionProps {
   section: TranscriptionSection
   currentTime: number
   wordOffset: number
-  onPhraseSelect?: (selection: PhraseSelection) => void
-  selectedIndices?: Set<number>
-  selectionStartRef: React.MutableRefObject<number | null>
-  selectionEndRef: React.MutableRefObject<number | null>
-  isDragging: React.MutableRefObject<boolean>
-  allWords: TranscriptionWord[]
-  onDragUpdate: (endIndex: number) => void
+  selectedIndices: Set<number>
+  getWordProps: (globalIndex: number) => WordSelectionHandlers
+  pulseIndex: number | null
 }
 
 function TranscriptSectionComponent({
   section,
   currentTime,
   wordOffset,
-  onPhraseSelect,
   selectedIndices,
-  selectionStartRef,
-  selectionEndRef,
-  isDragging,
-  allWords,
-  onDragUpdate,
+  getWordProps,
+  pulseIndex,
 }: TranscriptSectionProps) {
   if (section.static) {
     return (
@@ -83,13 +80,22 @@ function TranscriptSectionComponent({
             const globalIndex = wordOffset + entry.sectionIdx
             const isActive =
               currentTime >= entry.word.start && currentTime < entry.word.end
-            const isSelected = selectedIndices?.has(globalIndex) ?? false
+            const isSelected = selectedIndices.has(globalIndex)
+            const isPulsing = pulseIndex === globalIndex
             const isSpanish = entry.word.language !== 'en'
 
             return (
               <span
                 key={entry.sectionIdx}
-                className={isSelected ? 'bg-primary text-primary-foreground' : ''}
+                data-word-index={globalIndex}
+                className={[
+                  isSelected ? 'bg-primary text-primary-foreground' : '',
+                  'transition-transform duration-150 ease-out',
+                  isPulsing ? 'scale-110' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                {...getWordProps(globalIndex)}
               >
                 <span
                   className={[
@@ -101,30 +107,6 @@ function TranscriptSectionComponent({
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  onMouseDown={(e) => {
-                    e.preventDefault()
-                    isDragging.current = true
-                    selectionStartRef.current = globalIndex
-                    selectionEndRef.current = globalIndex
-                    onDragUpdate(globalIndex)
-                  }}
-                  onMouseEnter={() => {
-                    if (isDragging.current) onDragUpdate(globalIndex)
-                  }}
-                  onMouseUp={() => {
-                    if (!isDragging.current) return
-                    isDragging.current = false
-                    const start = selectionStartRef.current
-                    const end = selectionEndRef.current
-                    if (start === null || end === null) return
-                    const lo = Math.min(start, end)
-                    const hi = Math.max(start, end)
-                    const selectedWords = allWords.slice(lo, hi + 1)
-                    onPhraseSelect?.({
-                      words: selectedWords,
-                      phrase: selectedWords.map((w) => w.word).join(' '),
-                    })
-                  }}
                 >
                   {stripComma(entry.word.word)}
                 </span>
@@ -189,13 +171,22 @@ function TranscriptSectionComponent({
       const globalIndex = wordOffset + entry.sectionIdx
       const isActive =
         currentTime >= entry.word.start && currentTime < entry.word.end
-      const isSelected = selectedIndices?.has(globalIndex) ?? false
+      const isSelected = selectedIndices.has(globalIndex)
+      const isPulsing = pulseIndex === globalIndex
       const isSpanish = entry.word.language !== 'en'
 
       return (
         <span
           key={entry.sectionIdx}
-          className={isSelected ? 'bg-primary text-primary-foreground' : ''}
+          data-word-index={globalIndex}
+          className={[
+            isSelected ? 'bg-primary text-primary-foreground' : '',
+            'transition-transform duration-150 ease-out',
+            isPulsing ? 'scale-110' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          {...getWordProps(globalIndex)}
         >
           <span
             className={[
@@ -213,30 +204,6 @@ function TranscriptSectionComponent({
             ]
               .filter(Boolean)
               .join(' ')}
-            onMouseDown={(e) => {
-              e.preventDefault()
-              isDragging.current = true
-              selectionStartRef.current = globalIndex
-              selectionEndRef.current = globalIndex
-              onDragUpdate(globalIndex)
-            }}
-            onMouseEnter={() => {
-              if (isDragging.current) onDragUpdate(globalIndex)
-            }}
-            onMouseUp={() => {
-              if (!isDragging.current) return
-              isDragging.current = false
-              const start = selectionStartRef.current
-              const end = selectionEndRef.current
-              if (start === null || end === null) return
-              const lo = Math.min(start, end)
-              const hi = Math.max(start, end)
-              const selectedWords = allWords.slice(lo, hi + 1)
-              onPhraseSelect?.({
-                words: selectedWords,
-                phrase: selectedWords.map((w) => w.word).join(' '),
-              })
-            }}
           >
             {entry.word.word}
           </span>
@@ -296,12 +263,21 @@ function TranscriptSectionComponent({
         {section.words.map((word, i: number) => {
           const globalIndex = wordOffset + i
           const isActive = currentTime >= word.start && currentTime < word.end
-          const isSelected = selectedIndices?.has(globalIndex) ?? false
+          const isSelected = selectedIndices.has(globalIndex)
+          const isPulsing = pulseIndex === globalIndex
 
           return (
             <span
               key={i}
-              className={isSelected ? 'bg-primary text-primary-foreground' : ''}
+              data-word-index={globalIndex}
+              className={[
+                isSelected ? 'bg-primary text-primary-foreground' : '',
+                'transition-transform duration-150 ease-out',
+                isPulsing ? 'scale-110' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              {...getWordProps(globalIndex)}
             >
               <span
                 className={[
@@ -313,32 +289,6 @@ function TranscriptSectionComponent({
                 ]
                   .filter(Boolean)
                   .join(' ')}
-                onMouseDown={(e) => {
-                  e.preventDefault()
-                  isDragging.current = true
-                  selectionStartRef.current = globalIndex
-                  selectionEndRef.current = globalIndex
-                  onDragUpdate(globalIndex)
-                }}
-                onMouseEnter={() => {
-                  if (isDragging.current) {
-                    onDragUpdate(globalIndex)
-                  }
-                }}
-                onMouseUp={() => {
-                  if (!isDragging.current) return
-                  isDragging.current = false
-                  const start = selectionStartRef.current
-                  const end = selectionEndRef.current
-                  if (start === null || end === null) return
-                  const lo = Math.min(start, end)
-                  const hi = Math.max(start, end)
-                  const selectedWords = allWords.slice(lo, hi + 1)
-                  onPhraseSelect?.({
-                    words: selectedWords,
-                    phrase: selectedWords.map((w) => w.word).join(' '),
-                  })
-                }}
               >
                 {word.word}
               </span>
@@ -357,48 +307,46 @@ export function TranscriptDisplay({
   onPhraseSelect,
   selectedIndices,
 }: TranscriptDisplayProps) {
-  const selectionStartRef = useRef<number | null>(null)
-  const selectionEndRef = useRef<number | null>(null)
-  const isDragging = useRef(false)
-  const [, forceUpdate] = useState(0)
-
   // Flat list of all words with their global indices, for slice operations
-  const allWords = transcription.sections.flatMap((s) => s.words)
+  const allWords = useMemo(
+    () => transcription.sections.flatMap((s) => s.words),
+    [transcription],
+  )
 
-  // Compute word offsets per section
-  const sectionOffsets: number[] = []
-  let offset = 0
-  for (const section of transcription.sections) {
-    sectionOffsets.push(offset)
-    offset += section.words.length
-  }
+  // Word offset per section
+  const sectionOffsets = useMemo(() => {
+    const offsets: number[] = []
+    let offset = 0
+    for (const section of transcription.sections) {
+      offsets.push(offset)
+      offset += section.words.length
+    }
+    return offsets
+  }, [transcription])
 
-  function handleDragUpdate(endIndex: number) {
-    selectionEndRef.current = endIndex
-    forceUpdate((n) => n + 1)
-  }
+  const handleSelect = useCallback(
+    ({ loIndex, hiIndex }: WordSelectionRange) => {
+      const selectedWords = allWords.slice(loIndex, hiIndex + 1)
+      if (selectedWords.length === 0) return
+      onPhraseSelect?.({
+        words: selectedWords,
+        phrase: selectedWords.map((w) => w.word).join(' '),
+      })
+    },
+    [allWords, onPhraseSelect],
+  )
 
-  // Build selected set from current drag state for live feedback
-  const liveSelectedIndices = (() => {
-    if (!isDragging.current) return selectedIndices
-    const start = selectionStartRef.current
-    const end = selectionEndRef.current
-    if (start === null || end === null) return selectedIndices
-    const lo = Math.min(start, end)
-    const hi = Math.max(start, end)
-    const set = new Set<number>()
-    for (let i = lo; i <= hi; i++) set.add(i)
-    return set
-  })()
+  const {
+    getWordProps,
+    selectedIndices: effectiveSelectedIndices,
+    containerProps,
+    pulseIndex,
+  } = useWordSelection({ onSelect: handleSelect, selectedIndices })
 
   return (
     <div
-      className="mt-6 text-xl"
-      onMouseLeave={() => {
-        if (isDragging.current) {
-          isDragging.current = false
-        }
-      }}
+      {...containerProps}
+      className="mt-6 text-xl select-none touch-pan-y [-webkit-touch-callout:none]"
     >
       {transcription.sections.map((section, i) => (
         <TranscriptSectionComponent
@@ -406,13 +354,9 @@ export function TranscriptDisplay({
           section={section}
           currentTime={currentTime}
           wordOffset={sectionOffsets[i]}
-          onPhraseSelect={onPhraseSelect}
-          selectedIndices={liveSelectedIndices}
-          selectionStartRef={selectionStartRef}
-          selectionEndRef={selectionEndRef}
-          isDragging={isDragging}
-          allWords={allWords}
-          onDragUpdate={handleDragUpdate}
+          selectedIndices={effectiveSelectedIndices}
+          getWordProps={getWordProps}
+          pulseIndex={pulseIndex}
         />
       ))}
     </div>
