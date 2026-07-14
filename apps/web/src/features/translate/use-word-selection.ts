@@ -220,6 +220,13 @@ export function useWordSelection({
           return
         }
         event.preventDefault()
+        // Clear any suppress flag left over from a previous gesture. A drag
+        // that ends on a different word than it started fires its trailing
+        // synthetic click on the container, not a word span, so no onClick
+        // runs to consume the flag — without this reset it would linger and
+        // swallow the next genuine click (making a committed phrase take two
+        // clicks to dismiss).
+        suppressNextClick.current = false
         isDragging.current = true
         dragMoved.current = false
         startRef.current = globalIndex
@@ -317,19 +324,24 @@ export function useWordSelection({
     }
   }, [clearLongPressTimer])
 
-  // Derived during render — live range mid-drag/mid-selection, otherwise the
-  // committed set (controlled prop takes precedence over the hook's own).
+  // Derived during render — the committed set (controlled prop takes
+  // precedence over the hook's own) with the live drag/selection range layered
+  // on top, so existing selections stay highlighted while a new one is dragged.
+  const committedSelected = selectedIndices ?? committed
   const isLiveRange =
     (isDragging.current || isTouchSelecting.current) &&
     startRef.current !== null &&
     endRef.current !== null
 
   const effectiveSelected = isLiveRange
-    ? rangeToSet(
-        Math.min(startRef.current!, endRef.current!),
-        Math.max(startRef.current!, endRef.current!),
-      )
-    : (selectedIndices ?? committed)
+    ? new Set([
+        ...committedSelected,
+        ...rangeToSet(
+          Math.min(startRef.current!, endRef.current!),
+          Math.max(startRef.current!, endRef.current!),
+        ),
+      ])
+    : committedSelected
 
   return {
     getWordProps,

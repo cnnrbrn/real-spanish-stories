@@ -4,17 +4,25 @@ import type {
   WordSelectionHandlers,
   WordSelectionRange,
 } from '@/features/translate/use-word-selection'
+import type { GlossEntry } from '@/features/translate/use-glosses'
 import { useWordSelection } from '@/features/translate/use-word-selection'
+import { GlossReservation } from '@/features/translate/components/inline-gloss'
 
 interface SelectableTranscriptProps {
   html: string
-  onPhraseSelect: (phrase: string) => void
+  onPhraseSelect: (phrase: string, loIndex: number, hiIndex: number) => void
+  // Every glossed phrase on the page. Each is highlighted and rendered with
+  // its translation in-flow above its first word.
+  glosses?: GlossEntry[]
 }
 
 interface WordContextValue {
   selectedIndices: Set<number>
   getWordProps: (index: number) => WordSelectionHandlers
   pulseIndex: number | null
+  // Maps a word's global index to the gloss anchored there (i.e. that word is
+  // the first word of a glossed phrase), if any.
+  glossByFirstIndex: Map<number, GlossEntry>
 }
 
 // Selection state reaches each word through context so that highlighting a
@@ -28,7 +36,11 @@ function SelectableWord({ index, text }: { index: number; text: string }) {
   if (!ctx) return text
   const isSelected = ctx.selectedIndices.has(index)
   const isPulsing = ctx.pulseIndex === index
-  return (
+  const glossEntry = ctx.glossByFirstIndex.get(index)
+  const showGloss =
+    glossEntry != null && (glossEntry.gloss != null || glossEntry.isLoading)
+
+  const wordSpan = (
     <span
       data-word-index={index}
       className={[
@@ -44,6 +56,17 @@ function SelectableWord({ index, text }: { index: number; text: string }) {
     >
       {text}
     </span>
+  )
+
+  if (!showGloss) return wordSpan
+  return (
+    <GlossReservation
+      gloss={glossEntry.gloss}
+      isLoading={glossEntry.isLoading}
+      hiIndex={glossEntry.hiIndex}
+    >
+      {wordSpan}
+    </GlossReservation>
   )
 }
 
@@ -75,6 +98,7 @@ function SelectableSpace({
 export function SelectableTranscript({
   html,
   onPhraseSelect,
+  glosses = [],
 }: SelectableTranscriptProps) {
   // Tokenise once per html: wrap each word in a SelectableWord addressed by a
   // running global index and collect the words, so a committed index range maps
@@ -124,17 +148,38 @@ export function SelectableTranscript({
         .slice(loIndex, hiIndex + 1)
         .join(' ')
         .trim()
-      if (phrase) onPhraseSelect(phrase)
+      if (phrase) onPhraseSelect(phrase, loIndex, hiIndex)
     },
     [words, onPhraseSelect],
   )
 
+  // Union of all glossed ranges (highlighted), and a lookup from each phrase's
+  // first word to its gloss (where the translation is rendered above).
+  const glossedIndices = useMemo(() => {
+    const set = new Set<number>()
+    for (const g of glosses) {
+      for (let i = g.loIndex; i <= g.hiIndex; i++) set.add(i)
+    }
+    return set
+  }, [glosses])
+
+  const glossByFirstIndex = useMemo(() => {
+    const map = new Map<number, GlossEntry>()
+    for (const g of glosses) map.set(g.loIndex, g)
+    return map
+  }, [glosses])
+
   const { getWordProps, selectedIndices, containerProps, pulseIndex } =
-    useWordSelection({ onSelect: handleSelect })
+    useWordSelection({ onSelect: handleSelect, selectedIndices: glossedIndices })
 
   const contextValue = useMemo(
-    () => ({ selectedIndices, getWordProps, pulseIndex }),
-    [selectedIndices, getWordProps, pulseIndex],
+    () => ({
+      selectedIndices,
+      getWordProps,
+      pulseIndex,
+      glossByFirstIndex,
+    }),
+    [selectedIndices, getWordProps, pulseIndex, glossByFirstIndex],
   )
 
   return (

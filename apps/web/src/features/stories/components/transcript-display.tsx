@@ -8,18 +8,24 @@ import type {
   TranscriptionSection,
   TranscriptionWord,
 } from '@real-spanish-stories/shared'
+import type { GlossEntry } from '@/features/translate/use-glosses'
 import { useWordSelection } from '@/features/translate/use-word-selection'
+import { GlossReservation } from '@/features/translate/components/inline-gloss'
 
 interface PhraseSelection {
   words: TranscriptionWord[]
   phrase: string
+  loIndex: number
+  hiIndex: number
 }
 
 interface TranscriptDisplayProps {
   transcription: Transcription
   currentTime: number
   onPhraseSelect?: (selection: PhraseSelection) => void
-  selectedIndices?: Set<number>
+  // Every glossed phrase on the page. Each is highlighted and rendered with
+  // its translation in-flow above its first word.
+  glosses?: GlossEntry[]
 }
 
 interface TranscriptSectionProps {
@@ -29,6 +35,9 @@ interface TranscriptSectionProps {
   selectedIndices: Set<number>
   getWordProps: (globalIndex: number) => WordSelectionHandlers
   pulseIndex: number | null
+  // Maps a word's global index to the gloss anchored there (i.e. that word is
+  // the first word of a glossed phrase), if any.
+  glossByFirstIndex: Map<number, GlossEntry>
 }
 
 function TranscriptSectionComponent({
@@ -38,6 +47,7 @@ function TranscriptSectionComponent({
   selectedIndices,
   getWordProps,
   pulseIndex,
+  glossByFirstIndex,
 }: TranscriptSectionProps) {
   if (section.static) {
     return (
@@ -265,13 +275,38 @@ function TranscriptSectionComponent({
           const isActive = currentTime >= word.start && currentTime < word.end
           const isSelected = selectedIndices.has(globalIndex)
           const isPulsing = pulseIndex === globalIndex
+          const glossEntry = glossByFirstIndex.get(globalIndex)
+          const showGloss =
+            glossEntry != null &&
+            (glossEntry.gloss != null || glossEntry.isLoading)
+
+          const textSpan = (
+            <span
+              className={[
+                'transition-colors',
+                word.language !== 'en'
+                  ? 'cursor-pointer underline decoration-dotted underline-offset-2 decoration-gray-400 dark:decoration-gray-500'
+                  : 'cursor-default',
+                !isSelected && isActive ? 'text-red-500' : '',
+                // When a gloss shows, the highlight lives on the text (not the
+                // outer span) so it doesn't fill the reserved gloss space above.
+                showGloss ? 'bg-primary text-primary-foreground rounded' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {word.word}
+            </span>
+          )
 
           return (
             <span
               key={i}
               data-word-index={globalIndex}
               className={[
-                isSelected ? 'bg-primary text-primary-foreground' : '',
+                isSelected && !showGloss
+                  ? 'bg-primary text-primary-foreground'
+                  : '',
                 'transition-transform duration-150 ease-out',
                 isPulsing ? 'scale-110' : '',
               ]
@@ -279,19 +314,17 @@ function TranscriptSectionComponent({
                 .join(' ')}
               {...getWordProps(globalIndex)}
             >
-              <span
-                className={[
-                  'transition-colors',
-                  word.language !== 'en'
-                    ? 'cursor-pointer underline decoration-dotted underline-offset-2 decoration-gray-400 dark:decoration-gray-500'
-                    : 'cursor-default',
-                  !isSelected && isActive ? 'text-red-500' : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              >
-                {word.word}
-              </span>
+              {showGloss ? (
+                <GlossReservation
+                  gloss={glossEntry.gloss}
+                  isLoading={glossEntry.isLoading}
+                  hiIndex={glossEntry.hiIndex}
+                >
+                  {textSpan}
+                </GlossReservation>
+              ) : (
+                textSpan
+              )}
               {word.lineBreak ? <br /> : ' '}
             </span>
           )
@@ -305,7 +338,7 @@ export function TranscriptDisplay({
   transcription,
   currentTime,
   onPhraseSelect,
-  selectedIndices,
+  glosses = [],
 }: TranscriptDisplayProps) {
   // Flat list of all words with their global indices, for slice operations
   const allWords = useMemo(
@@ -331,17 +364,35 @@ export function TranscriptDisplay({
       onPhraseSelect?.({
         words: selectedWords,
         phrase: selectedWords.map((w) => w.word).join(' '),
+        loIndex,
+        hiIndex,
       })
     },
     [allWords, onPhraseSelect],
   )
+
+  // Union of all glossed ranges (highlighted), and a lookup from each phrase's
+  // first word to its gloss (where the translation is rendered above).
+  const glossedIndices = useMemo(() => {
+    const set = new Set<number>()
+    for (const g of glosses) {
+      for (let i = g.loIndex; i <= g.hiIndex; i++) set.add(i)
+    }
+    return set
+  }, [glosses])
+
+  const glossByFirstIndex = useMemo(() => {
+    const map = new Map<number, GlossEntry>()
+    for (const g of glosses) map.set(g.loIndex, g)
+    return map
+  }, [glosses])
 
   const {
     getWordProps,
     selectedIndices: effectiveSelectedIndices,
     containerProps,
     pulseIndex,
-  } = useWordSelection({ onSelect: handleSelect, selectedIndices })
+  } = useWordSelection({ onSelect: handleSelect, selectedIndices: glossedIndices })
 
   return (
     <div
@@ -357,6 +408,7 @@ export function TranscriptDisplay({
           selectedIndices={effectiveSelectedIndices}
           getWordProps={getWordProps}
           pulseIndex={pulseIndex}
+          glossByFirstIndex={glossByFirstIndex}
         />
       ))}
     </div>

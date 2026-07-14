@@ -1,0 +1,1 @@
+ALTER TABLE "news" ADD COLUMN "list_summary" varchar(300);
