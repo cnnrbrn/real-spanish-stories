@@ -66,6 +66,8 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
   const [useSpanishHeadings, setUseSpanishHeadings] = useState(video.useSpanishHeadings)
   const [skipEnglishTitle, setSkipEnglishTitle] = useState(video.skipEnglishTitle)
   const isAdvanced = video.level === "advanced"
+  const isNews = video.contentType === "news"
+  const hideDetectionOptions = isAdvanced || isNews
 
   const detectSectionsMutation = useMutation({
     mutationFn: () =>
@@ -160,7 +162,7 @@ export function SectionsEditor({ video }: SectionsEditorProps) {
 
       <div className="rounded-lg border p-4 space-y-3">
         <p className="text-sm font-medium">Section detection options</p>
-        {!isAdvanced && (
+        {!hideDetectionOptions && (
           <>
             <div className="flex items-start gap-3">
               <Checkbox

@@ -8,6 +8,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { VIDEO_STATUS_VALUES } from "../constants/video-status.js";
+import { CONTENT_TYPE_VALUES } from "../constants/content-types.js";
 
 export const videosSchema = pgTable("videos", {
   id: serial("id").primaryKey(),
@@ -17,6 +18,10 @@ export const videosSchema = pgTable("videos", {
     .$type<(typeof VIDEO_STATUS_VALUES)[number]>()
     .notNull()
     .default("draft"),
+  contentType: varchar("content_type", { length: 20 })
+    .$type<(typeof CONTENT_TYPE_VALUES)[number]>()
+    .notNull()
+    .default("story"),
   level: varchar("level", { length: 50 }),
   useSpanishHeadings: boolean("use_spanish_headings").notNull().default(false),
   skipEnglishTitle: boolean("skip_english_title").notNull().default(false),

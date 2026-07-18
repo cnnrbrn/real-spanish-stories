@@ -17,19 +17,23 @@ export class CreateVideoHandler implements ICommandHandler<CreateVideoCommand> {
   ) {}
 
   async execute(command: CreateVideoCommand): Promise<Video> {
-    const existing = await this.database
-      .select({ id: videosSchema.id })
-      .from(videosSchema)
-      .where(and(
-        eq(videosSchema.altTitle, command.altTitle),
-        eq(videosSchema.level, command.level),
-      ))
-      .limit(1);
+    // News videos are identified by date, not by title/level, so the
+    // (altTitle, level) uniqueness check only applies to levelled content.
+    if (command.level !== null) {
+      const existing = await this.database
+        .select({ id: videosSchema.id })
+        .from(videosSchema)
+        .where(and(
+          eq(videosSchema.altTitle, command.altTitle),
+          eq(videosSchema.level, command.level),
+        ))
+        .limit(1);
 
-    if (existing.length > 0) {
-      throw new ConflictException(
-        "A video with this title and level already exists",
-      );
+      if (existing.length > 0) {
+        throw new ConflictException(
+          "A video with this title and level already exists",
+        );
+      }
     }
 
     const [video] = await this.database
@@ -38,6 +42,7 @@ export class CreateVideoHandler implements ICommandHandler<CreateVideoCommand> {
         title: command.title,
         altTitle: command.altTitle,
         level: command.level,
+        contentType: command.contentType,
         status: "draft",
         useSpanishHeadings: false,
         skipEnglishTitle: false,

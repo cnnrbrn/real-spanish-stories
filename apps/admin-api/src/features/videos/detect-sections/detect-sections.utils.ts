@@ -101,6 +101,7 @@ export function detectSections(
   useSpanishHeadings: boolean = false,
   level: string | null = null,
   skipEnglishTitle: boolean = false,
+  spanishOnly: boolean = false,
 ): SectionsJson {
   const vocabPreferred = useSpanishHeadings
     ? VOCABULARY_HEADER_PHRASE_ES
@@ -135,6 +136,21 @@ export function detectSections(
     end: w.end,
   }));
 
+  // News episodes are read straight through with no spoken title or headings,
+  // so the whole transcription is a single story section.
+  if (spanishOnly) {
+    return {
+      sections: [
+        {
+          type: "story",
+          start_time: words[0].start,
+          end_time: words[words.length - 1].end,
+          words,
+        },
+      ],
+    };
+  }
+
   const sections: Section[] = [];
   let currentIndex = 0;
 
@@ -151,7 +167,9 @@ export function detectSections(
     currentIndex += titleWordCount;
   }
 
-  // Advanced videos: title_spanish + story only
+  // All-Spanish advanced-level stories: title_spanish + story only, no
+  // bilingual vocabulary/verbs sections. (News is handled by the early return
+  // above, which produces a single story section with no title.)
   if (level === "advanced") {
     const storyWords = words.slice(currentIndex);
     if (storyWords.length > 0) {

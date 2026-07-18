@@ -24,17 +24,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-const videoTitleSchema = z.object({
-  title: z
-    .string()
-    .min(1, 'Title is required')
-    .max(200, 'Title must be less than 200 characters'),
-  altTitle: z
-    .string()
-    .min(1, 'Alt title is required')
-    .max(200, 'Alt title must be less than 200 characters'),
-  level: z.string().min(1, 'Level is required'),
-})
+const videoTitleSchema = z
+  .object({
+    title: z
+      .string()
+      .min(1, 'Title is required')
+      .max(200, 'Title must be less than 200 characters'),
+    altTitle: z
+      .string()
+      .min(1, 'Alt title is required')
+      .max(200, 'Alt title must be less than 200 characters'),
+    level: z.string(),
+    contentType: z.enum(['story', 'news']),
+  })
+  .refine((data) => data.contentType === 'news' || data.level.length > 0, {
+    message: 'Level is required',
+    path: ['level'],
+  })
 
 type VideoTitleFormValues = z.infer<typeof videoTitleSchema>
 
@@ -48,6 +54,7 @@ export function VideoTitleForm() {
       title: '',
       altTitle: '',
       level: '',
+      contentType: 'story',
     },
   })
 
@@ -62,11 +69,14 @@ export function VideoTitleForm() {
     },
   })
 
+  const contentType = form.watch('contentType')
+
   function onSubmit(data: VideoTitleFormValues) {
     createMutation.mutate({
       title: data.title,
       altTitle: data.altTitle,
-      level: data.level,
+      level: data.contentType === 'news' ? null : data.level,
+      contentType: data.contentType,
     })
   }
 
@@ -109,31 +119,62 @@ export function VideoTitleForm() {
 
         <FormField
           control={form.control}
-          name="level"
+          name="contentType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Level</FormLabel>
+              <FormLabel>Content Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select difficulty level" />
+                    <SelectValue placeholder="Select content type" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {VIDEO_LEVELS.map((level) => (
-                    <SelectItem key={level.value} value={level.value}>
-                      {level.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="story">Story</SelectItem>
+                  <SelectItem value="news">News</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>
-                The difficulty level of the video
+                News episodes are all-Spanish and skip vocabulary and verbs
+                sections.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {contentType === 'story' && (
+          <FormField
+            control={form.control}
+            name="level"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Level</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select difficulty level" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {VIDEO_LEVELS.map((level) => (
+                      <SelectItem key={level.value} value={level.value}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  The difficulty level of the video
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {createMutation.isError && (
           <div className="text-sm text-red-600">

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ChevronRight, PanelRightClose, PanelRightOpen, X } from 'lucide-react'
 import { translateNewsPhrase } from '../api'
@@ -6,8 +6,14 @@ import { formatNewsDate } from '../utils/date'
 import { newsHeading } from '../utils/title'
 import { NewsDownloads } from './news-downloads'
 import { SelectableTranscript } from './selectable-transcript'
-import type { NewsDetail, TranslationResponse } from '@real-spanish-stories/shared'
+import type {
+  NewsDetail,
+  TranscriptionWord,
+  TranslationResponse,
+} from '@real-spanish-stories/shared'
+import type { VideoPlayerHandle } from '@/features/stories/components/video-player'
 import { PageContainer, pageTitleClass } from '@/components/ui/page'
+import { TranscriptDisplay } from '@/features/stories/components/transcript-display'
 import { VideoPlayer } from '@/features/stories/components/video-player'
 import { WordExplanationPanel } from '@/features/stories/components/word-explanation-panel'
 
@@ -16,6 +22,9 @@ interface NewsDetailsProps {
 }
 
 export function NewsDetails({ news }: NewsDetailsProps) {
+  const playerRef = useRef<VideoPlayerHandle>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set())
   const [selectedPhrase, setSelectedPhrase] = useState<string | null>(null)
   const [wordData, setWordData] = useState<TranslationResponse | null>(null)
   const [isLoadingWord, setIsLoadingWord] = useState(false)
@@ -52,6 +61,31 @@ export function NewsDetails({ news }: NewsDetailsProps) {
       }
     },
     [news.id],
+  )
+
+  const handleTranscriptPhraseSelect = useCallback(
+    ({ words, phrase }: { words: TranscriptionWord[]; phrase: string }) => {
+      if (words.length === 0) return
+
+      playerRef.current?.seekTo(words[0].start)
+
+      if (news.transcription) {
+        let globalOffset = 0
+        const indices = new Set<number>()
+        for (const section of news.transcription.sections) {
+          for (let i = 0; i < section.words.length; i++) {
+            if (words.includes(section.words[i])) {
+              indices.add(globalOffset + i)
+            }
+          }
+          globalOffset += section.words.length
+        }
+        setSelectedIndices(indices)
+      }
+
+      void runTranslate(phrase)
+    },
+    [news.transcription, runTranslate],
   )
 
   return (
@@ -100,7 +134,12 @@ export function NewsDetails({ news }: NewsDetailsProps) {
 
           {news.videoLink && (
             <div className="mb-6 aspect-video bg-black">
-              <VideoPlayer videoUrl={news.videoLink} />
+              <VideoPlayer
+                ref={playerRef}
+                key={news.videoLink}
+                videoUrl={news.videoLink}
+                onTimeUpdate={setCurrentTime}
+              />
             </div>
           )}
 
@@ -116,7 +155,7 @@ export function NewsDetails({ news }: NewsDetailsProps) {
             </div>
           )}
 
-          {news.transcript && (
+          {news.transcription ? (
             <>
               <div className="mb-2 flex items-center justify-between gap-3">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -128,12 +167,34 @@ export function NewsDetails({ news }: NewsDetailsProps) {
                 Select a Spanish word or phrase for a translation.
               </p>
               <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 bg-card">
-                <SelectableTranscript
-                  html={news.transcript}
-                  onPhraseSelect={runTranslate}
+                <TranscriptDisplay
+                  transcription={news.transcription}
+                  currentTime={currentTime}
+                  onPhraseSelect={handleTranscriptPhraseSelect}
+                  selectedIndices={selectedIndices}
                 />
               </div>
             </>
+          ) : (
+            news.transcript && (
+              <>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Transcript
+                  </h2>
+                  <NewsDownloads news={news} />
+                </div>
+                <p className="text-lg text-muted-foreground mb-3">
+                  Select a Spanish word or phrase for a translation.
+                </p>
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 bg-card">
+                  <SelectableTranscript
+                    html={news.transcript}
+                    onPhraseSelect={runTranslate}
+                  />
+                </div>
+              </>
+            )
           )}
         </div>
 

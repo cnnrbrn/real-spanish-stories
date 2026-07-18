@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import { uploadAudio } from "@/features/videos/api"
 import { videoQueryOptions } from "@/features/videos/query-options"
 import {
+  MAX_AUDIO_UPLOAD_BYTES,
   TRANSCRIPTION_SERVICES,
   TRANSCRIPTION_SERVICE_OPTIONS,
   VIDEO_LEVELS,
@@ -54,8 +55,8 @@ const audioUploadSchema = z.object({
     }, "Only WAV and MP3 files are supported")
     .refine((files) => {
       const file = files[0]
-      return file.size <= 50 * 1024 * 1024 // 50MB
-    }, "File size must be less than 50MB"),
+      return file.size <= MAX_AUDIO_UPLOAD_BYTES
+    }, "File size must be less than 100MB"),
   transcriptionOption: z.enum(TRANSCRIPTION_SERVICE_OPTIONS),
   fixTimestamps: z.boolean(),
 })
@@ -190,7 +191,7 @@ function UploadAudioPage() {
                   />
                 </FormControl>
                 <FormDescription>
-                  Upload a WAV or MP3 audio file (max 50MB)
+                  Upload a WAV or MP3 audio file (max 100MB)
                 </FormDescription>
                 <FormMessage />
               </FormItem>

@@ -1,11 +1,12 @@
 import { Query } from "@nestjs/cqrs";
-import type { VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
+import type { ContentType, VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
 
 export interface VideoListItem {
   id: number;
   title: string;
   altTitle: string;
   status: (typeof VIDEO_STATUS_VALUES)[number];
+  contentType: ContentType;
   level: string | null;
   useSpanishHeadings: boolean;
   skipEnglishTitle: boolean;

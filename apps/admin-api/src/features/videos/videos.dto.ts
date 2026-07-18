@@ -1,11 +1,12 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
+import { CONTENT_TYPE_VALUES, VIDEO_STATUS_VALUES } from "@real-spanish-stories/shared";
 
 const createVideoSchema = z.object({
   title: z.string().min(1).max(200),
   altTitle: z.string().min(1).max(200),
-  level: z.string(),
+  level: z.string().nullish(),
+  contentType: z.enum(CONTENT_TYPE_VALUES).default("story"),
 });
 
 const updateVideoSchema = z.object({

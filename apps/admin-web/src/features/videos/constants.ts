@@ -16,6 +16,8 @@ export type TranscriptionService =
 export { STORY_LEVELS as VIDEO_LEVELS } from "@real-spanish-stories/shared"
 export type { StoryLevel as VideoLevel } from "@real-spanish-stories/shared"
 
+export const MAX_AUDIO_UPLOAD_BYTES = 100 * 1024 * 1024 // 100MB
+
 export const PROCESSING_STATUSES = [
   "transcribing",
   "aligning",

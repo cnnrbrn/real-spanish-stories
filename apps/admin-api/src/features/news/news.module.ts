@@ -11,6 +11,7 @@ import { UpdateNewsStatusHandler } from "./update-news-status/update-news-status
 import { DeleteNewsHandler } from "./delete-news/delete-news.handler";
 import { CreateNewsPdfHandler } from "./create-news-pdf/create-news-pdf.handler";
 import { DeleteNewsPdfHandler } from "./delete-news-pdf/delete-news-pdf.handler";
+import { CreateNewsFromVideoHandler } from "./create-news-from-video/create-news-from-video.handler";
 
 @Module({
   imports: [DatabaseModule, CqrsModule, StorageModule],
@@ -24,6 +25,7 @@ import { DeleteNewsPdfHandler } from "./delete-news-pdf/delete-news-pdf.handler"
     DeleteNewsHandler,
     CreateNewsPdfHandler,
     DeleteNewsPdfHandler,
+    CreateNewsFromVideoHandler,
   ],
 })
 export class NewsModule {}

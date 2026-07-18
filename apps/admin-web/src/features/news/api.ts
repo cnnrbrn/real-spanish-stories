@@ -37,6 +37,19 @@ export async function createNews(data: NewsCreate): Promise<NewsDetail> {
   return res.json()
 }
 
+export async function createNewsFromVideo(
+  videoId: number,
+): Promise<NewsDetail> {
+  const res = await fetch(`${API_URL}/news/from-video/${videoId}`, {
+    method: "POST",
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(error.message || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function updateNews(
   id: number,
   data: NewsUpdate,

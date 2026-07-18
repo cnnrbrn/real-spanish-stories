@@ -24,6 +24,7 @@ import { UpdateNewsStatusCommand } from "./update-news-status/update-news-status
 import { DeleteNewsCommand } from "./delete-news/delete-news.command";
 import { CreateNewsPdfCommand } from "./create-news-pdf/create-news-pdf.command";
 import { DeleteNewsPdfCommand } from "./delete-news-pdf/delete-news-pdf.command";
+import { CreateNewsFromVideoCommand } from "./create-news-from-video/create-news-from-video.command";
 import { CreateNewsDto, UpdateNewsDto, UpdateNewsStatusDto } from "./news.dto";
 
 @Controller("news")
@@ -47,6 +48,11 @@ export class NewsController {
   @Post()
   createNews(@Body() dto: CreateNewsDto) {
     return this.commandBus.execute(new CreateNewsCommand(dto));
+  }
+
+  @Post("from-video/:videoId")
+  createNewsFromVideo(@Param("videoId", ParseIntPipe) videoId: number) {
+    return this.commandBus.execute(new CreateNewsFromVideoCommand(videoId));
   }
 
   @Patch(":id")

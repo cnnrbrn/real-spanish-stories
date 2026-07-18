@@ -70,6 +70,7 @@ export class DetectSectionsHandler
         command.useSpanishHeadings,
         video.level,
         command.skipEnglishTitle,
+        video.contentType === "news",
       );
 
       const [updated] = await this.database

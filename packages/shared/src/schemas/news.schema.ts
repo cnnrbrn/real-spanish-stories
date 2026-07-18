@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { STORY_STATUS_VALUES } from "../constants/story-status.js";
+import { transcriptionSchema } from "./transcription.schema.js";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -20,6 +21,7 @@ export const newsDetailSchema = newsResponseSchema.extend({
   metaDescription: z.string().max(160).nullable(),
   summary: z.string().nullable(),
   transcript: z.string().nullable(),
+  transcription: transcriptionSchema.nullable(),
 });
 
 export type NewsDetail = z.infer<typeof newsDetailSchema>;

@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { MAX_AUDIO_UPLOAD_BYTES } from '../constants'
 
 const audioUploadSchema = z.object({
   audioFile: z
@@ -23,8 +24,8 @@ const audioUploadSchema = z.object({
     }, 'Only WAV and MP3 files are supported')
     .refine((files) => {
       const file = files[0]
-      return file.size <= 50 * 1024 * 1024 // 50MB
-    }, 'File size must be less than 50MB'),
+      return file.size <= MAX_AUDIO_UPLOAD_BYTES
+    }, 'File size must be less than 100MB'),
 })
 
 type AudioUploadFormValues = z.infer<typeof audioUploadSchema>
@@ -57,7 +58,7 @@ export function AudioUploadForm() {
                 />
               </FormControl>
               <FormDescription>
-                Upload a WAV or MP3 audio file (max 50MB)
+                Upload a WAV or MP3 audio file (max 100MB)
               </FormDescription>
               <FormMessage />
             </FormItem>

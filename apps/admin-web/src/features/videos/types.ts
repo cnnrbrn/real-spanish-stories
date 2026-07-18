@@ -11,12 +11,15 @@ export enum VideoStatus {
   FAILED = 'failed',
 }
 
+export type ContentType = 'story' | 'news'
+
 export interface Video {
   id: number
   title: string
   altTitle: string
   level: string | null
   status: VideoStatus
+  contentType: ContentType
   useSpanishHeadings: boolean
   skipEnglishTitle: boolean
   skipVerbs: boolean
@@ -39,6 +42,7 @@ export interface VideoListItem {
   altTitle: string
   level: string | null
   status: VideoStatus
+  contentType: ContentType
   useSpanishHeadings: boolean
   skipEnglishTitle: boolean
   audioPath: string | null
@@ -56,7 +60,8 @@ export interface VideoListItem {
 export interface VideoCreate {
   title: string
   altTitle: string
-  level: string
+  level: string | null
+  contentType: ContentType
 }
 
 export interface VideoUpdate {

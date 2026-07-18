@@ -40,7 +40,12 @@ export class VideosController {
   @Post()
   createVideo(@Body() dto: CreateVideoDto) {
     return this.commandBus.execute(
-      new CreateVideoCommand(dto.title, dto.altTitle, dto.level),
+      new CreateVideoCommand(
+        dto.title,
+        dto.altTitle,
+        dto.level ?? null,
+        dto.contentType,
+      ),
     );
   }
 

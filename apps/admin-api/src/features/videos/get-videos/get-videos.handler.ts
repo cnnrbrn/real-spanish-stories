@@ -22,6 +22,7 @@ export class GetVideosHandler implements IQueryHandler<GetVideosQuery> {
         title: videosSchema.title,
         altTitle: videosSchema.altTitle,
         status: videosSchema.status,
+        contentType: videosSchema.contentType,
         level: videosSchema.level,
         useSpanishHeadings: videosSchema.useSpanishHeadings,
         skipEnglishTitle: videosSchema.skipEnglishTitle,

@@ -24,6 +24,8 @@ import {
   updateStory,
 } from "@/features/stories/api"
 import { storyKeys } from "@/features/stories/constants"
+import { createNewsFromVideo } from "@/features/news/api"
+import { newsKeys } from "@/features/news/constants"
 import type { StoryLevel, StoryUpdate } from "@real-spanish-stories/shared"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -68,6 +70,9 @@ export function Video({ video }: VideoProps) {
   const [showStoryDialog, setShowStoryDialog] = useState(false)
   const [createdStoryId, setCreatedStoryId] = useState<number | null>(null)
   const [isExistingStory, setIsExistingStory] = useState(false)
+  const [showNewsDialog, setShowNewsDialog] = useState(false)
+  const [createdNewsId, setCreatedNewsId] = useState<number | null>(null)
+  const [isExistingNews, setIsExistingNews] = useState(false)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -124,6 +129,29 @@ export function Video({ video }: VideoProps) {
       } else {
         // Log unexpected errors
         console.error("Story creation error:", error)
+      }
+    },
+  })
+
+  const createNewsMutation = useMutation({
+    mutationFn: () => createNewsFromVideo(video.id),
+    onSuccess: (news) => {
+      queryClient.invalidateQueries({ queryKey: newsKeys.list() })
+      setCreatedNewsId(news.id)
+      setIsExistingNews(false)
+      setShowNewsDialog(true)
+    },
+    onError: (error: Error) => {
+      const is409 =
+        error.message.includes("409") ||
+        error.message.toLowerCase().includes("already exists")
+
+      if (is409) {
+        setCreatedNewsId(null)
+        setIsExistingNews(true)
+        setShowNewsDialog(true)
+      } else {
+        console.error("News creation error:", error)
       }
     },
   })
@@ -484,16 +512,31 @@ export function Video({ video }: VideoProps) {
                   : "Generate Video"}
               </Button>
 
-              <Button
-                size="sm"
-                variant="secondary"
-                className="gap-1.5"
-                onClick={() => createStoryMutation.mutate()}
-                disabled={!hasLanguageTags || createStoryMutation.isPending}
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                {createStoryMutation.isPending ? "Creating..." : "Create Story"}
-              </Button>
+              {video.contentType === "news" ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="gap-1.5"
+                  onClick={() => createNewsMutation.mutate()}
+                  disabled={!hasLanguageTags || createNewsMutation.isPending}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {createNewsMutation.isPending ? "Creating..." : "Create News"}
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="gap-1.5"
+                  onClick={() => createStoryMutation.mutate()}
+                  disabled={!hasLanguageTags || createStoryMutation.isPending}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {createStoryMutation.isPending
+                    ? "Creating..."
+                    : "Create Story"}
+                </Button>
+              )}
             </div>
           </CardContent>
         </>
@@ -546,6 +589,46 @@ export function Video({ video }: VideoProps) {
                   : "Update Story"
                 : "View Story"}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* News creation success/conflict dialog */}
+      <AlertDialog
+        open={showNewsDialog}
+        onOpenChange={(open) => {
+          setShowNewsDialog(open)
+          if (!open) {
+            setCreatedNewsId(null)
+            setIsExistingNews(false)
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {isExistingNews ? "News Already Exists" : "News Created"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {isExistingNews
+                ? "A news episode already exists for this video or today's date. Open the news section to edit it."
+                : "A draft news episode has been created from this video. Set its date and video link on the edit page, then publish."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            {!isExistingNews && createdNewsId && (
+              <AlertDialogAction
+                onClick={() =>
+                  navigate({
+                    to: "/news/$id/edit",
+                    params: { id: createdNewsId.toString() },
+                  })
+                }
+              >
+                Edit News
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
