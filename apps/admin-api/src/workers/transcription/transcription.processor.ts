@@ -8,6 +8,7 @@ import { DATABASE_CONNECTION } from "src/database/database.constants";
 import { videosSchema } from "@real-spanish-stories/shared";
 import { StorageService } from "src/storage/storage.service";
 import { DeepgramTranscriptionService } from "./deepgram-transcription.service";
+import { GladiaTranscriptionService } from "./gladia-transcription.service";
 import { ReplicateTranscriptionService } from "./replicate-transcription.service";
 
 export interface TranscriptionJobData {
@@ -36,6 +37,7 @@ export class TranscriptionProcessor extends WorkerHost {
     private readonly storageService: StorageService,
     private readonly replicateService: ReplicateTranscriptionService,
     private readonly deepgramService: DeepgramTranscriptionService,
+    private readonly gladiaService: GladiaTranscriptionService,
     @InjectQueue("transcription-local")
     private readonly alignmentQueue: Queue<AlignmentJobData>,
   ) {
@@ -50,10 +52,14 @@ export class TranscriptionProcessor extends WorkerHost {
 
     try {
       const audioBuffer = await this.storageService.download(audioPath);
-      const result =
-        transcriptionOption === "deepgram"
-          ? await this.deepgramService.transcribe(audioBuffer)
-          : await this.replicateService.transcribe(audioBuffer);
+      let result;
+      if (transcriptionOption === "deepgram") {
+        result = await this.deepgramService.transcribe(audioBuffer);
+      } else if (transcriptionOption === "gladia") {
+        result = await this.gladiaService.transcribe(audioBuffer);
+      } else {
+        result = await this.replicateService.transcribe(audioBuffer);
+      }
 
       if (fixTimestamps && transcriptionOption === "deepgram") {
         await this.database

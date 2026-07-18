@@ -225,6 +225,9 @@ function UploadAudioPage() {
                     <SelectItem value={TRANSCRIPTION_SERVICES.DEEPGRAM}>
                       Deepgram Nova-3 (cloud API, best for mixed Spanish/English)
                     </SelectItem>
+                    <SelectItem value={TRANSCRIPTION_SERVICES.GLADIA}>
+                      Gladia Solaria-3 (cloud API, best Spanish accuracy)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>

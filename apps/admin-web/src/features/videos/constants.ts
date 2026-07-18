@@ -2,12 +2,14 @@ export const TRANSCRIPTION_SERVICES = {
   LOCAL_WHISPERX: "local-whisperx",
   REPLICATE: "replicate",
   DEEPGRAM: "deepgram",
+  GLADIA: "gladia",
 } as const
 
 export const TRANSCRIPTION_SERVICE_OPTIONS = [
   TRANSCRIPTION_SERVICES.LOCAL_WHISPERX,
   TRANSCRIPTION_SERVICES.REPLICATE,
   TRANSCRIPTION_SERVICES.DEEPGRAM,
+  TRANSCRIPTION_SERVICES.GLADIA,
 ] as const
 
 export type TranscriptionService =
