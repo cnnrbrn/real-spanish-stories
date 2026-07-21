@@ -17,6 +17,7 @@ export const newsSchema = pgTable("news", {
   title: varchar("title", { length: 200 }),
   metaDescription: varchar("meta_description", { length: 160 }),
   summary: text("summary"),
+  listSummary: varchar("list_summary", { length: 300 }),
   videoLink: varchar("video_link", { length: 500 }),
   transcript: text("transcript"),
   transcription: jsonb("transcription").$type<Transcription>(),

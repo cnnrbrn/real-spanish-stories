@@ -16,6 +16,7 @@ import { PageContainer, pageTitleClass } from '@/components/ui/page'
 import { TranscriptDisplay } from '@/features/stories/components/transcript-display'
 import { VideoPlayer } from '@/features/stories/components/video-player'
 import { WordExplanationPanel } from '@/features/stories/components/word-explanation-panel'
+import { useGlosses } from '@/features/translate/use-glosses'
 
 interface NewsDetailsProps {
   news: NewsDetail
@@ -24,11 +25,11 @@ interface NewsDetailsProps {
 export function NewsDetails({ news }: NewsDetailsProps) {
   const playerRef = useRef<VideoPlayerHandle>(null)
   const [currentTime, setCurrentTime] = useState(0)
-  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set())
   const [selectedPhrase, setSelectedPhrase] = useState<string | null>(null)
   const [wordData, setWordData] = useState<TranslationResponse | null>(null)
   const [isLoadingWord, setIsLoadingWord] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const glosses = useGlosses()
 
   const formattedDate = formatNewsDate(news.date)
 
@@ -43,7 +44,11 @@ export function NewsDetails({ news }: NewsDetailsProps) {
   }, [sidebarOpen])
 
   const runTranslate = useCallback(
-    async (phrase: string) => {
+    async (phrase: string, loIndex: number, hiIndex: number) => {
+      // A new selection removes any glosses it overlaps; re-selecting an
+      // existing phrase exactly toggles it off — nothing more to do.
+      if (glosses.select(loIndex, hiIndex, phrase) === 'removed') return
+
       setSelectedPhrase(phrase)
       setWordData(null)
       setSidebarOpen(true)
@@ -60,32 +65,29 @@ export function NewsDetails({ news }: NewsDetailsProps) {
         setIsLoadingWord(false)
       }
     },
-    [news.id],
+    // Depend on the stable `select` (not the whole glosses object, whose
+    // identity changes as glosses are added) so this callback and the
+    // transcript's word handlers keep a stable identity during selection.
+    [news.id, glosses.select],
   )
 
   const handleTranscriptPhraseSelect = useCallback(
-    ({ words, phrase }: { words: TranscriptionWord[]; phrase: string }) => {
+    ({
+      words,
+      phrase,
+      loIndex,
+      hiIndex,
+    }: {
+      words: TranscriptionWord[]
+      phrase: string
+      loIndex: number
+      hiIndex: number
+    }) => {
       if (words.length === 0) return
-
       playerRef.current?.seekTo(words[0].start)
-
-      if (news.transcription) {
-        let globalOffset = 0
-        const indices = new Set<number>()
-        for (const section of news.transcription.sections) {
-          for (let i = 0; i < section.words.length; i++) {
-            if (words.includes(section.words[i])) {
-              indices.add(globalOffset + i)
-            }
-          }
-          globalOffset += section.words.length
-        }
-        setSelectedIndices(indices)
-      }
-
-      void runTranslate(phrase)
+      void runTranslate(phrase, loIndex, hiIndex)
     },
-    [news.transcription, runTranslate],
+    [runTranslate],
   )
 
   return (
@@ -171,7 +173,7 @@ export function NewsDetails({ news }: NewsDetailsProps) {
                   transcription={news.transcription}
                   currentTime={currentTime}
                   onPhraseSelect={handleTranscriptPhraseSelect}
-                  selectedIndices={selectedIndices}
+                  glosses={glosses.glosses}
                 />
               </div>
             </>

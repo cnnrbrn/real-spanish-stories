@@ -14,6 +14,7 @@ import { TranscriptDisplay } from './transcript-display'
 import { VideoPlayer } from './video-player'
 import { WordExplanationPanel } from './word-explanation-panel'
 import type { VideoPlayerHandle } from './video-player'
+import { useGlosses } from '@/features/translate/use-glosses'
 import type {
   StoryDetail,
   TranscriptionWord,
@@ -30,13 +31,13 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   const playerRef = useRef<VideoPlayerHandle>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [selectedPhrase, setSelectedPhrase] = useState<string | null>(null)
-  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set())
   const [wordData, setWordData] = useState<{
     translation: string
     explanation: string[]
   } | null>(null)
   const [isLoadingWord, setIsLoadingWord] = useState(false)
   const [englishOnly, setEnglishOnly] = useState(false)
+  const glosses = useGlosses()
   const levelAutoplay = usePreferencesStore((s) => s.levelAutoplay)
   const skipToStory = usePreferencesStore((s) => s.skipToStory)
   const startSeconds =
@@ -69,36 +70,35 @@ export function StoryDetails({ story }: StoryDetailsProps) {
   async function handlePhraseSelect({
     words,
     phrase,
+    loIndex,
+    hiIndex,
   }: {
     words: TranscriptionWord[]
     phrase: string
+    loIndex: number
+    hiIndex: number
   }) {
     if (words.length === 0) return
-    setSidebarOpen(true)
 
-    playerRef.current?.seekTo(words[0].start)
-    setSelectedPhrase(phrase)
-    setWordData(null)
-
-    // Compute indices: find the global index range for these words
-    let globalOffset = 0
-    const indices = new Set<number>()
-    for (const section of story.transcription.sections) {
-      for (let i = 0; i < section.words.length; i++) {
-        const w = section.words[i]
-        if (words.includes(w)) {
-          indices.add(globalOffset + i)
-        }
-      }
-      globalOffset += section.words.length
-    }
-    setSelectedIndices(indices)
-
+    // Non-Spanish selection: no gloss, just the side-panel hint.
     if (words.every((w) => w.language === 'en')) {
+      setSidebarOpen(true)
+      playerRef.current?.seekTo(words[0].start)
+      setSelectedPhrase(phrase)
+      setWordData(null)
       setEnglishOnly(true)
       return
     }
     setEnglishOnly(false)
+
+    // A new selection removes any glosses it overlaps; re-selecting an existing
+    // phrase exactly toggles it off, in which case there's nothing more to do.
+    if (glosses.select(loIndex, hiIndex, phrase) === 'removed') return
+
+    setSidebarOpen(true)
+    playerRef.current?.seekTo(words[0].start)
+    setSelectedPhrase(phrase)
+    setWordData(null)
     setIsLoadingWord(true)
 
     try {
@@ -207,7 +207,7 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               transcription={story.transcription}
               currentTime={currentTime}
               onPhraseSelect={handlePhraseSelect}
-              selectedIndices={selectedIndices}
+              glosses={glosses.glosses}
             />
             {/* TODO(seo): consider adding a comprehension-questions block here once
                 the feature exists (see transcript-display.tsx TODO) — would help

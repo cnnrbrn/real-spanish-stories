@@ -23,6 +23,7 @@ const newsFormSchema = z.object({
   title: z.string().max(200).optional(),
   metaDescription: z.string().max(160).optional(),
   summary: z.string().optional(),
+  listSummary: z.string().max(300).optional(),
   videoLink: z.string().url().optional().or(z.literal('')),
   transcript: z.string().optional(),
 })
@@ -40,6 +41,7 @@ export function NewsForm() {
       title: '',
       metaDescription: '',
       summary: '',
+      listSummary: '',
       videoLink: '',
       transcript: '',
     },
@@ -59,6 +61,7 @@ export function NewsForm() {
       title: data.title || undefined,
       metaDescription: data.metaDescription || undefined,
       summary: data.summary || undefined,
+      listSummary: data.listSummary || undefined,
       videoLink: data.videoLink || undefined,
       transcript: data.transcript || undefined,
     })
@@ -120,6 +123,23 @@ export function NewsForm() {
               <FormLabel>Summary (optional)</FormLabel>
               <FormControl>
                 <RichTextEditor value={field.value ?? ''} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="listSummary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Listing summary (optional)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Short plain-text blurb shown on the news list page. Keep it different from the Summary above."
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

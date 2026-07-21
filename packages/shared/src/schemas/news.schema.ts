@@ -8,6 +8,7 @@ export const newsResponseSchema = z.object({
   id: z.number(),
   date: z.string(),
   title: z.string().nullable(),
+  listSummary: z.string().nullable(),
   videoLink: z.string().nullable(),
   pdfPath: z.string().nullable(),
   status: z.enum(STORY_STATUS_VALUES),
@@ -31,6 +32,7 @@ export const newsCreateSchema = z.object({
   title: z.string().max(200).optional(),
   metaDescription: z.string().max(160).optional(),
   summary: z.string().optional(),
+  listSummary: z.string().max(300).optional(),
   videoLink: z.string().url().optional(),
   transcript: z.string().optional(),
 });

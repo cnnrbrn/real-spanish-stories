@@ -81,6 +81,11 @@ function NewsListPage() {
                       {formatNewsDate(item.date)}
                     </p>
                   )}
+                  {item.listSummary && (
+                    <p className="text-base text-muted-foreground mt-1 line-clamp-2">
+                      {item.listSummary}
+                    </p>
+                  )}
                 </div>
                 <ChevronRight className="w-5 h-5 shrink-0 text-muted-foreground" />
               </Link>

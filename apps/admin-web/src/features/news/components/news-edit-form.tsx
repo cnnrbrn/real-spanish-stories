@@ -28,6 +28,7 @@ const editNewsSchema = z.object({
   title: z.string().max(200).optional(),
   metaDescription: z.string().max(160).optional(),
   summary: z.string().optional(),
+  listSummary: z.string().max(300).optional(),
   videoLink: z.string().url().optional().or(z.literal("")),
   transcript: z.string().optional(),
 })
@@ -45,6 +46,7 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
       title: news.title ?? "",
       metaDescription: news.metaDescription ?? "",
       summary: news.summary ?? "",
+      listSummary: news.listSummary ?? "",
       videoLink: news.videoLink ?? "",
       transcript: news.transcript ?? "",
     },
@@ -57,6 +59,7 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
         title: data.title || undefined,
         metaDescription: data.metaDescription || undefined,
         summary: data.summary || undefined,
+        listSummary: data.listSummary || undefined,
         videoLink: data.videoLink || undefined,
         transcript: data.transcript || undefined,
       }),
@@ -124,6 +127,22 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
               <FormLabel>Summary (optional)</FormLabel>
               <FormControl>
                 <RichTextEditor value={field.value ?? ""} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="listSummary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Listing summary (optional)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Short plain-text blurb shown on the news list page. Keep it different from the Summary above."
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

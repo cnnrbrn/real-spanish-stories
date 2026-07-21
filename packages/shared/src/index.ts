@@ -16,6 +16,7 @@ export * from "./db/stories.schema.js";
 export * from "./db/news.schema.js";
 export * from "./db/auth.schema.js";
 export * from "./db/translation-cache.schema.js";
+export * from "./db/gloss-cache.schema.js";
 export * from "./db/videos.schema.js";
 export * from "./db/contact.schema.js";
 export * from "./db/story-downloads.schema.js";

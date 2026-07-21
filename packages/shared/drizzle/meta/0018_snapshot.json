@@ -1,6 +1,6 @@
 {
-  "id": "401e3822-dfb9-4b6e-bc45-ff8717c85b1a",
-  "prevId": "110e0627-bb53-4009-8644-5582518a6b68",
+  "id": "5aba6da9-e49c-4e4b-a9b5-257e5ffbf6ec",
+  "prevId": "401e3822-dfb9-4b6e-bc45-ff8717c85b1a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1100,6 +1100,52 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.gloss_cache": {
+      "name": "gloss_cache",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "phrase": {
+          "name": "phrase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gloss": {
+          "name": "gloss",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gloss_cache_phrase_unique": {
+          "name": "gloss_cache_phrase_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "phrase"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
