@@ -255,15 +255,15 @@ export function StoryDetails({ story }: StoryDetailsProps) {
                 <StoryAutoplaySwitch />
               </div>
             </div>
-            <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+            <div className="hidden md:block md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
               <LevelProgressionPanel
                 currentLevel={story.level}
                 levels={story.siblings}
                 altTitle={story.altTitle}
               />
             </div>
-            {(selectedPhrase || isLoadingWord) && (
-              <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+            <div className="md:rounded-lg md:border md:border-gray-200 dark:md:border-gray-700 p-4 md:bg-[#fafafa] md:dark:bg-card">
+              {selectedPhrase || isLoadingWord ? (
                 <WordExplanationPanel
                   phrase={selectedPhrase}
                   translation={wordData?.translation ?? null}
@@ -271,8 +271,13 @@ export function StoryDetails({ story }: StoryDetailsProps) {
                   isLoading={isLoadingWord}
                   englishOnly={englishOnly}
                 />
-              </div>
-            )}
+              ) : (
+                <p className="text-base text-muted-foreground">
+                  Select a Spanish word or phrase in the transcript to see its
+                  translation and explanation here.
+                </p>
+              )}
+            </div>
           </div>
         </aside>
       </div>

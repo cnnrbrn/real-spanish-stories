@@ -31,7 +31,17 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
 
     useImperativeHandle(ref, () => ({
       seekTo(time: number) {
-        playerRef.current?.currentTime(time)
+        const player = playerRef.current
+        if (!player) return
+
+        // YouTube starts playing when you seek a cued video, so a seek from a
+        // paused player leaks a moment of audio. Undo it on the way out.
+        const wasPaused = player.paused()
+        player.currentTime(time)
+        if (wasPaused) {
+          player.pause()
+          player.one('play', () => player.pause())
+        }
       },
     }))
 
