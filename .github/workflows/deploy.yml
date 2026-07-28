@@ -81,6 +81,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -98,7 +99,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: DATABASE_URL,OPENAI_API_KEY,AWS_REGION,S3_BUCKET,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,BETTER_AUTH_URL,BETTER_AUTH_SECRET,CORS_ORIGIN,RESEND_API_KEY,RESEND_FROM_EMAIL,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GHCR_USERNAME,GHCR_TOKEN
+          envs: DATABASE_URL,OPENAI_API_KEY,DEEPL_API_KEY,AWS_REGION,S3_BUCKET,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,BETTER_AUTH_URL,BETTER_AUTH_SECRET,CORS_ORIGIN,RESEND_API_KEY,RESEND_FROM_EMAIL,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GHCR_USERNAME,GHCR_TOKEN
           script: |
             set -e
             cd /home/ubuntu/apps/real-spanish-stories
@@ -107,6 +108,7 @@ jobs:
             NODE_ENV=production
             DATABASE_URL=${DATABASE_URL}
             OPENAI_API_KEY=${OPENAI_API_KEY}
+            DEEPL_API_KEY=${DEEPL_API_KEY}
             AWS_REGION=${AWS_REGION}
             S3_BUCKET=${S3_BUCKET}
             AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
