@@ -9,7 +9,6 @@ on:
       - "apps/web/**"
       - "packages/**"
       - "docker-compose.prod.yml"
-      - "Caddyfile"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
@@ -74,7 +73,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: "docker-compose.prod.yml,Caddyfile"
+          source: "docker-compose.prod.yml"
           target: "/home/ubuntu/apps/real-spanish-stories"
 
       - name: Deploy on VPS
@@ -126,8 +125,5 @@ jobs:
 
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
-
-            sudo cp Caddyfile /etc/caddy/Caddyfile
-            sudo systemctl reload caddy
 
             docker image prune -f

@@ -1,3 +1,9 @@
+# REFERENCE COPY ONLY — not deployed.
+# The live config is hand-edited at /etc/caddy/Caddyfile on the VPS.
+# Changes here have no effect; SSH in and edit the server directly,
+# then run: sudo caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+#           sudo systemctl reload caddy
+
 www.realspanishstories.com {
     redir https://realspanishstories.com{uri} permanent
 }
