@@ -5,7 +5,7 @@ import { STORY_LEVELS } from '@real-spanish-stories/shared'
 import { translatePhrase } from '../api'
 import { findNextSibling } from '../utils/next-sibling'
 import { createStoryTitle } from '../utils/story'
-import { LevelBadge } from './level-badge'
+// import { LevelBadge } from './level-badge'
 import { LevelProgressionPanel } from './level-progression-panel'
 import { SkipToStorySwitch } from './skip-to-story-switch'
 import { StoryAutoplaySwitch } from './story-autoplay-switch'
@@ -179,11 +179,22 @@ export function StoryDetails({ story }: StoryDetailsProps) {
               </button>
             </div>
             <div className="mt-4 flex flex-col md:flex-row md:items-center gap-2">
+              {/* Level badge removed: the <h1> and the all-levels grid below
+                  already state the level.
               <div className="self-start">
                 <LevelBadge level={story.level} size="lg" />
               </div>
+              */}
               <StoryDownloads story={story} />
             </div>
+          </div>
+          <div className="md:hidden mb-6">
+            <LevelProgressionPanel
+              currentLevel={story.level}
+              levels={story.siblings}
+              altTitle={story.altTitle}
+              variant="compact"
+            />
           </div>
           <div className="mb-4">
             <span className="inline-flex items-center gap-2 text-lg italic text-muted-foreground">
