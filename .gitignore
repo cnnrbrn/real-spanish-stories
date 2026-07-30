@@ -23,10 +23,9 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 
-python-admin
-
 # Data
 /data/
 
 CLAUDE.md
 language.md
+docs/temp

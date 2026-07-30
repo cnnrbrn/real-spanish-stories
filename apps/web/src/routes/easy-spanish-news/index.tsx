@@ -15,9 +15,11 @@ const newsListQueryOptions = queryOptions({
   queryFn: () => getNews(),
 })
 
-const TITLE = 'Easy Spanish News: Slow Spanish Listening with Transcripts'
+const TITLE = 'News in Slow Spanish: Easy Latin American News for Learners'
 const DESCRIPTION =
-  'Weekly Latin American news read slowly in clear, easy Argentine Spanish for learners, with video and full transcripts you can click for instant translation.'
+  'Free weekly Latin American news read slowly in clear, easy Argentine Spanish for A2-B1 learners. Full clickable transcripts with instant translation.'
+const URL = 'https://realspanishstories.com/easy-spanish-news'
+const OG_IMAGE = 'https://realspanishstories.com/og-image.jpg'
 
 export const Route = createFileRoute('/easy-spanish-news/')({
   loader: ({ context: { queryClient } }) =>
@@ -29,17 +31,12 @@ export const Route = createFileRoute('/easy-spanish-news/')({
       { property: 'og:type', content: 'website' },
       { property: 'og:title', content: TITLE },
       { property: 'og:description', content: DESCRIPTION },
-      {
-        property: 'og:url',
-        content: 'https://realspanishstories.com/easy-spanish-news',
-      },
+      { property: 'og:url', content: URL },
+      { property: 'og:image', content: OG_IMAGE },
+      { property: 'og:site_name', content: 'Real Spanish Stories' },
+      { name: 'twitter:card', content: 'summary_large_image' },
     ],
-    links: [
-      {
-        rel: 'canonical',
-        href: 'https://realspanishstories.com/easy-spanish-news',
-      },
-    ],
+    links: [{ rel: 'canonical', href: URL }],
   }),
   component: NewsListPage,
 })
@@ -49,15 +46,19 @@ function NewsListPage() {
 
   return (
     <PageContainer width="prose">
-      <h1 className={pageTitleClass}>Easy Spanish News</h1>
+      <h1 className={pageTitleClass}>
+        Easy Spanish News - Current Events in Slow, Easy Spanish
+      </h1>
       <p className={pageDescriptionClass}>
-        Weekly Latin American news read in clear, slow Argentine (rioplatense)
-        Spanish, with a full transcript you can click for translation.
+        Real news from across Latin America, read slowly in clear Argentine
+        (Rioplatense) Spanish. A new episode every week, written for A2-B1
+        learners — beginner to intermediate — who want real, current Spanish
+        they can actually follow by ear, completely free.
       </p>
       <p className={pageDescriptionClass}>
-        New episode every week, narrated in clear Argentine (rioplatense)
-        Spanish. Perfect listening practice for beginner and intermediate
-        learners who want real, current Spanish.
+        Every episode comes with a full transcript you can click for instant
+        translation, so you can listen first and check anything you missed. Slow
+        Spanish news, made for learning.
       </p>
 
       {news.length === 0 ? (

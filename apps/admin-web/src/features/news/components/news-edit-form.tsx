@@ -56,12 +56,12 @@ export function NewsEditForm({ news }: NewsEditFormProps) {
     mutationFn: (data: EditNewsFormValues) =>
       updateNews(news.id, {
         date: data.date,
-        title: data.title || undefined,
-        metaDescription: data.metaDescription || undefined,
-        summary: data.summary || undefined,
-        listSummary: data.listSummary || undefined,
+        title: data.title,
+        metaDescription: data.metaDescription,
+        summary: data.summary,
+        listSummary: data.listSummary,
         videoLink: data.videoLink || undefined,
-        transcript: data.transcript || undefined,
+        transcript: data.transcript,
       }),
     onSuccess: (updated) => {
       queryClient.setQueryData(newsKeys.detail(news.id), updated)
