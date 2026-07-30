@@ -52,7 +52,7 @@ function NewsListPage() {
       <p className={pageDescriptionClass}>
         Real news from across Latin America, read slowly in clear Argentine
         (Rioplatense) Spanish. A new episode every week, written for A2-B1
-        learners — beginner to intermediate — who want real, current Spanish
+        learners - beginner to intermediate - who want real, current Spanish
         they can actually follow by ear, completely free.
       </p>
       <p className={pageDescriptionClass}>
